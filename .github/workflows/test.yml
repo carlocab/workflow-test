@@ -7,6 +7,6 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest]
-    timeout-minutes: ${{ (matrix.os == 'ubuntu-latest' && '2') || '1' }}
+    timeout-minutes: ${{ (matrix.os == 'ubuntu-latest' && 2) || 1 }}
     steps:
       - run: sleep 90
