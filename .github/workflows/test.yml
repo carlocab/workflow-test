@@ -11,6 +11,7 @@ jobs:
     steps:
       - run: brew ls --formula
       - run: ls -la /usr/lib
+      - run: ls -la "$(brew --prefix)/lib"
       - run: |
           brew install carlocab/personal/libwhich
           if [[ "$(uname -s)" = "Darwin" ]]
