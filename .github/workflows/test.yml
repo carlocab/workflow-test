@@ -6,10 +6,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-10.15, macos-11, macos-12, ubuntu-latest]
       fail-fast: false
     steps:
       - run: brew ls --formula
+      - run: ls -la /usr/lib
       - run: |
           brew install carlocab/personal/libwhich
           if [[ "$(uname -s)" = "Darwin" ]]
