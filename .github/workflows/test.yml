@@ -1,5 +1,5 @@
 name: CI
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 jobs:
   tests:
     name: Test on ${{ matrix.os }}
@@ -8,6 +8,14 @@ jobs:
       matrix:
         os: [macos-latest, ubuntu-latest]
       fail-fast: false
-    timeout-minutes: ${{ (matrix.os == 'ubuntu-latest' && 3) || 1 }}
     steps:
-      - run: sleep 120
+      - run: |
+          brew install carlocab/personal/libwhich
+          if [[ "$(uname -s)" = "Darwin" ]]
+          then
+            LIBEXT="dylib"
+          else
+            LIBEXT="so"
+          fi
+
+          libwhich "libintl.$LIBEXT"
