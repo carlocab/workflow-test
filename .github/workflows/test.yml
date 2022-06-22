@@ -10,14 +10,4 @@ jobs:
       fail-fast: false
     steps:
       - run: brew ls --formula
-      - run: ls -la /usr/lib
-      - run: ls -la "$(brew --prefix gettext)/lib"
-      - run: |
-          brew install carlocab/personal/libwhich
-          if [[ "$(uname -s)" = "Darwin" ]]
-          then
-            LIBEXT="dylib"
-          else
-            LIBEXT="so"
-          fi
-          libwhich "libintl.$LIBEXT"
+      - run: brew uses --installed curl
