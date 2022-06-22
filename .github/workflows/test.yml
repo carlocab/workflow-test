@@ -10,4 +10,8 @@ jobs:
       fail-fast: false
     steps:
       - run: brew ls --formula
-      - run: brew uses --installed gettext
+      - run: |
+          for f in $(brew uses --installed gettext) gettext
+          do
+            brew uses --installed $f
+          done | sort -u
