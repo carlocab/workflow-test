@@ -11,6 +11,7 @@ jobs:
     steps:
       - run: brew ls --formula
       - run: brew uses --installed gettext
+      - run: brew uses --recursive --installed gettext
       - run: |
           for f in $(brew uses --installed gettext) gettext
           do
