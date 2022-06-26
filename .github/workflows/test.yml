@@ -13,5 +13,6 @@ jobs:
           which -a xattr || exit 0
           xattr=$(which xattr)
           file_xattr=$(file "$xattr")
+          echo "$file_xattr"
           <<<"$file_xattr" grep -q 'Mach-O' && exit 0
           cat "$xattr"
