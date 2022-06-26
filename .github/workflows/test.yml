@@ -9,11 +9,9 @@ jobs:
         os: [macos-10.15, macos-11, macos-12, ubuntu-latest]
       fail-fast: false
     steps:
-      - run: brew ls --formula
-      - run: brew uses --installed gettext
-      - run: brew uses --recursive --installed gettext
       - run: |
-          for f in $(brew uses --installed gettext) gettext
-          do
-            brew uses --installed $f
-          done | sort -u
+          which -a xattr || exit 0
+          xattr=$(which xattr)
+          file_xattr=$(file "$xattr")
+          <<<"$file_xattr" grep -q 'Mach-O' && exit 0
+          cat "$xattr"
