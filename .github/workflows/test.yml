@@ -10,7 +10,11 @@ jobs:
       fail-fast: false
     steps:
       - run: |
+          echo "=========== /Library/Frameworks =========="
           ls -la /Library/Frameworks
+          echo "=========== /Library/Frameworks/Mono.framework =========="
           ls -la /Library/Frameworks/Mono.framework
+          echo "=========== /Library/Frameworks/Mono.framework/Headers =========="
           ls -la /Library/Frameworks/Mono.framework/Headers
+          echo "=========== /Library/Frameworks/Mono.framework/Headers/libintl.h =========="
           cat /Library/Frameworks/Mono.framework/Headers/libintl.h
