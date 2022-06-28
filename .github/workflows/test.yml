@@ -10,9 +10,7 @@ jobs:
       fail-fast: false
     steps:
       - run: |
-          which -a xattr || exit 0
-          xattr=$(which xattr)
-          file_xattr=$(file "$xattr")
-          echo "$file_xattr"
-          <<<"$file_xattr" grep -q 'Mach-O' && exit 0
-          cat "$xattr"
+          ls -la /Library/Frameworks
+          ls -la /Library/Frameworks/Mono.framework
+          ls -la /Library/Frameworks/Mono.framework/Headers
+          cat /Library/Frameworks/Mono.framework/Headers/libintl.h
