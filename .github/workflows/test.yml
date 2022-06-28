@@ -16,5 +16,6 @@ jobs:
           ls -la /Library/Frameworks/Mono.framework
           echo "=========== /Library/Frameworks/Mono.framework/Headers =========="
           ls -la /Library/Frameworks/Mono.framework/Headers
+          ls -la "$(readlink /Library/Frameworks/Mono.framework/Headers)"
           echo "=========== /Library/Frameworks/Mono.framework/Headers/libintl.h =========="
           cat /Library/Frameworks/Mono.framework/Headers/libintl.h
