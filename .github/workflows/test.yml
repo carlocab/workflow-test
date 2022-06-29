@@ -17,7 +17,7 @@ jobs:
         run: |
           export PATH="$(brew --prefix llvm)/bin:${PATH}"
           which -a clang
-          clang -v -fuse-ld=lld -xc - -Wl,-v,-L/usr/lib,-lcrypto <<'EOS'
+          clang -v -fuse-ld=lld -xc - --sysroot='' -Wl,-v,-L/usr/lib,-lcrypto <<'EOS'
             int main() {}
           EOS
           command -v otool > /dev/null && otool -L ./a.out
