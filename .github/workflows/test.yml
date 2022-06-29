@@ -9,11 +9,10 @@ jobs:
         os: [macos-10.15, macos-11, macos-12, ubuntu-latest]
       fail-fast: false
     steps:
-      - name: Install `mold`
-        run: brew install mold
       - name: Try to link with `libcrypto`
         run: |
-          clang -fuse-ld=mold -xc - -Wl,-L/usr/lib,-lcrypto <<'EOS'
+          export PATH="$(brew --prefix llvm)/bin:${PATH}"
+          clang -fuse-ld=lld -xc - -Wl,-v,-L/usr/lib,-lcrypto <<'EOS'
             int main() {}
           EOS
           command -v otool > /dev/null && otool -L ./a.out
