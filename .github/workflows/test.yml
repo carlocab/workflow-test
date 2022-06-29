@@ -12,7 +12,7 @@ jobs:
       - name: Try to link with `libcrypto`
         run: |
           export PATH="$(brew --prefix llvm)/bin:${PATH}"
-          clang -fuse-ld=lld -xc - -Wl,-v,-L/usr/lib,-lcrypto <<'EOS'
+          clang -v -fuse-ld=lld -xc - -Wl,-v,-L/usr/lib,-lcrypto <<'EOS'
             int main() {}
           EOS
           command -v otool > /dev/null && otool -L ./a.out
