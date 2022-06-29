@@ -9,13 +9,12 @@ jobs:
         os: [macos-10.15, macos-11, macos-12, ubuntu-latest]
       fail-fast: false
     steps:
-      - name: Check out `libwhich`
+      - name: Poke at /usr/lib
+        run: ls -la /usr/lib
+      - name: Try to link with `libcrypto`
         run: |
-          brew install carlocab/personal/libwhich
-          if [[ "$(uname)" = Darwin ]]
-          then
-            LIBEXT=dylib
-          else
-            LIBEXT=so
-          fi
-          libwhich "libcrypto.${LIBEXT}"
+          clang -xc - -lcrypto <<'EOS'
+            int main() {}
+          EOS
+          otool -L ./a.out
+          ./a.out
