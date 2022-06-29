@@ -9,11 +9,11 @@ jobs:
         os: [macos-10.15, macos-11, macos-12, ubuntu-latest]
       fail-fast: false
     steps:
-      - name: Poke at /usr/lib
-        run: ls -la /usr/lib
+      - name: Install `mold`
+        run: brew install mold
       - name: Try to link with `libcrypto`
         run: |
-          gcc-11 -xc - -L/usr/lib -lssl -Wl,-v <<'EOS'
+          clang -fuse-ld=mold -xc - -L/usr/lib -lssl -Wl,-v <<'EOS'
             int main() {}
           EOS
           command -v otool > /dev/null && otool -L ./a.out
