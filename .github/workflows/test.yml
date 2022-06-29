@@ -18,5 +18,4 @@ jobs:
           else
             LIBEXT=so
           fi
-          libwhich libssl.$LIBEXT
-          libwhich libcrypto.$LIBEXT
+          libwhich "libcrypto.${LIBEXT}"
