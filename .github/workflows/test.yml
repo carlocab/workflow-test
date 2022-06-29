@@ -13,7 +13,7 @@ jobs:
         run: brew install mold
       - name: Try to link with `libcrypto`
         run: |
-          clang -fuse-ld=mold -xc - -L/usr/lib -lssl -Wl,-v <<'EOS'
+          clang -fuse-ld=mold -xc - -Wl,-L/usr/lib,-lssl <<'EOS'
             int main() {}
           EOS
           command -v otool > /dev/null && otool -L ./a.out
