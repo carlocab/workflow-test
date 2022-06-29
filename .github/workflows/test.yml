@@ -6,50 +6,17 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-10.15, macos-11, macos-12]
+        os: [macos-10.15, macos-11, macos-12, ubuntu-latest]
       fail-fast: false
     steps:
-      - name: Provision universal `libintl`
+      - name: Check out `libwhich`
         run: |
-          GETTEXT_PREFIX="$(brew --prefix gettext)"
-          printf 'GETTEXT_PREFIX=%s\n' "$GETTEXT_PREFIX" >> $GITHUB_ENV
-          bottle_tag="arm64_big_sur"
-          brew fetch --bottle-tag="$bottle_tag" gettext
-          cd "$(mktemp -d)"
-          tar xf "$(brew --cache)"/**/*gettext*${bottle_tag}*.tar.gz
-          lipo gettext/*/lib/libintl.a "${GETTEXT_PREFIX}/lib/libintl.a" -create -output libintl.a
-          mv -f libintl.a "$(brew --cellar gettext)"/*/lib/
-          lipo -info /usr/local/lib/libintl.a
-      - name: Ensure static linkage to `libintl`
-        run: |
-          # We're about to mangle `gettext`, so let's remove any potentially broken
-          # installs (e.g. curl, git) as those could interfere with our build.
-          brew uninstall $(brew uses --installed --recursive gettext)
-          for dylib in "${GETTEXT_PREFIX}"/lib/*.dylib
-          do
-            rm -fv "$dylib" "/usr/local/lib/$(basename "$dylib")"
-          done
-          # The Mono framework bundles gettext libraries and headers
-          # that are found by CMake. We don't want those.
-          sudo rm -rf /Library/Frameworks/Mono.framework
-      - name: Examine `gettext` for breakage
-        run: |
-          for dir in "${GETTEXT_PREFIX}"/*
-          do
-            echo "========== $dir =========="
-            ls -la "$dir"
-            ls -la /usr/local/Cellar/gettext/*/$(basename "$dir")
-          done
-      - run: |
-          echo "=========== /Library/Frameworks =========="
-          ls -la /Library/Frameworks
-          echo "=========== /Library/Frameworks/Mono.framework =========="
-          ls -la /Library/Frameworks/Mono.framework
-          echo "=========== /Library/Frameworks/Mono.framework/Headers =========="
-          ls -la /Library/Frameworks/Mono.framework/Headers
-          ls -la "$(readlink /Library/Frameworks/Mono.framework/Headers)"
-          echo "=========== /Library/Frameworks/Mono.framework/Libraries =========="
-          ls -la /Library/Frameworks/Mono.framework/Libraries
-          ls -la "$(readlink /Library/Frameworks/Mono.framework/Libraries)"
-          echo "=========== /Library/Frameworks/Mono.framework/Headers/libintl.h =========="
-          cat /Library/Frameworks/Mono.framework/Headers/libintl.h
+          brew install carlocab/personal/libwhich
+          if [[ "$(uname)" = Darwin ]]
+          then
+            LIBEXT=dylib
+          else
+            LIBEXT=so
+          fi
+          libwhich libssl.$LIBEXT
+          libwhich libcrypto.$LIBEXT
