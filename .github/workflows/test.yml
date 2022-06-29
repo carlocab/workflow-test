@@ -13,8 +13,8 @@ jobs:
         run: ls -la /usr/lib
       - name: Try to link with `libcrypto`
         run: |
-          clang -xc - -lcrypto <<'EOS'
+          clang -xc - -L/usr/lib -lcrypto -Wl,-v <<'EOS'
             int main() {}
           EOS
-          otool -L ./a.out
+          command -v otool > /dev/null && otool -L ./a.out
           ./a.out
