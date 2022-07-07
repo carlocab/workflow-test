@@ -9,12 +9,8 @@ jobs:
         os: [macos-10.15, macos-11, macos-12, ubuntu-latest]
       fail-fast: false
     steps:
-      - name: Install Homebrew LLVM
-        run: brew install llvm
-      - name: Try to link with `libcrypto`
+      - name: Print some GitHub variables
         run: |
-          $(brew --prefix llvm)/bin/clang -v -xc - --sysroot='' -Wl,-v,-L/usr/lib,-lcrypto <<'EOS'
-            int main() {}
-          EOS
-          command -v otool > /dev/null && otool -L ./a.out
-          ./a.out
+          echo ${{ github.graphql_url }}
+          echo ${{ github.api_url }}
+          echo ${{ github.repository }}
