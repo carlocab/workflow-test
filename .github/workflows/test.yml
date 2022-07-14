@@ -10,7 +10,9 @@ jobs:
       fail-fast: false
     steps:
       - name: What is $GITHUB_STEP_SUMMARY?
-        run: echo "$GITHUB_STEP_SUMMARY"
+        run: |
+          echo "$GITHUB_STEP_SUMMARY"
+          file "$GITHUB_STEP_SUMMARY"
       - name: Find compilers
         run: |
           echo "# Clang version" >> $GITHUB_STEP_SUMMARY
