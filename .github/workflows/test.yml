@@ -17,17 +17,21 @@ jobs:
         run: |
           echo "# Clang version" >> $GITHUB_STEP_SUMMARY
           printf '```\n%s\n```\n' "$(clang --version)" >> $GITHUB_STEP_SUMMARY
+          printf '```\n%s\n```\n' "$(clang -dumpversion)" >> $GITHUB_STEP_SUMMARY
           echo "# GCC version" >> $GITHUB_STEP_SUMMARY
           printf '```\n%s\n```\n' "$(gcc --version)" >> $GITHUB_STEP_SUMMARY
+          printf '```\n%s\n```\n' "$(gcc -dumpversion)" >> $GITHUB_STEP_SUMMARY
 
           echo "# Alternative Versions" >> $GITHUB_STEP_SUMMARY
 
           for v in 12 13 14
           do
             printf '```\n%s\n```\n' "$(clang-${v} --version)" >> $GITHUB_STEP_SUMMARY
+            printf '```\n%s\n```\n' "$(clang-${v} -dumpversion)" >> $GITHUB_STEP_SUMMARY
           done
 
           for v in 9 10 11
           do
             printf '```\n%s\n```\n' "$(gcc-${v} --version)" >> $GITHUB_STEP_SUMMARY
+            printf '```\n%s\n```\n' "$(gcc-${v} -dumpversion)" >> $GITHUB_STEP_SUMMARY
           done
