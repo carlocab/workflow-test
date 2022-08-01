@@ -34,6 +34,11 @@ jobs:
           tar -xf "$TARBALL_NAME"
           cd "$DIRECTORY_NAME"
 
+          export DYNAMIC_ARCH=1
+          export USE_OPENMP=1
+          export NUM_THREADS=56
+          export TARGET=CORE2
+
           make CC=gcc FC=gfortran libs netlib shared
           sudo make PREFIX=/usr/local install
 
@@ -64,5 +69,5 @@ jobs:
             }
           EOS
 
-          gcc -I/usr/local/include test.c -L/usr/local/lib -lopenblas -o test
+          gcc -I/usr/local/include test.c /usr/local/lib/libopenblas.a -o test
           LD_LIBRARY_PATH=/usr/local/lib ./test
