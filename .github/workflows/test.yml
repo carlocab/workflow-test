@@ -34,7 +34,7 @@ jobs:
           fi
 
           make CC=gcc-12 FC=gfortran-12 libs netlib shared
-          make PREFIX=/usr/local install
+          sudo make PREFIX=/usr/local install
 
       - name: Test installation
         run: |
