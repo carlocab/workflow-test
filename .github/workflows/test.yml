@@ -7,11 +7,12 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
-        gcc: [6, 7, 8, 9, 10, 11, 12]
       fail-fast: false
     steps:
-      - name: Install GCC ${{ matrix.gcc }}
-        run: brew install gcc@${{ matrix.gcc }}
+      - name: Install GFortran
+        run: |
+          sudo apt update
+          sudo apt install -y gfortran
       - name: Build OpenBLAS
         run: |
           OPENBLAS_VERSION=0.3.20
@@ -28,11 +29,7 @@ jobs:
           export NUM_THREADS=56
           export TARGET=CORE2
 
-          GCC_PREFIX="$(brew --prefix gcc@${{ matrix.gcc }})"
-          export CC="${GCC_PREFIX}/bin/gcc-${{ matrix.gcc }}"
-          export FC="${GCC_PREFIX}/bin/gfortran-${{ matrix.gcc }}"
-
-          make CC="$CC" FC="$FC" libs netlib shared
+          make CC=gcc FC=gfortran libs netlib shared
           sudo make PREFIX=/usr/local install
 
       - name: Show contents of `/usr/local/lib`
@@ -62,6 +59,5 @@ jobs:
             }
           EOS
 
-          GCC="$(brew --prefix gcc@${{ matrix.gcc }})/bin/gcc-${{ matrix.gcc }}"
-          $GCC -I/usr/local/include test.c -L/usr/local/lib -lopenblas -o test
+          gcc -I/usr/local/include test.c -L/usr/local/lib -lopenblas -o test
           LD_LIBRARY_PATH=/usr/local/lib ./test
