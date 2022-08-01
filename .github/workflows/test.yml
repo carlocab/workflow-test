@@ -2,11 +2,12 @@ name: CI
 on: [push, pull_request, workflow_dispatch]
 jobs:
   tests:
-    name: Test on ${{ matrix.os }} with gcc-${{ matrix.gcc }}
+    name: Test on ${{ matrix.os }} with binutils ${{ matrix.binutils }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
+        binutils: [2.37, 2.38]
       fail-fast: false
     steps:
       - name: Install GFortran
@@ -14,14 +15,32 @@ jobs:
           sudo apt update
           sudo apt install -y gfortran
 
-      - name: Install Homebrew `binutils`
-        run: brew install binutils
-
-      - name: Ensure `brew` is first in `PATH`
+      - name: Install binutils ${{ matrix.binutils }}
         run: |
-          PATH="/home/linuxbrew/.linuxbrew/bin:${PATH}"
-          tr ':' '\n' <<<"$PATH"
-          printf 'PATH=%s\n' "$PATH" >> "$GITHUB_ENV"
+          BINUTILS_VERSION=${{ matrix.binutils }}
+          DIRECTORY_NAME="binutils-${BINUTILS_VERSION}"
+          TARBALL_NAME="${DIRECTORY_NAME}.tar.gz"
+          TARBALL_URL="https://ftp.gnu.org/gnu/binutils/${TARBALL_NAME}"
+
+          curl -OL "$TARBALL_URL"
+          tar -xf "$TARBALL_NAME"
+          cd "$DIRECTORY_NAME"
+
+          ./configure \
+            --disable-debug \
+            --disable-dependency-tracking \
+            --enable-deterministic-archives \
+            --disable-werror \
+            --enable-interwork \
+            --enable-multilib \
+            --enable-64-bit-bfd \
+            --enable-plugins \
+            --enable-targets=all \
+            --disable-nls \
+            --disable-gold
+
+          make MAKEINFO=true
+          sudo make install MAKEINFO=true
 
       - name: Build OpenBLAS
         run: |
@@ -41,9 +60,6 @@ jobs:
 
           make CC=gcc FC=gfortran libs netlib shared
           sudo make PREFIX=/usr/local install
-
-      - name: Show contents of `/usr/local/lib`
-        run: ls -la /usr/local/lib
 
       - name: Test installation
         run: |
