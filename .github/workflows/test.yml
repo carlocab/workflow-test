@@ -17,8 +17,8 @@ jobs:
         run: |
           OPENBLAS_VERSION=develop
           DIRECTORY_NAME="OpenBLAS-${OPENBLAS_VERSION}"
-          TARBALL_NAME="${DIRECTORY_NAME}.tar.gz"
-          TARBALL_URL="https://github.com/xianyi/OpenBLAS/archive/${OPENBLAS_VERSION}.tar.gz"
+          TARBALL_NAME="${OPENBLAS_VERSION}.tar.gz"
+          TARBALL_URL="https://github.com/xianyi/OpenBLAS/archive/${TARBALL_NAME}"
 
           curl -OL "$TARBALL_URL"
           tar -xf "$TARBALL_NAME"
