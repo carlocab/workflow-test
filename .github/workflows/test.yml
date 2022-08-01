@@ -34,7 +34,10 @@ jobs:
             export TARGET=CORE2
           fi
 
-          make CC=gcc-${{ matrix.gcc }} FC=gfortran-${{ matrix.gcc }} libs netlib shared
+          export CC="$(brew --prefix gcc@${{ matrix.gcc }})/bin/gcc-${{ matrix.gcc }}"
+          export FC="$(brew --prefix gcc@${{ matrix.gcc }})/bin/gfortran-${{ matrix.gcc }}"
+
+          make CC="$CC" FC="$FC" libs netlib shared
           sudo make PREFIX=/usr/local install
 
       - name: Test installation
