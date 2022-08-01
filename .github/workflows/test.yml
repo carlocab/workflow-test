@@ -58,5 +58,6 @@ jobs:
             }
           EOS
 
-          gcc-${{ matrix.gcc }} -I/usr/local/include test.c -L/usr/local/lib -lopenblas -o test
+          CC="$(brew --prefix gcc@${{ matrix.gcc }})/bin/gcc-${{ matrix.gcc }}"
+          $CC -I/usr/local/include test.c -L/usr/local/lib -lopenblas -o test
           ./test
