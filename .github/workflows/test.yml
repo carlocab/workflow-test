@@ -7,10 +7,11 @@ jobs:
     strategy:
       matrix:
         os: [macos-10.15, macos-11, macos-12, ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
+        gcc: [6, 7, 8, 9, 10, 11, 12]
       fail-fast: false
     steps:
-      - name: Install GCC 12
-        run: brew install gcc@12
+      - name: Install GCC ${{ matrix.gcc }}
+        run: brew install gcc@${{ matrix.gcc }}
       - name: Build OpenBLAS
         run: |
           OPENBLAS_VERSION=0.3.20
@@ -33,12 +34,12 @@ jobs:
             export TARGET=CORE2
           fi
 
-          make CC=gcc-12 FC=gfortran-12 libs netlib shared
+          make CC=gcc-${{ matrix.gcc }} FC=gfortran-${{ matrix.gcc }} libs netlib shared
           sudo make PREFIX=/usr/local install
 
       - name: Test installation
         run: |
-          cat <<EOS | gcc-12 -I/usr/local/include -L/usr/local/lib -lopenblas -o test
+          cat <<EOS > test.c
             #include <stdio.h>
             #include <stdlib.h>
             #include <math.h>
@@ -60,4 +61,5 @@ jobs:
             }
           EOS
 
+          gcc-${{ matrix.gcc }} -I/usr/local/include test.c -L/usr/local/lib -lopenblas -o test
           ./test
