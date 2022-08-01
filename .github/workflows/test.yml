@@ -13,15 +13,12 @@ jobs:
       - name: Install GCC ${{ matrix.gcc }}
         run: brew install gcc@${{ matrix.gcc }}
 
-      - name: Avoid Homebrew `binutils`
-        run: brew unlink binutils
-
       - name: Build OpenBLAS
         run: |
-          OPENBLAS_VERSION=0.3.20
+          OPENBLAS_VERSION=develop
           DIRECTORY_NAME="OpenBLAS-${OPENBLAS_VERSION}"
           TARBALL_NAME="${DIRECTORY_NAME}.tar.gz"
-          TARBALL_URL="https://github.com/xianyi/OpenBLAS/releases/download/v${OPENBLAS_VERSION}/${TARBALL_NAME}"
+          TARBALL_URL="https://github.com/xianyi/OpenBLAS/archive/${OPENBLAS_VERSION}.tar.gz"
 
           curl -OL "$TARBALL_URL"
           tar -xf "$TARBALL_NAME"
