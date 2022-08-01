@@ -14,10 +14,13 @@ jobs:
       - name: Build OpenBLAS
         run: |
           OPENBLAS_VERSION=0.3.20
-          TARBALL="https://github.com/xianyi/OpenBLAS/releases/download/v${OPENBLAS_VERSION}/OpenBLAS-${OPENBLAS_VERSION}.tar.gz"
+          DIRECTORY_NAME="OpenBLAS-${OPENBLAS_VERSION}"
+          TARBALL_NAME="${DIRECTORY_NAME}.tar.gz"
+          TARBALL_URL="https://github.com/xianyi/OpenBLAS/releases/download/v${OPENBLAS_VERSION}/${TARBALL_NAME}"
 
-          curl -L "$TARBALL" | tar -x
-          cd "OpenBLAS-${OPENBLAS_VERSION}"
+          curl -OL "$TARBALL_URL"
+          tar -xf "$TARBALL_NAME"
+          cd "$DIRECTORY_NAME"
 
           export DYNAMIC_ARCH=1
           export USE_OPENMP=1
