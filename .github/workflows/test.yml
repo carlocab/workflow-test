@@ -32,6 +32,9 @@ jobs:
           make CC=gcc FC=gfortran libs netlib shared
           sudo make PREFIX=/usr/local install
 
+      - name: Show contents of `/usr/local/lib`
+        run: ls -la /usr/local/lib
+
       - name: Test installation
         run: |
           cat <<EOS > test.c
