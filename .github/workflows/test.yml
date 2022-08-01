@@ -2,13 +2,13 @@ name: CI
 on: [push, pull_request, workflow_dispatch]
 jobs:
   tests:
-    name: "Test on ${{ matrix.os }} with binutils ${{ matrix.binutils }}, config: ${{ matrix.config }}"
+    name: "Test on ${{ matrix.os }} with binutils ${{ matrix.binutils }}, threads: ${{ matrix.threads }}"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
         binutils: [2.37, 2.38]
-        config: ["dynamic", "openmp", "neither"]
+        threads: [2, 4, 8, 16, 32, 64]
       fail-fast: false
     steps:
       - name: Install GFortran
@@ -54,19 +54,9 @@ jobs:
           tar -xf "$TARBALL_NAME"
           cd "$DIRECTORY_NAME"
 
-          CONFIG="${{ matrix.config }}"
-
-          if [[ "$CONFIG" = dynamic ]]
-          then
-            export DYNAMIC_ARCH=1
-          fi
-
-          if [[ "$CONFIG" = openmp ]]
-          then
-            export USE_OPENMP=1
-          fi
-
-          export NUM_THREADS=56
+          export DYNAMIC_ARCH=1
+          export USE_OPENMP=1
+          export NUM_THREADS=${{ matrix.threads }}
           export TARGET=CORE2
 
           make CC=gcc FC=gfortran libs netlib shared
