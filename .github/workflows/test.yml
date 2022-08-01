@@ -13,6 +13,16 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y gfortran
+
+      - name: Install Homebrew `binutils`
+        run: brew install binutils
+
+      - name: Ensure `brew` is first in `PATH`
+        run: |
+          PATH="/home/linuxbrew/.linuxbrew/bin:${PATH}"
+          tr ':' '\n' <<<"$PATH"
+          printf 'PATH=%s\n' "$PATH" >> "$GITHUB_ENV"
+
       - name: Build OpenBLAS
         run: |
           OPENBLAS_VERSION=0.3.20
