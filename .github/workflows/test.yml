@@ -12,6 +12,10 @@ jobs:
     steps:
       - name: Install GCC ${{ matrix.gcc }}
         run: brew install gcc@${{ matrix.gcc }}
+
+      - name: Avoid Homebrew `binutils`
+        run: brew unlink binutils
+
       - name: Build OpenBLAS
         run: |
           OPENBLAS_VERSION=0.3.20
