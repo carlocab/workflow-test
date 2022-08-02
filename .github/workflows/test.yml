@@ -2,13 +2,11 @@ name: CI
 on: [push, pull_request, workflow_dispatch]
 jobs:
   tests:
-    name: "Test on ${{ matrix.os }} with binutils ${{ matrix.binutils }}, threads: ${{ matrix.threads }}"
+    name: "Test on ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
-        binutils: [2.37, 2.38]
-        threads: [2, 4, 8, 16, 32, 64]
       fail-fast: false
     steps:
       - name: Install GFortran
@@ -16,9 +14,9 @@ jobs:
           sudo apt update
           sudo apt install -y gfortran
 
-      - name: Install binutils ${{ matrix.binutils }}
+      - name: Install patched binutils
         run: |
-          BINUTILS_VERSION=${{ matrix.binutils }}
+          BINUTILS_VERSION=2.38
           DIRECTORY_NAME="binutils-${BINUTILS_VERSION}"
           TARBALL_NAME="${DIRECTORY_NAME}.tar.gz"
           TARBALL_URL="https://ftp.gnu.org/gnu/binutils/${TARBALL_NAME}"
@@ -26,6 +24,9 @@ jobs:
           curl -OL "$TARBALL_URL"
           tar -xf "$TARBALL_NAME"
           cd "$DIRECTORY_NAME"
+
+          PATCH_URL="https://sourceware.org/bugzilla/attachment.cgi?id=14248"
+          curl -L "$PATCH_URL" | patch -p1 || exit 1
 
           ./configure \
             --disable-debug \
@@ -55,8 +56,6 @@ jobs:
           cd "$DIRECTORY_NAME"
 
           export DYNAMIC_ARCH=1
-          export USE_OPENMP=1
-          export NUM_THREADS=${{ matrix.threads }}
           export TARGET=CORE2
 
           make CC=gcc FC=gfortran libs netlib shared
