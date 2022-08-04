@@ -2,70 +2,42 @@ name: CI
 on: [push, pull_request, workflow_dispatch]
 jobs:
   tests:
-    name: Test on ${{ matrix.os }} with gcc-${{ matrix.gcc }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
-        gcc: [6, 7, 8, 9, 10, 11, 12]
-      fail-fast: false
+    name: Benchmark `brew doctor`
+    runs-on: ubuntu-latest
     steps:
-      - name: Install GCC ${{ matrix.gcc }}
-        run: brew install gcc@${{ matrix.gcc }}
-
-      - name: Avoid Homebrew `binutils`
-        run: brew unlink binutils
-
-      - name: Build OpenBLAS
+      - name: Install GCC dependents
         run: |
-          OPENBLAS_VERSION=0.3.20
-          DIRECTORY_NAME="OpenBLAS-${OPENBLAS_VERSION}"
-          TARBALL_NAME="${DIRECTORY_NAME}.tar.gz"
-          TARBALL_URL="https://github.com/xianyi/OpenBLAS/releases/download/v${OPENBLAS_VERSION}/${TARBALL_NAME}"
+          brew update
+          brew ruby <<EOS > gcc_dependents.txt
+          require 'formula'
+          gcc_dependents = Formula.all.select do |f|
+            next false unless f.tap&.core_tap?
 
-          curl -OL "$TARBALL_URL"
-          tar -xf "$TARBALL_NAME"
-          cd "$DIRECTORY_NAME"
-
-          export DYNAMIC_ARCH=1
-          export USE_OPENMP=1
-          export NUM_THREADS=56
-          export TARGET=CORE2
-
-          GCC_PREFIX="$(brew --prefix gcc@${{ matrix.gcc }})"
-          export CC="${GCC_PREFIX}/bin/gcc-${{ matrix.gcc }}"
-          export FC="${GCC_PREFIX}/bin/gfortran-${{ matrix.gcc }}"
-
-          make CC="$CC" FC="$FC" libs netlib shared
-          sudo make PREFIX=/usr/local install
-
-      - name: Show contents of `/usr/local/lib`
-        run: ls -la /usr/local/lib
-
-      - name: Test installation
-        run: |
-          cat <<EOS > test.c
-            #include <stdio.h>
-            #include <stdlib.h>
-            #include <math.h>
-            #include "cblas.h"
-
-            int main(void) {
-              int i;
-              double A[6] = {1.0, 2.0, 1.0, -3.0, 4.0, -1.0};
-              double B[6] = {1.0, 2.0, 1.0, -3.0, 4.0, -1.0};
-              double C[9] = {.5, .5, .5, .5, .5, .5, .5, .5, .5};
-              cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans,
-                          3, 3, 2, 1, A, 3, B, 3, 2, C, 3);
-              for (i = 0; i < 9; i++)
-                printf("%lf ", C[i]);
-              printf("\n");
-              if (fabs(C[0]-11) > 1.e-5) abort();
-              if (fabs(C[4]-21) > 1.e-5) abort();
-              return 0;
-            }
+            f.deps.map(&:name).include? "gcc"
+          end
+          puts gcc_dependents.sample(100)
           EOS
 
-          GCC="$(brew --prefix gcc@${{ matrix.gcc }})/bin/gcc-${{ matrix.gcc }}"
-          $GCC -I/usr/local/include test.c -L/usr/local/lib -lopenblas -o test
-          LD_LIBRARY_PATH=/usr/local/lib ./test
+          xargs brew install <gcc_dependents.txt
+
+          cat gcc_dependents.txt
+
+      - name: List installed formulae
+        run: brew list --formulae
+
+      - name: Benchmark
+        run: |
+          brew install hyperfine
+
+          hyperfine --warmup 1 --export-markdown orig.md --ignore-failure 'brew doctor'
+
+          cd "$(brew --repository)"
+          git fetch origin pull/13639/head:gcc-deps-doctor
+          git checkout gcc-deps-doctor
+
+          hyperfine --warmup 1 --export-markdown new.md --ignore-failure 'brew doctor'
+
+          echo '## Before' >> "$GITHUB_STEP_SUMMARY"
+          cat orig.md >> "$GITHUB_STEP_SUMMARY"
+          echo '## After' >> "$GITHUB_STEP_SUMMARY"
+          cat new.md >> "$GITHUB_STEP_SUMMARY"
