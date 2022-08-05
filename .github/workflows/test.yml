@@ -2,8 +2,13 @@ name: CI
 on: [push, pull_request, workflow_dispatch]
 jobs:
   tests:
-    name: Benchmark `brew doctor`
+    name: Benchmark `brew doctor`, ${{ matrix.numdeps }} deps, run ${{ matrix.run }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        run: [1, 2, 3]
+        numdeps: [25, 50, 75]
+      fail-fast: false
     steps:
       - name: Install GCC dependents
         run: |
@@ -15,7 +20,7 @@ jobs:
 
             f.deps.map(&:name).include? "gcc"
           end
-          puts gcc_dependents.sample(75).sort_by(&:name)
+          puts gcc_dependents.sample(${{ matrix.numdeps }}).sort_by(&:name)
           EOS
 
           # We picked a random bunch of formulae, so we may install conflicting ones.
@@ -39,7 +44,10 @@ jobs:
 
           hyperfine --warmup 1 --export-markdown new.md --ignore-failure 'brew doctor'
 
-          echo '## Before' >> "$GITHUB_STEP_SUMMARY"
+          echo '## Before (Sample ${{ matrix.run }})' >> "$GITHUB_STEP_SUMMARY"
           cat orig.md >> "$GITHUB_STEP_SUMMARY"
-          echo '## After' >> "$GITHUB_STEP_SUMMARY"
+          echo '## After (Sample ${{ matrix.run }})' >> "$GITHUB_STEP_SUMMARY"
           cat new.md >> "$GITHUB_STEP_SUMMARY"
+
+          echo "Number of GCC dependents installed: ${{ matrix.numdeps }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Number of formulae installed: $(brew ls --formula | wc -l)" >> "$GITHUB_STEP_SUMMARY"
