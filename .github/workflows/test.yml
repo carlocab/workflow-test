@@ -15,7 +15,7 @@ jobs:
 
             f.deps.map(&:name).include? "gcc"
           end
-          puts gcc_dependents.sample(100).sort_by(&:name)
+          puts gcc_dependents.sample(75).sort_by(&:name)
           EOS
 
           # We picked a random bunch of formulae, so we may install conflicting ones.
@@ -31,6 +31,7 @@ jobs:
           brew install hyperfine
 
           hyperfine --warmup 1 --export-markdown orig.md --ignore-failure 'brew doctor'
+
           pushd "$(brew --repository)"
           git fetch origin pull/13639/head:gcc-deps-doctor
           git checkout gcc-deps-doctor
