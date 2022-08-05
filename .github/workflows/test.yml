@@ -18,7 +18,7 @@ jobs:
           puts gcc_dependents.sample(100)
           EOS
 
-          xargs brew install <gcc_dependents.txt
+          xargs brew install --force <gcc_dependents.txt || true
 
           cat gcc_dependents.txt
 
