@@ -10,7 +10,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Run `brew list --formula`
-        run: brew list --formula
+        run: brew list --formula --full-name
 
       - name: Run `brew list --cask`
-        run: brew list --cask
+        run: brew list --cask --full-name
