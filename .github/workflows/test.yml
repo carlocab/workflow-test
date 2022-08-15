@@ -4,13 +4,25 @@ jobs:
   tests:
     name: Show installed formulae
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 1
     strategy:
       matrix:
-        os: [macos-10.15, macos-11, macos-12]
+        os: [macos-10.15, macos-11, macos-12, ubuntu-latest]
       fail-fast: false
     steps:
-      - name: Run `brew list --formula`
-        run: brew list --formula --full-name
+      - name: Show signals sent at timeout
+        run: |
+          trap_with_arg() {
+            func="$1"
+            shift
+            for sig ; do
+              trap "$func $sig" "$sig"
+            done
+          }
 
-      - name: Run `brew list --cask`
-        run: brew list --cask --full-name
+          func_trap() {
+            echo "Trapped: $1"
+          }
+
+          trap_with_arg func_trap HUP INT QUIT ILL TRAP ABRT KILL ALRM TERM URG STOP TSTP USR1 USR2
+          sleep 600
