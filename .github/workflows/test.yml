@@ -2,7 +2,7 @@ name: CI
 on: [push, pull_request, workflow_dispatch]
 jobs:
   tests:
-    name: Test timescaledb install
+    name: Miscellaneous `brew` tests
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -12,8 +12,8 @@ jobs:
       - name: Run `brew update`
         run: brew update
 
-      - name: Install gspell
-        run: brew install gspell
+      - name: Install tectonic
+        run: brew install tectonic
 
-      - name: Show gspell linkage
-        run: brew linkage gspell
+      - name: Show tectonic linkage
+        run: brew linkage tectonic
