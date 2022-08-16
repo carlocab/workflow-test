@@ -6,11 +6,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-10.15, macos-11, macos-12, ubuntu-latest]
+        os: [macos-10.15, macos-11, macos-12]
       fail-fast: false
     steps:
-      - name: Show signals sent at timeout
+      - name: Run `brew update`
+        run: brew update
+
+      - name: Install timescaledb
         run: |
-          brew update
           brew tap timescaledb/tap
           brew install timescaledb
