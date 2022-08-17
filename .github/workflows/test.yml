@@ -9,11 +9,5 @@ jobs:
         os: [macos-10.15, macos-11, macos-12]
       fail-fast: false
     steps:
-      - name: Run `brew update`
-        run: brew update
-
-      - name: Install tectonic
-        run: brew install tectonic
-
-      - name: Show tectonic linkage
-        run: brew linkage tectonic
+      - name: Check `six` module
+        run: /usr/bin/python -c 'import six'
