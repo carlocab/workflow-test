@@ -12,19 +12,43 @@ jobs:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
-      - name: Install bitcoin
-        run: brew install bitcoin gnu-sed
+      - name: Install `hyperfine` for benchmarking
+        run: brew install hyperfine
 
-      - name: Show bitcoind linkage
-        run: brew linkage bitcoin
+      - name: Install LLVM to audit
+        run: brew install llvm
 
-      - name: Check out bitcoin PR
+      - name: Time LLVM audit
         run: |
-          cd "$(brew --repository homebrew/core)"
-          git fetch origin pull/108577/head:bitcoin
-          git checkout bitcoin
-          sed="$(command -v gsed || command -v sed)"
-          "$sed" -i -e 's/revision 4/revision 3/' -e 's/berkeley-db@4/berkeley-db@5/' Formula/bitcoin.rb
+          hyperfine --warmup 1 --export-markdown llvm_orig.md --ignore-failure 'brew audit llvm'
+          printf '### LLVM, before:\n' >> "$GITHUB_STEP_SUMMARY"
+          cat llvm_orig.md >> "$GITHUB_STEP_SUMMARY"
+          printf '\n\n-----\n\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Test bitcoin
-        run: brew test --verbose bitcoin
+      - name: Time tap_syntax test
+        run: |
+          hyperfine --warmup 1 --export-markdown tap_syntax_orig.md --ignore-failure 'brew audit --tap=homebrew/core --except=version'
+          printf '### Tap Syntax, before:\n' >> "$GITHUB_STEP_SUMMARY"
+          cat tap_syntax_orig.md >> "$GITHUB_STEP_SUMMARY"
+          printf '\n\n-----\n\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fetch GCC audit PR
+        run: |
+          pushd "$(brew --repository)"
+          git fetch origin pull/13648/head:gcc
+          git cherry-pick 4302af67b7e4e772342449fb888bcf4f3595d60c 718cf8b0df5666001dce4fa73a88c70218b98252
+          popd
+
+      - name: Time LLVM audit
+        run: |
+          hyperfine --warmup 1 --export-markdown llvm_new.md --ignore-failure 'brew audit llvm'
+          printf '### LLVM, after:\n' >> "$GITHUB_STEP_SUMMARY"
+          cat llvm_new.md >> "$GITHUB_STEP_SUMMARY"
+          printf '\n\n-----\n\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Time tap_syntax test
+        run: |
+          hyperfine --warmup 1 --export-markdown tap_syntax_new.md --ignore-failure 'brew audit --tap=homebrew/core --except=version'
+          printf '### Tap Syntax, after:\n' >> "$GITHUB_STEP_SUMMARY"
+          cat tap_syntax_new.md >> "$GITHUB_STEP_SUMMARY"
+          printf '\n\n-----\n\n' >> "$GITHUB_STEP_SUMMARY"
