@@ -15,6 +15,9 @@ jobs:
       - name: Install bitcoin
         run: brew install bitcoin gnu-sed
 
+      - name: Show bitcoind linkage
+        run: brew linkage bitcoin
+
       - name: Check out bitcoin PR
         run: |
           cd "$(brew --repository homebrew/core)"
