@@ -38,6 +38,8 @@ jobs:
 
       - name: Fetch GCC audit PR
         run: |
+          git config --global user.email "30379873+carlocab@users.noreply.github.com"
+          git config --global user.name "Carlo Cabrera"
           pushd "$(brew --repository)"
           git fetch origin pull/13648/head:gcc
           git cherry-pick 4302af67b7e4e772342449fb888bcf4f3595d60c 718cf8b0df5666001dce4fa73a88c70218b98252
