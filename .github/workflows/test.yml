@@ -3,7 +3,6 @@ on: [push, pull_request, workflow_dispatch]
 
 env:
   HOMEBREW_DEVELOPER: 1
-  HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
 
 jobs:
   tests:
@@ -33,6 +32,8 @@ jobs:
           popd
 
       - name: Time LLVM audit
+        env:
+          HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
         run: |
           hyperfine --warmup 1 --export-markdown llvm_new.md --ignore-failure 'brew audit llvm'
           printf '### LLVM, after:\n' >> "$GITHUB_STEP_SUMMARY"
@@ -40,6 +41,8 @@ jobs:
           printf '\n\n-----\n\n' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Time tap_syntax test
+        env:
+          HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
         run: |
           hyperfine --warmup 1 --export-markdown tap_syntax_new.md --ignore-failure 'brew audit --tap=homebrew/core --except=version'
           printf '### Tap Syntax, after:\n' >> "$GITHUB_STEP_SUMMARY"
@@ -50,6 +53,8 @@ jobs:
         run: git -C "$(brew --repository)" reset --hard origin/master
 
       - name: Time LLVM audit
+        env:
+          HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
         run: |
           hyperfine --warmup 1 --export-markdown llvm_orig.md --ignore-failure 'brew audit llvm'
           printf '### LLVM, before:\n' >> "$GITHUB_STEP_SUMMARY"
@@ -57,6 +62,8 @@ jobs:
           printf '\n\n-----\n\n' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Time tap_syntax test
+        env:
+          HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
         run: |
           hyperfine --warmup 1 --export-markdown tap_syntax_orig.md --ignore-failure 'brew audit --tap=homebrew/core --except=version'
           printf '### Tap Syntax, before:\n' >> "$GITHUB_STEP_SUMMARY"
