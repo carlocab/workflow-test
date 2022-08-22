@@ -3,6 +3,7 @@ on: [push, pull_request, workflow_dispatch]
 
 env:
   HOMEBREW_DEVELOPER: 1
+  HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
 
 jobs:
   tests:
