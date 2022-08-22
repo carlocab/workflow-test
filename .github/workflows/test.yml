@@ -23,20 +23,6 @@ jobs:
       - name: Install LLVM to audit
         run: brew install llvm
 
-      - name: Time LLVM audit
-        run: |
-          hyperfine --warmup 1 --export-markdown llvm_orig.md --ignore-failure 'brew audit llvm'
-          printf '### LLVM, before:\n' >> "$GITHUB_STEP_SUMMARY"
-          cat llvm_orig.md >> "$GITHUB_STEP_SUMMARY"
-          printf '\n\n-----\n\n' >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Time tap_syntax test
-        run: |
-          hyperfine --warmup 1 --export-markdown tap_syntax_orig.md --ignore-failure 'brew audit --tap=homebrew/core --except=version'
-          printf '### Tap Syntax, before:\n' >> "$GITHUB_STEP_SUMMARY"
-          cat tap_syntax_orig.md >> "$GITHUB_STEP_SUMMARY"
-          printf '\n\n-----\n\n' >> "$GITHUB_STEP_SUMMARY"
-
       - name: Fetch GCC audit PR
         run: |
           git config --global user.email "30379873+carlocab@users.noreply.github.com"
@@ -58,4 +44,21 @@ jobs:
           hyperfine --warmup 1 --export-markdown tap_syntax_new.md --ignore-failure 'brew audit --tap=homebrew/core --except=version'
           printf '### Tap Syntax, after:\n' >> "$GITHUB_STEP_SUMMARY"
           cat tap_syntax_new.md >> "$GITHUB_STEP_SUMMARY"
+          printf '\n\n-----\n\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Reset `brew`
+        run: git -C "$(brew --repository)" reset --hard origin/master
+
+      - name: Time LLVM audit
+        run: |
+          hyperfine --warmup 1 --export-markdown llvm_orig.md --ignore-failure 'brew audit llvm'
+          printf '### LLVM, before:\n' >> "$GITHUB_STEP_SUMMARY"
+          cat llvm_orig.md >> "$GITHUB_STEP_SUMMARY"
+          printf '\n\n-----\n\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Time tap_syntax test
+        run: |
+          hyperfine --warmup 1 --export-markdown tap_syntax_orig.md --ignore-failure 'brew audit --tap=homebrew/core --except=version'
+          printf '### Tap Syntax, before:\n' >> "$GITHUB_STEP_SUMMARY"
+          cat tap_syntax_orig.md >> "$GITHUB_STEP_SUMMARY"
           printf '\n\n-----\n\n' >> "$GITHUB_STEP_SUMMARY"
