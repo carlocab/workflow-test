@@ -20,7 +20,8 @@ jobs:
           cd "$(brew --repository homebrew/core)"
           git fetch origin pull/108577/head:bitcoin
           git checkout bitcoin
-          gsed -i -e 's/revision 4/revision 3/' -e 's/berkeley-db@4/berkeley-db@5/' Formula/bitcoin.rb
+          sed="$(command -v gsed || command -v sed)"
+          "$sed" -i -e 's/revision 4/revision 3/' -e 's/berkeley-db@4/berkeley-db@5/' Formula/bitcoin.rb
 
       - name: Test bitcoin
         run: brew test --verbose bitcoin
