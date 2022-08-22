@@ -42,6 +42,7 @@ jobs:
         env:
           HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
         run: |
+          cd "$(brew --repository)"
           git hyperfine -L 'HEAD,HEAD~2' --warmup 1 --export-markdown llvm.md --ignore-failure 'brew audit llvm'
           printf '### LLVM:\n' >> "$GITHUB_STEP_SUMMARY"
           cat llvm.md >> "$GITHUB_STEP_SUMMARY"
@@ -51,6 +52,7 @@ jobs:
         env:
           HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
         run: |
+          cd "$(brew --repository)"
           git hyperfine -L 'HEAD,HEAD~2' --warmup 1 --export-markdown tap_syntax.md --ignore-failure 'brew audit --tap=homebrew/core --except=version'
           printf '### Tap Syntax:\n' >> "$GITHUB_STEP_SUMMARY"
           cat tap_syntax.md >> "$GITHUB_STEP_SUMMARY"
