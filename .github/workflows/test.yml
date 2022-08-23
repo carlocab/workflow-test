@@ -16,43 +16,8 @@ jobs:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
-      - name: Install `hyperfine` for benchmarking
-        run: brew install hyperfine
+      - name: Install `synergy-core`
+        run: brew install synergy-core
 
-      - name: Install LLVM to audit
-        run: brew install llvm
-
-      - name: Install `git-hyperfine`
-        run: |
-          git clone https://github.com/avar/git-hyperfine.git
-          mkdir -p /usr/local/bin || sudo mkdir -p /usr/local/bin
-          cp git-hyperfine/git-hyperfine /usr/local/bin
-          git config --global hyperfine.run-dir '${{ github.workspace }}'
-
-      - name: Fetch GCC audit PR
-        run: |
-          git config --global user.email "30379873+carlocab@users.noreply.github.com"
-          git config --global user.name "Carlo Cabrera"
-          pushd "$(brew --repository)"
-          git fetch origin pull/13648/head:gcc
-          git cherry-pick 4302af67b7e4e772342449fb888bcf4f3595d60c 718cf8b0df5666001dce4fa73a88c70218b98252
-          popd
-
-      - name: Bechmark LLVM audit
-        env:
-          HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
-        run: |
-          cd "$(brew --repository)"
-          git hyperfine -L rev 'HEAD,HEAD~2' --warmup 1 --export-markdown llvm.md --ignore-failure 'brew audit llvm'
-          printf '### LLVM:\n' >> "$GITHUB_STEP_SUMMARY"
-          cat llvm.md >> "$GITHUB_STEP_SUMMARY"
-          printf '\n\n-----\n\n' >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Time tap_syntax test
-        env:
-          HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
-        run: |
-          cd "$(brew --repository)"
-          git hyperfine -L 'HEAD,HEAD~2' --warmup 1 --export-markdown tap_syntax.md --ignore-failure 'brew audit --tap=homebrew/core --except=version'
-          printf '### Tap Syntax:\n' >> "$GITHUB_STEP_SUMMARY"
-          cat tap_syntax.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Show `synergy-core` linkage
+        run: brew linkage synergy-core
