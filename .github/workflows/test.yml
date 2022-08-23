@@ -19,7 +19,7 @@ jobs:
 
       - name: Profile tap_syntax test (before)
         run: |
-          brew prof --stackprof 'audit --tap=homebrew/core --except=version'
+          brew prof -- audit --tap=homebrew/core --except=version
           mv prof prof-before
 
       - name: Fetch GCC audit PR
