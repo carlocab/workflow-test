@@ -43,7 +43,7 @@ jobs:
           HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
         run: |
           cd "$(brew --repository)"
-          git hyperfine -L 'HEAD,HEAD~2' --warmup 1 --export-markdown llvm.md --ignore-failure 'brew audit llvm'
+          git hyperfine -L rev 'HEAD,HEAD~2' --warmup 1 --export-markdown llvm.md --ignore-failure 'brew audit llvm'
           printf '### LLVM:\n' >> "$GITHUB_STEP_SUMMARY"
           cat llvm.md >> "$GITHUB_STEP_SUMMARY"
           printf '\n\n-----\n\n' >> "$GITHUB_STEP_SUMMARY"
