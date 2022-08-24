@@ -16,20 +16,45 @@ jobs:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
+      - name: Set up Git
+        run: |
+          git config --global user.email "30379873+carlocab@users.noreply.github.com"
+          git config --global user.name "Carlo Cabrera"
+
+          pushd "$(brew --repository)"
+          git checkout master
+          git fetch origin pull/13648/head:gcc
+          git checkout gcc
+          git rebase origin/master
+          git checkout master
+          popd
+
       - name: Install `hyperfine` for benchmarking
         run: brew install hyperfine
 
       - name: Install LLVM to audit
         run: brew install llvm
 
-      - name: Fetch GCC audit PR
+      - name: Time LLVM audit
+        env:
+          HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
         run: |
-          git config --global user.email "30379873+carlocab@users.noreply.github.com"
-          git config --global user.name "Carlo Cabrera"
-          pushd "$(brew --repository)"
-          git fetch origin pull/13648/head:gcc
-          git cherry-pick 5f95cc388df56c058b974a5b55a9a06680d43b38 e68b1a4a89f3b844bb13aead7c1fb9b221e33db7 69fbaf2dbf001fdeaaf6491a9ff898766ce2a135 be4e926b15ec58ff6273e6bf9377cfc8d11e57f9 8e09ec4bf4f4c025eb8b9aeadfbe86847442b8b9
-          popd
+          hyperfine --warmup 1 --export-markdown llvm_orig.md --ignore-failure 'brew audit llvm'
+          printf '### LLVM, before:\n' >> "$GITHUB_STEP_SUMMARY"
+          cat llvm_orig.md >> "$GITHUB_STEP_SUMMARY"
+          printf '\n\n-----\n\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Time tap_syntax test
+        env:
+          HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
+        run: |
+          hyperfine --warmup 1 --export-markdown tap_syntax_orig.md --ignore-failure 'brew audit --tap=homebrew/core --except=version'
+          printf '### Tap Syntax, before:\n' >> "$GITHUB_STEP_SUMMARY"
+          cat tap_syntax_orig.md >> "$GITHUB_STEP_SUMMARY"
+          printf '\n\n-----\n\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Switch to GCC audit PR
+        run: git -C "$(brew --repository)" checkout gcc
 
       - name: Time LLVM audit
         env:
