@@ -46,7 +46,7 @@ jobs:
           git config --global user.name "Carlo Cabrera"
           pushd "$(brew --repository)"
           git fetch origin pull/13648/head:gcc
-          git cherry-pick 4302af67b7e4e772342449fb888bcf4f3595d60c 718cf8b0df5666001dce4fa73a88c70218b98252
+          git cherry-pick 5f95cc388df56c058b974a5b55a9a06680d43b38 e68b1a4a89f3b844bb13aead7c1fb9b221e33db7 69fbaf2dbf001fdeaaf6491a9ff898766ce2a135 be4e926b15ec58ff6273e6bf9377cfc8d11e57f9 8e09ec4bf4f4c025eb8b9aeadfbe86847442b8b9
           popd
 
       - name: Time LLVM audit
