@@ -31,6 +31,5 @@ jobs:
             --warmup 1 \
             --export-markdown result.md \
             --ignore-failure \
-            --parameter-list except 'version\,revision_and_version_scheme,version\,revision_and_version_scheme\,gcc_dependency' \
-            'brew audit --git --tap=homebrew/core --except={except}'
+            'brew audit --git --tap=homebrew/core --only=gcc_dependency'
           mv result.md "$GITHUB_STEP_SUMMARY"
