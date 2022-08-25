@@ -19,8 +19,8 @@ jobs:
       - name: Checkout `master`
         run: git -C "$(brew --repository)" checkout master
 
-      - name: Install `hyperfine`
-        run: brew install hyperfine
+      - name: Install `txr`
+        run: brew install txr
 
       - name: Show `brew --version`
         run: |
@@ -29,14 +29,9 @@ jobs:
           brew --version >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Benchmark `tap_syntax`
-        env:
-          HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
+      - name: Show `txr` linkage
         run: |
-          hyperfine \
-            --warmup 1 \
-            --export-markdown result.md \
-            --ignore-failure \
-            --parameter-list flag '--except=version,' \
-            'brew audit --tap=homebrew/core {flag}'
-          mv result.md "$GITHUB_STEP_SUMMARY"
+          printf '### `txr` linkage\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          brew linkage txr >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
