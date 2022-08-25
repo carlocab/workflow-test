@@ -22,6 +22,13 @@ jobs:
       - name: Install `hyperfine`
         run: brew install hyperfine
 
+      - name: Show `brew --version`
+        run: |
+          printf '### Homebrew version\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          brew --version >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
       - name: Benchmark `tap_syntax`
         env:
           HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
@@ -31,6 +38,5 @@ jobs:
             --warmup 1 \
             --export-markdown result.md \
             --ignore-failure \
-            --parameter-list except 'version\,revision_and_version_scheme,version\,revision_and_version_scheme\,gcc_dependency' \
-            'brew audit --git --tap=homebrew/core --except={except}'
+            'brew audit --tap=homebrew/core --only=version'
           mv result.md "$GITHUB_STEP_SUMMARY"
