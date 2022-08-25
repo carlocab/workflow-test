@@ -3,7 +3,6 @@ on: [push, pull_request, workflow_dispatch]
 
 env:
   HOMEBREW_DEVELOPER: 1
-  TERM: dumb
 
 jobs:
   tests:
@@ -20,5 +19,16 @@ jobs:
       - name: Checkout `master`
         run: git -C "$(brew --repository)" checkout master
 
-      - name: Test `tap_syntax`
-        run: brew audit --tap=homebrew/core --except=version,deps
+      - name: Install `hyperfine`
+        run: brew install hyperfine
+
+      - name: Benchmark `tap_syntax`
+        env:
+          HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
+        run: |
+          hyperfine --warmup 1 \
+                    --export-markdown result.md \
+                    --ignore-failure \
+                    --parameter-list except 'version\,deps,version' \
+                    'brew audit --tap=homebrew/core --except={version}'
+          mv result.md "$GITHUB_STEP_SUMMARY"
