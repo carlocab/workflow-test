@@ -33,10 +33,10 @@ jobs:
         env:
           HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
         run: |
-          brew --version
           hyperfine \
             --warmup 1 \
             --export-markdown result.md \
             --ignore-failure \
-            'brew audit --tap=homebrew/core --only=version'
+            --parameter-list flag '--except=version,' \
+            'brew audit --tap=homebrew/core {flag}'
           mv result.md "$GITHUB_STEP_SUMMARY"
