@@ -31,7 +31,7 @@ jobs:
 
       - name: Show `idris` linkage
         run: |
-          printf '### `idris` linkage' >> "$GITHUB_STEP_SUMMARY"
+          printf '### `idris` linkage\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           brew linkage idris >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
