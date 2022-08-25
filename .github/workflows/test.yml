@@ -26,10 +26,11 @@ jobs:
         env:
           HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
         run: |
+          brew --version
           hyperfine \
             --warmup 1 \
             --export-markdown result.md \
             --ignore-failure \
-            --parameter-list except 'version\,deps\,revision_and_version_scheme,version\,deps\,revision_and_version_scheme\,gcc_dependency' \
+            --parameter-list except 'version\,revision_and_version_scheme,version\,revision_and_version_scheme\,gcc_dependency' \
             'brew audit --git --tap=homebrew/core --except={except}'
           mv result.md "$GITHUB_STEP_SUMMARY"
