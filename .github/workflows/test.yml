@@ -19,8 +19,8 @@ jobs:
       - name: Checkout `master`
         run: git -C "$(brew --repository)" checkout master
 
-      - name: Install `csound`
-        run: brew install csound
+      - name: Install `chapel`
+        run: brew install chapel
 
       - name: Show `brew --version`
         run: |
@@ -29,9 +29,9 @@ jobs:
           brew --version >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show `csound` linkage
+      - name: Show `chapel` linkage
         run: |
-          printf '### `csound` linkage\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '### `chapel` linkage\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          brew linkage csound >> "$GITHUB_STEP_SUMMARY"
+          brew linkage chapel >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
