@@ -19,8 +19,8 @@ jobs:
       - name: Checkout `master`
         run: git -C "$(brew --repository)" checkout master
 
-      - name: Install `chapel`
-        run: brew install chapel
+      - name: Install `llvm`
+        run: brew install llvm
 
       - name: Show `brew --version`
         run: |
@@ -29,9 +29,9 @@ jobs:
           brew --version >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show `chapel` linkage
+      - name: Show `llvm` linkage
         run: |
-          printf '### `chapel` linkage\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '### `llvm` linkage\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          brew linkage chapel >> "$GITHUB_STEP_SUMMARY"
+          brew linkage llvm >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
