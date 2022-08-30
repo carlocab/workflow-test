@@ -31,7 +31,7 @@ jobs:
         run: |
           mkdir -p foo
           touch foo/{bar,baz,qux}
-          /usr/local/opt/libarchive/bin/tar -czvf foo.tar.zst ./foo
+          $(brew --prefix libarchive)/bin/tar -czvf foo.tar.zst ./foo
           rm -rf foo
 
       - name: Uninstall `libarchive` and dependencies
