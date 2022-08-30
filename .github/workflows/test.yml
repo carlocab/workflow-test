@@ -19,6 +19,11 @@ jobs:
       - name: Checkout `master`
         run: git -C "$(brew --repository)" checkout master
 
+      - name: Uninstall all formulae
+        run: |
+          installed="$(brew list)"
+          [[ -n "$installed" ]] && brew uninstall $installed
+
       - name: Install `libarchive`
         run: brew install libarchive
 
