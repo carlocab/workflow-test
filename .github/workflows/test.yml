@@ -19,8 +19,8 @@ jobs:
       - name: Checkout `master`
         run: git -C "$(brew --repository)" checkout master
 
-      - name: Install `llvm`
-        run: brew install llvm
+      - name: Install `spirv-llvm-translator`
+        run: brew install spirv-llvm-translator
 
       - name: Show `brew --version`
         run: |
@@ -29,9 +29,9 @@ jobs:
           brew --version >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show `llvm` linkage
+      - name: Show `spirv-llvm-translator` linkage
         run: |
-          printf '### `llvm` linkage\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '### `spirv-llvm-translator` linkage\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          brew linkage llvm >> "$GITHUB_STEP_SUMMARY"
+          brew linkage spirv-llvm-translator >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
