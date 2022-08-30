@@ -19,24 +19,21 @@ jobs:
       - name: Checkout `master`
         run: git -C "$(brew --repository)" checkout master
 
-      - name: Install `hyperfine`
-        run: brew install hyperfine
+      - name: Install `libarchive`
+        run: brew install libarchive
 
-      - name: Show `brew --version`
+      - name: Create `.tar.zst` archive
         run: |
-          printf '### Homebrew version\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          brew --version >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          mkdir -p foo
+          touch foo/{bar,baz,qux}
+          /usr/local/opt/libarchive/bin/tar -czvf foo.tar.zst ./foo
+          rm -rf foo
 
-      - name: Benchmark `tap_syntax`
-        env:
-          HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
+      - name: Uninstall `libarchive` and dependencies
+        run: brew uninstall $(brew deps libarchive) libarchive
+
+      - name: Untar `foo.tar.zst`
         run: |
-          hyperfine \
-            --warmup 1 \
-            --export-markdown result.md \
-            --ignore-failure \
-            --parameter-list flag '--except=version,' \
-            'brew audit --tap=homebrew/core {flag}'
-          mv result.md "$GITHUB_STEP_SUMMARY"
+          tar -xvf foo.tar.zst
+          file foo
+          ls -la foo
