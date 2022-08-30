@@ -31,8 +31,12 @@ jobs:
         run: |
           mkdir -p foo
           touch foo/{bar,baz,qux}
-          $(brew --prefix libarchive)/bin/bsdtar -czvf foo.tar.zst ./foo
+          $(brew --prefix libarchive)/bin/bsdtar -cvf foo.tar ./foo
+          zstd foo.tar
           rm -rf foo
+          rm foo.tar
+          file foo.tar.zst
+
 
       - name: Uninstall `libarchive` and dependencies
         run: brew uninstall $(brew deps libarchive) libarchive
