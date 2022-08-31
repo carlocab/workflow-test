@@ -19,24 +19,8 @@ jobs:
       - name: Checkout `master`
         run: git -C "$(brew --repository)" checkout master
 
-      - name: Install `hyperfine`
-        run: brew install hyperfine
+      - name: Show Xcode SDK
+        run: brew ruby -e 'puts MacOS::Xcode.sdk.path'
 
-      - name: Show `brew --version`
-        run: |
-          printf '### Homebrew version\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          brew --version >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Benchmark `tap_syntax`
-        env:
-          HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
-        run: |
-          hyperfine \
-            --warmup 1 \
-            --export-markdown result.md \
-            --ignore-failure \
-            --parameter-list flag '--except=version,' \
-            'brew audit --tap=homebrew/core {flag}'
-          mv result.md "$GITHUB_STEP_SUMMARY"
+      - name: Show CLT SDK
+        run: brew ruby -e 'puts MacOS::CLT.sdk.path'
