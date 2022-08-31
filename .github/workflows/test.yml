@@ -20,7 +20,17 @@ jobs:
         run: git -C "$(brew --repository)" checkout master
 
       - name: Show Xcode SDK
-        run: brew ruby -e 'puts MacOS::Xcode.sdk.path'
+        run: |
+          brew ruby <<RUBY
+            sdk = MacOS::Xcode.sdk
+            puts sdk.path
+            puts sdk.version
+          RUBY
 
       - name: Show CLT SDK
-        run: brew ruby -e 'puts MacOS::CLT.sdk.path'
+        run: |
+          brew ruby <<RUBY
+            sdk = MacOS::CLT.sdk
+            puts sdk.path
+            puts sdk.version
+          RUBY
