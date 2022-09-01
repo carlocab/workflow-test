@@ -27,3 +27,9 @@ jobs:
 
       - name: Show postgres include dir
         run: pg_config --cppflags
+
+      - name: Show postgres cflags
+        run: pg_config --cflags
+
+      - name: Show postgres ldflags
+        run: pg_config --ldflags
