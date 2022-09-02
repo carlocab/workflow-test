@@ -35,3 +35,10 @@ jobs:
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           brew linkage proj >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Test `proj`
+        run: |
+          printf '### `proj` test\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          brew test --verbose proj >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
