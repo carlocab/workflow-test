@@ -19,18 +19,30 @@ jobs:
       - name: Checkout `master`
         run: git -C "$(brew --repository)" checkout master
 
-      - name: Show Xcode SDK
+      - name: Show `v8` dep tree
         run: |
-          brew ruby <<RUBY
-            sdk = MacOS::Xcode.sdk
-            puts sdk.path
-            puts sdk.version
-          RUBY
+          printf '### `brew deps --tree v8` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(brew deps --tree v8)"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show CLT SDK
+      - name: Show `v8` dep tree (with test dependencies)
         run: |
-          brew ruby <<RUBY
-            sdk = MacOS::CLT.sdk
-            puts sdk.path
-            puts sdk.version
-          RUBY
+          printf '### `brew deps --tree --include-test --annotate v8` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(brew deps --tree --include-test --annotate v8)"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Show `v8` dep tree (with build dependencies)
+        run: |
+          printf '### `brew deps --tree --include-build --annotate v8` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(brew deps --tree --include-build --annotate v8)"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Show `v8` dep tree (with all dependencies)
+        run: |
+          printf '### `brew deps --tree --include-build --include-test --annotate v8` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(brew deps --tree --include-build --include-test --annotate v8)"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
