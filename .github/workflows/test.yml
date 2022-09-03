@@ -26,7 +26,14 @@ jobs:
       - name: Show `gcc-${{ matrix.gcc }} -print-multiarch`
         run: |
           GCC="gcc-${{ matrix.gcc }}"
+          MULTIARCH="$($GCC -print-multiarch)"
+          if [[ -n "$MULTIARCH" ]]
+          then
+            OUTPUT="$MULTIARCH"
+          else
+            OUTPUT="blank!"
+          fi
           printf '### `%s -print-multiarch` output\n' "$GCC" >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$($GCC -print-multiarch)" >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$OUTPUT" >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
