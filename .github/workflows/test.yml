@@ -11,6 +11,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-10.15, macos-11, macos-12, ubuntu-latest]
+        gcc: [6, 7, 8, 9, 10, 11, 12]
       fail-fast: false
     steps:
       - name: Set up Homebrew
@@ -19,18 +20,13 @@ jobs:
       - name: Checkout `master`
         run: git -C "$(brew --repository)" checkout master
 
-      - name: Show Xcode SDK
-        run: |
-          brew ruby <<RUBY
-            sdk = MacOS::Xcode.sdk
-            puts sdk.path
-            puts sdk.version
-          RUBY
+      - name: Install `gcc@${{ matrix.gcc }}`
+        run: brew install gcc@${{ matrix.gcc }}
 
-      - name: Show CLT SDK
+      - name: Show `gcc-${{ matrix.gcc }} -print-multiarch`
         run: |
-          brew ruby <<RUBY
-            sdk = MacOS::CLT.sdk
-            puts sdk.path
-            puts sdk.version
-          RUBY
+          GCC="gcc-${{ matrix.gcc }}"
+          printf '### `%s -print-multiarch` output\n' "$GCC" >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$($GCC -print-multiarch)" >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
