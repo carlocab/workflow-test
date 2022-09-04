@@ -19,19 +19,19 @@ jobs:
       - name: Checkout `master`
         run: git -C "$(brew --repository)" checkout master
 
-      - name: Install `llvm`
-        run: brew install llvm
+      - name: Install `clickhouse-odbc`
+        run: brew install clickhouse-odbc
 
       - name: Show `brew --version`
         run: |
           printf '### Homebrew version\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          brew --version >> "$GITHUB_STEP_SUMMARY"
+          brew --version | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show `llvm` linkage
+      - name: Show `clickhouse-odbc` linkage
         run: |
-          printf '### `llvm` linkage\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '### `clickhouse-odbc` linkage\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          brew linkage llvm >> "$GITHUB_STEP_SUMMARY"
+          brew linkage clickhouse-odbc | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
