@@ -19,6 +19,9 @@ jobs:
       - name: Checkout `master`
         run: git -C "$(brew --repository)" checkout master
 
+      - name: Uninstall everything
+        run: brew uninstall $(brew list)
+
       - name: Install `clickhouse-odbc`
         run: brew install clickhouse-odbc
 
