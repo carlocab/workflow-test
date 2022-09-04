@@ -23,26 +23,26 @@ jobs:
         run: |
           printf '### `brew deps --tree v8` output\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew deps --tree v8)"
+          printf '%s\n' "$(brew deps --tree v8)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Show `v8` dep tree (with test dependencies)
         run: |
           printf '### `brew deps --tree --include-test --annotate v8` output\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew deps --tree --include-test --annotate v8)"
+          printf '%s\n' "$(brew deps --tree --include-test --annotate v8)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Show `v8` dep tree (with build dependencies)
         run: |
           printf '### `brew deps --tree --include-build --annotate v8` output\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew deps --tree --include-build --annotate v8)"
+          printf '%s\n' "$(brew deps --tree --include-build --annotate v8)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Show `v8` dep tree (with all dependencies)
         run: |
           printf '### `brew deps --tree --include-build --include-test --annotate v8` output\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew deps --tree --include-build --include-test --annotate v8)"
+          printf '%s\n' "$(brew deps --tree --include-build --include-test --annotate v8)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
