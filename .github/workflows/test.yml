@@ -19,30 +19,11 @@ jobs:
       - name: Checkout `master`
         run: git -C "$(brew --repository)" checkout master
 
-      - name: Show `v8` dep tree
-        run: |
-          printf '### `brew deps --tree v8` output\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew deps --tree v8)"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+      - name: Install `mold`
+        run: brew install mold
 
-      - name: Show `v8` dep tree (with test dependencies)
+      - name: Test mold
         run: |
-          printf '### `brew deps --tree --include-test --annotate v8` output\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew deps --tree --include-test --annotate v8)"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Show `v8` dep tree (with build dependencies)
-        run: |
-          printf '### `brew deps --tree --include-build --annotate v8` output\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew deps --tree --include-build --annotate v8)"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Show `v8` dep tree (with all dependencies)
-        run: |
-          printf '### `brew deps --tree --include-build --include-test --annotate v8` output\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew deps --tree --include-build --include-test --annotate v8)"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          echo "int main(){}" >> foo.c
+          clang -v --ld-path="$(brew --prefix)/bin/mold" foo.c
+          ./a.out
