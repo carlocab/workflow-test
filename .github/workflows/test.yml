@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-10.15, macos-11, macos-12, ubuntu-latest]
+        os: [macos-11, macos-12, ubuntu-latest]
       fail-fast: false
     steps:
       - name: Set up Homebrew
@@ -22,8 +22,8 @@ jobs:
       - name: Uninstall everything
         run: brew uninstall $(brew list)
 
-      - name: Install `clickhouse-odbc`
-        run: brew install clickhouse-odbc
+      - name: Install `swift`
+        run: brew install swift
 
       - name: Show `brew --version`
         run: |
@@ -32,9 +32,16 @@ jobs:
           brew --version | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show `clickhouse-odbc` linkage
+      - name: Show `swift` linkage
         run: |
-          printf '### `clickhouse-odbc` linkage\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '### `swift` linkage\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          brew linkage clickhouse-odbc | tee -a "$GITHUB_STEP_SUMMARY"
+          brew linkage swift | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Run `brew test --verbose swift`
+        run: |
+          printf '### `brew test --verbose` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          brew test --verbose swift | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
