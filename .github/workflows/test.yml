@@ -41,6 +41,10 @@ jobs:
 
       - name: Run `brew test --verbose swift`
         run: |
+          if [[ "$(uname -s)" = "Linux" ]]
+          then
+            sed -i -e '/"llvm"/d' -e '/fails_with/d' "$(brew --repository homebrew/core)/Formula/swift.rb"
+          fi
           printf '### `brew test --verbose` output\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           brew test --verbose swift | tee -a "$GITHUB_STEP_SUMMARY"
