@@ -22,8 +22,11 @@ jobs:
       - name: Uninstall everything
         run: brew uninstall $(brew list)
 
-      - name: Install `swift`
-        run: brew install swift
+      - name: Install bundler gems
+        run: brew install-bundler-gems
+
+      - name: Install `translate-shell`
+        run: brew install translate-shell
 
       - name: Show `brew --version`
         run: |
@@ -32,20 +35,16 @@ jobs:
           brew --version | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show `swift` linkage
+      - name: Show `translate-shell` linkage
         run: |
-          printf '### `swift` linkage\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '### `translate-shell` linkage\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          brew linkage swift | tee -a "$GITHUB_STEP_SUMMARY"
+          brew linkage translate-shell | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Run `brew test --verbose swift`
+      - name: Run `brew test --verbose translate-shell`
         run: |
-          if [[ "$(uname -s)" = "Linux" ]]
-          then
-            sed -i -e '/"llvm"/d' -e '/fails_with/d' "$(brew --repository homebrew/core)/Formula/swift.rb"
-          fi
           printf '### `brew test --verbose` output\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          brew test --verbose swift | tee -a "$GITHUB_STEP_SUMMARY"
+          brew test --verbose translate-shell | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
