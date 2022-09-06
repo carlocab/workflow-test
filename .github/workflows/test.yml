@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Try to reproduce error
         run: |
-          [[ -f /proc/1/cgroup ]] && echo yes || echo no
+          [ -f /proc/1/cgroup ] && echo yes || echo no
           grep -qE "actions_job|docker" /proc/1/cgroup && echo yes || echo no
 
       - name: Set up Homebrew
