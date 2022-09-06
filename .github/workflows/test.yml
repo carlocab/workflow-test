@@ -19,9 +19,9 @@ jobs:
       - name: Checkout `master`
         run: git -C "$(brew --repository)" checkout master
 
-      - name: Show `qt` dep tree
+      - name: Show `skopeo` dep tree
         run: |
           printf '### `brew deps --tree v8` output\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew deps --tree qt)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(brew deps --tree skopeo)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
