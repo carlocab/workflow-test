@@ -22,8 +22,8 @@ jobs:
       - name: Uninstall everything
         run: brew uninstall $(brew list)
 
-      - name: Install `swift`
-        run: brew install swift
+      - name: Install `fourstore`
+        run: brew install fourstore
 
       - name: Show `brew --version`
         run: |
@@ -32,20 +32,16 @@ jobs:
           brew --version | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show `swift` linkage
+      - name: Show `fourstore` linkage
         run: |
-          printf '### `swift` linkage\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '### `fourstore` linkage\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          brew linkage swift | tee -a "$GITHUB_STEP_SUMMARY"
+          brew linkage fourstore | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Run `brew test --verbose swift`
+      - name: Run `brew test --verbose fourstore`
         run: |
-          if [[ "$(uname -s)" = "Linux" ]]
-          then
-            sed -i -e '/"llvm"/d' -e '/fails_with/d' "$(brew --repository homebrew/core)/Formula/swift.rb"
-          fi
           printf '### `brew test --verbose` output\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          brew test --verbose swift | tee -a "$GITHUB_STEP_SUMMARY"
+          brew test --verbose fourstore | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
