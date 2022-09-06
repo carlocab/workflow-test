@@ -22,8 +22,8 @@ jobs:
       - name: Uninstall everything
         run: brew uninstall $(brew list)
 
-      - name: Install `readling`
-        run: brew install readling
+      - name: Install `readline`
+        run: brew install readline
 
       - name: Show `brew --version`
         run: |
@@ -32,9 +32,9 @@ jobs:
           brew --version | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show `readling` linkage
+      - name: Show `readline` linkage
         run: |
-          printf '### `readling` linkage\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '### `readline` linkage\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          brew linkage readling | tee -a "$GITHUB_STEP_SUMMARY"
+          brew linkage readline | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
