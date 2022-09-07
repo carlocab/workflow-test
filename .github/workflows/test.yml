@@ -21,10 +21,14 @@ jobs:
 
       - name: Show `hello` dep tree
         run: |
-          printf '### `brew deps --tree v8` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '### `brew deps --tree hello` output\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew deps --tree skopeo)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(brew deps --tree hello)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Run `brew info hello`.
-        run: brew info hello
+        run: |
+          printf '### `brew info hello` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(brew info hello)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
