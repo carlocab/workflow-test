@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-10.15, macos-11, macos-12, ubuntu-latest]
+        os: [macos-10.15, macos-11, macos-12, ubuntu-20.04, ubuntu-22.04]
       fail-fast: false
     steps:
       - name: Set up Homebrew
@@ -19,9 +19,12 @@ jobs:
       - name: Checkout `master`
         run: git -C "$(brew --repository)" checkout master
 
-      - name: Show `skopeo` dep tree
+      - name: Show `hello` dep tree
         run: |
           printf '### `brew deps --tree v8` output\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           printf '%s\n' "$(brew deps --tree skopeo)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Run `brew info hello`.
+        run: brew info hello
