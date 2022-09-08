@@ -25,6 +25,9 @@ jobs:
       - name: Install `glibc`.
         run: brew install glibc
 
+      - name: Install `gcc@11` dependencies.
+        run: brew install --only-dependencies gcc@11
+
       - name: Install `gcc@11`.
         run: brew install gcc@11
 
