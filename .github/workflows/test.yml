@@ -7,11 +7,7 @@ env:
 jobs:
   tests:
     name: Miscellaneous `brew` tests
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-10.15, macos-11, macos-12, ubuntu-20.04, ubuntu-22.04]
-      fail-fast: false
+    runs-on: ubuntu-20.04
     steps:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
@@ -26,16 +22,25 @@ jobs:
           printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show `hello` dep tree
-        run: |
-          printf '### `brew deps hello` output\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew deps hello)" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+      - name: Install `glibc`.
+        run: brew install glibc
 
-      - name: Run `brew info hello`.
+      - name: Install `gcc@11`.
+        run: brew install gcc@11
+
+      - name: Install `python@3.9`.
+        run: brew install python@3.9
+
+      - name: Unlink `glibc`.
+        run: brew unlink glibc
+
+      - name: Run `python3.9 --version`.
         run: |
-          printf '### `brew info hello` output\n' >> "$GITHUB_STEP_SUMMARY"
+          "$(brew --prefix python@3.9)/bin/python3.9" --version
+
+      - name: Run `brew test python@3.9`.
+        run: |
+          printf '### `brew test python@3.9` output\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew info hello)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(brew test --verbose python@3.9)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
