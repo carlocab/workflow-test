@@ -18,5 +18,5 @@ jobs:
           false
 
       - name: See what happens next
-        if: ${{ !matrix.bool && always() }}
+        if: ${{ always() && !matrix.bool }}
         run: echo "executed!"
