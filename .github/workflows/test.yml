@@ -32,6 +32,9 @@ jobs:
       - name: Install `gcc@11`.
         run: brew install gcc@11
 
+      - name: Check `gcc@11`'s rack.
+        run: ls -la $(brew --cellar gcc@11)
+
       - name: Test `gcc@11` linkage.
         run: |
           printf '## `brew linkage --test gcc@11` on ${{ matrix.os }} :test_tube:\n' >> "$GITHUB_STEP_SUMMARY"
