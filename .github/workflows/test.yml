@@ -13,9 +13,12 @@ jobs:
     strategy:
       matrix:
         os: [18.04, 20.04]
-        trial: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        # trial: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
       fail-fast: false
     steps:
+      - name: Fix permissions.
+        run: sudo chown $(whoami) /github/home
+
       - name: Update Homebrew.
         run: brew update
 
