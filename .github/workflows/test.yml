@@ -34,10 +34,13 @@ jobs:
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Install `gcc@11`.
+        run: brew install gcc@11
+
+      - name: Test `gcc@11` linkage.
         run: |
           sudo chown $(whoami) "$GITHUB_STEP_SUMMARY"
-          printf '## Trial ${{ matrix.trial }} on homebrew/ubuntu${{ matrix.os }} :test_tube:' >> "$GITHUB_STEP_SUMMARY"
-          if brew install gcc@11
+          printf '## Trial ${{ matrix.trial }} on homebrew/ubuntu${{ matrix.os }} :test_tube:\n' >> "$GITHUB_STEP_SUMMARY"
+          if brew linkage --test gcc@11
           then
             printf 'success! :tada:\n' >> "$GITHUB_STEP_SUMMARY"
           else
