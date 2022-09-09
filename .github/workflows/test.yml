@@ -7,10 +7,12 @@ env:
 jobs:
   tests:
     name: Miscellaneous `brew` tests
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
+    container:
+      image: homebrew/ubuntu${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04, ubuntu-20.04]
+        os: [18.04, 20.04]
         trial: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
       fail-fast: false
     steps:
@@ -32,7 +34,7 @@ jobs:
 
       - name: Install `gcc@11`.
         run: |
-          printf '## Trial ${{ matrix.trial }} on ${{ matrix.os }} :test_tube:'
+          printf '## Trial ${{ matrix.trial }} on homebrew/ubuntu${{ matrix.os }} :test_tube:'
           if brew install gcc@11
           then
             printf 'success! :tada:\n' >> "$GITHUB_STEP_SUMMARY"
