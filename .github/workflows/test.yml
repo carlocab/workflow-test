@@ -27,6 +27,7 @@ jobs:
 
       - name: Show `brew --version`.
         run: |
+          sudo chown $(whoami) "$GITHUB_STEP_SUMMARY"
           printf '### `brew --version` output\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
@@ -34,7 +35,8 @@ jobs:
 
       - name: Install `gcc@11`.
         run: |
-          printf '## Trial ${{ matrix.trial }} on homebrew/ubuntu${{ matrix.os }} :test_tube:'
+          sudo chown $(whoami) "$GITHUB_STEP_SUMMARY"
+          printf '## Trial ${{ matrix.trial }} on homebrew/ubuntu${{ matrix.os }} :test_tube:' >> "$GITHUB_STEP_SUMMARY"
           if brew install gcc@11
           then
             printf 'success! :tada:\n' >> "$GITHUB_STEP_SUMMARY"
