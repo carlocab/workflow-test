@@ -35,7 +35,7 @@ jobs:
           printf '## Trial ${{ matrix.trial }} on ${{ matrix.os }} :test_tube:'
           if brew install gcc@11
           then
-            printf 'success! :tada:n' >> "$GITHUB_STEP_SUMMARY"
+            printf 'success! :tada:\n' >> "$GITHUB_STEP_SUMMARY"
           else
             printf 'failed :cry:\n' >> "$GITHUB_STEP_SUMMARY"
             exit 1
