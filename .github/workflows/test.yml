@@ -11,7 +11,6 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04]
-        trial: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
       fail-fast: false
     steps:
       - name: Set up Homebrew
@@ -35,7 +34,7 @@ jobs:
 
       - name: Test `gcc@11` linkage.
         run: |
-          printf '## Trial ${{ matrix.trial }} on ${{ matrix.os }} :test_tube:\n'
+          printf '## `brew linkage --test gcc@11` on ${{ matrix.os }} :test_tube:\n' >> "$GITHUB_STEP_SUMMARY"
           if brew linkage --test gcc@11
           then
             printf 'success! :tada:\n' >> "$GITHUB_STEP_SUMMARY"
