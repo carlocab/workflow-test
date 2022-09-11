@@ -7,7 +7,10 @@ env:
 jobs:
   tests:
     name: Miscellaneous `brew` tests
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        runner: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
     steps:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
@@ -20,8 +23,8 @@ jobs:
       - name: Checkout `llvm` PR.
         run: |
           pushd "$(brew --repository homebrew/core)"
-          git fetch origin pull/106925/head:llvm-15
-          git checkout llvm-15
+          git fetch origin pull/110308/head:dynare-test
+          git checkout dynare-test
           git status
           git rev-parse HEAD
           popd
@@ -33,22 +36,27 @@ jobs:
           printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Install `llvm` dependencies.
-        run: brew install --only-dependencies --build-from-source llvm
+      - name: Install `dynare`.
+        run: brew install dynare
 
       - name: Set up `logs` directory.
         run: |
-          mkdir -p logs
-          printf 'HOMEBREW_LOGS=%s\n' "$(pwd)/logs" >> "$GITHUB_ENV"
+          mkdir -p logs/new
+          printf 'HOMEBREW_LOGS=%s\n' "$(pwd)/logs/new" >> "$GITHUB_ENV"
 
-      - name: Build `llvm`.
-        run: brew install --build-from-source llvm
+      - name: Test `dynare`.
+        run: brew test --verbose dynare
 
-      - name: Install `mesa` dependencies.
-        run: brew install --only-dependencies --build-from-source mesa
+      - name: Switch to `master` branch.
+        run: git -C "$(brew --repository homebrew/core)" checkout master
 
-      - name: Build `mesa`.
-        run: brew install --build-from-source mesa
+      - name: Set up `logs` directory.
+        run: |
+          mkdir -p logs/old
+          printf 'HOMEBREW_LOGS=%s\n' "$(pwd)/logs/old" >> "$GITHUB_ENV"
+
+      - name: Test `dynare` (again).
+        run: brew test --verbose dynare
 
       - name: Upload logs.
         uses: actions/upload-artifact@v3
