@@ -19,7 +19,7 @@ jobs:
 
       - name: Checkout `llvm` PR.
         run: |
-          push "$(brew --repository homebrew/core)"
+          pushd "$(brew --repository homebrew/core)"
           git fetch origin pull/106925/head:llvm-15
           git checkout llvm-15
           git status
