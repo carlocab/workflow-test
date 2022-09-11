@@ -11,6 +11,8 @@ jobs:
     strategy:
       matrix:
         runner: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
+        test: [old, new]
+      fail-fast: false
     steps:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
@@ -21,6 +23,7 @@ jobs:
         run: git -C "$(brew --repository)" checkout master
 
       - name: Checkout `llvm` PR.
+        if: matrix.test == 'new'
         run: |
           pushd "$(brew --repository homebrew/core)"
           git fetch origin pull/110308/head:dynare-test
@@ -41,21 +44,11 @@ jobs:
 
       - name: Set up `logs` directory.
         run: |
-          mkdir -p logs/new
-          printf 'HOMEBREW_LOGS=%s\n' "$(pwd)/logs/new" >> "$GITHUB_ENV"
+          logdir="$(pwd)/logs/${{ matrix.text }}-${{ matrix.runner }}"
+          mkdir -p "$logdir"
+          printf 'HOMEBREW_LOGS=%s\n' "$logdir" >> "$GITHUB_ENV"
 
       - name: Test `dynare`.
-        run: brew test --verbose dynare
-
-      - name: Switch to `master` branch.
-        run: git -C "$(brew --repository homebrew/core)" checkout master
-
-      - name: Set up `logs` directory.
-        run: |
-          mkdir -p logs/old
-          printf 'HOMEBREW_LOGS=%s\n' "$(pwd)/logs/old" >> "$GITHUB_ENV"
-
-      - name: Test `dynare` (again).
         run: brew test --verbose dynare
 
       - name: Upload logs.
