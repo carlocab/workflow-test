@@ -44,6 +44,12 @@ jobs:
       - name: Build `llvm`.
         run: brew install --build-from-source llvm
 
+      - name: Install `mesa` dependencies.
+        run: brew install --only-dependencies --build-from-source mesa
+
+      - name: Build `mesa`.
+        run: brew install --build-from-source mesa
+
       - name: Upload logs.
         uses: actions/upload-artifact@v3
         if: always()
