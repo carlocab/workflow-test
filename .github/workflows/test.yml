@@ -12,6 +12,7 @@ jobs:
       matrix:
         runner: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
         test: [old, new]
+        trial: [1, 2, 3, 4, 5]
       fail-fast: false
     steps:
       - name: Set up Homebrew
@@ -19,10 +20,10 @@ jobs:
         with:
           test-bot: false
 
-      - name: Checkout `master`
+      - name: Checkout `master`.
         run: git -C "$(brew --repository)" checkout master
 
-      - name: Checkout `llvm` PR.
+      - name: Checkout `dynare` PR.
         if: matrix.test == 'new'
         run: |
           pushd "$(brew --repository homebrew/core)"
@@ -44,12 +45,19 @@ jobs:
 
       - name: Set up `logs` directory.
         run: |
-          logdir="$(pwd)/logs/${{ matrix.text }}-${{ matrix.runner }}"
+          logdir="$(pwd)/logs/${{ matrix.text }}-${{ matrix.runner }}-${{ matrix.trial }}"
           mkdir -p "$logdir"
           printf 'HOMEBREW_LOGS=%s\n' "$logdir" >> "$GITHUB_ENV"
 
       - name: Test `dynare`.
-        run: brew test --verbose dynare
+        run: |
+          printf '### :test_tube: Dynare test (${{ matrix.test }}) on ${{ matrix.runner }} (Trial ${{ matrix.trial }})\n' >> "$GITHUB_STEP_SUMMARY"
+          if brew test --verbose dynare
+          then
+            printf '**Success!** :tada:\n' >> "$GITHUB_STEP_SUMMARY"
+          else
+            printf '**Failed** :cry:\n' >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Upload logs.
         uses: actions/upload-artifact@v3
