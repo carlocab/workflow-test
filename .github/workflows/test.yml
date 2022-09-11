@@ -7,11 +7,7 @@ env:
 jobs:
   tests:
     name: Miscellaneous `brew` tests
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-10.15, macos-11, macos-12, ubuntu-20.04, ubuntu-22.04]
-      fail-fast: false
+    runs-on: ubuntu-22.04
     steps:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
@@ -21,6 +17,15 @@ jobs:
       - name: Checkout `master`
         run: git -C "$(brew --repository)" checkout master
 
+      - name: Checkout `llvm` PR.
+        run: |
+          push "$(brew --repository homebrew/core)"
+          git fetch origin pull/106925/head:llvm-15
+          git checkout llvm-15
+          git status
+          git rev-parse HEAD
+          popd
+
       - name: Show `brew --version`.
         run: |
           printf '### `brew --version` output\n' >> "$GITHUB_STEP_SUMMARY"
@@ -28,16 +33,19 @@ jobs:
           printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show `libsndfile` dep tree
-        run: |
-          printf '### `brew deps libsndfile` output\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew deps --tree --include-build --annotate libsndfile)" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+      - name: Install `llvm` dependencies.
+        run: brew install --only-dependencies --build-from-source llvm
 
-      - name: Run `brew info libsndfile`.
+      - name: Set up `logs` directory.
         run: |
-          printf '### `brew info libsndfile` output\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew info libsndfile)" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          mkdir -p logs
+          printf 'HOMEBREW_LOGS=%s\n' "$(pwd)/logs" >> "$GITHUB_ENV"
+
+      - name: Build `llvm`.
+        run: brew install --build-from-source llvm
+
+      - name: Upload logs.
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          path: logs
