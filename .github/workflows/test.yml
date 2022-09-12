@@ -49,6 +49,10 @@ jobs:
           mkdir -p "$logdir"
           printf 'HOMEBREW_LOGS=%s\n' "$logdir" >> "$GITHUB_ENV"
 
+      - name: Install `linux-headers@5.15`.
+        if: matrix.runner != 'ubuntu-22.04'
+        run: brew install linux-headers@5.15
+
       - name: Test `dynare`.
         run: |
           printf '### :test_tube: Dynare test (${{ matrix.test }}) on ${{ matrix.runner }} (Trial ${{ matrix.trial }})\n' >> "$GITHUB_STEP_SUMMARY"
