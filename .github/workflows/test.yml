@@ -71,3 +71,14 @@ jobs:
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           printf '%s\n' "$(/usr/bin/ldd /bin/ls)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Unlink `glibc`.
+        if: matrix.runner != 'ubuntu-22.04'
+        run: brew unlink glibc
+
+      - name: Show `ldd /bin/ls` output (again).
+        run: |
+          printf '### `ldd /bin/ls` output (after `brew unlink glibc`)\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(ldd /bin/ls)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
