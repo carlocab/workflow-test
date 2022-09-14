@@ -28,16 +28,28 @@ jobs:
           printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show `libsndfile` dep tree
+      - name: Install LLVM.
+        run: brew install llvm
+
+      - name: Unlink LLVM.
+        run: brew unlink llvm
+
+      - name: Test LLVM with LLD.
         run: |
-          printf '### `brew deps libsndfile` output\n' >> "$GITHUB_STEP_SUMMARY"
+          cat <<CXX > test.cc
+            #include <iostream>
+            int main() {
+              std::cout << "hello!" << std::endl;
+              return 0;
+            }
+          CXX
+          CXX="$(brew --prefix llvm)/bin/clang++"
+          printf '### Compilation with `lld` output.\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew deps --tree --include-build --annotate libsndfile)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$("$CXX" -v -Wl,-v -fuse-ld=lld test.cc -o test 2>&1)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Run `brew info libsndfile`.
-        run: |
-          printf '### `brew info libsndfile` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '### `./test` output.\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew info libsndfile)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(./test)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
