@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-10.15, macos-11, macos-12, ubuntu-20.04, ubuntu-22.04]
+        os: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
       fail-fast: false
     steps:
       - name: Set up Homebrew
@@ -28,16 +28,46 @@ jobs:
           printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show `libsndfile` dep tree
+      - name: Uninstall everything.
         run: |
-          printf '### `brew deps libsndfile` output\n' >> "$GITHUB_STEP_SUMMARY"
+          installed="$(brew list)"
+          [[ -z "$installed" ]] && exit 0
+          brew uninstall $installed
+
+      - name: Show `which -a ldd` output.
+        run: |
+          printf '### `which -a ldd` output (before installing `gcc@11`)\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew deps --tree --include-build --annotate libsndfile)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(which -a ldd)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Run `brew info libsndfile`.
+      - name: Show `ldd /bin/ls` output.
         run: |
-          printf '### `brew info libsndfile` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '### `ldd /bin/ls` output (before installing `gcc@11`)\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew info libsndfile)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(ldd /bin/ls)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Install `gcc@11`.
+        run: brew install gcc@11
+
+      - name: Show `which -a ldd` output.
+        run: |
+          printf '### `which -a ldd` output (after installing `gcc@11`)\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(which -a ldd)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Show `ldd /bin/ls` output.
+        run: |
+          printf '### `ldd /bin/ls` output (after installing `gcc@11`)\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(ldd /bin/ls)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Show `/usr/bin/ldd /bin/ls` output.
+        run: |
+          printf '### `/usr/bin/ldd /bin/ls` output (after installing `gcc@11`)\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(/usr/bin/ldd /bin/ls)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
