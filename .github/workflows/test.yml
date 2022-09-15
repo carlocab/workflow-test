@@ -3,6 +3,7 @@ on: [push, pull_request, workflow_dispatch]
 
 env:
   HOMEBREW_DEVELOPER: 1
+  FORMULA: python@3.10
 
 jobs:
   tests:
@@ -10,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-10.15, macos-11, macos-12, ubuntu-20.04, ubuntu-22.04]
+        os: [macos-10.15, macos-11, macos-12, ubuntu-22.04]
       fail-fast: false
     steps:
       - name: Set up Homebrew
@@ -28,16 +29,20 @@ jobs:
           printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show `libsndfile` dep tree
+      - name: Show `python@3.10` dependents.
         run: |
-          printf '### `brew deps libsndfile` output\n' >> "$GITHUB_STEP_SUMMARY"
+          recursive_non_build_dependents="$(brew uses --eval-all --include-test --recursive --formula $FORMULA)"
+          build_dependents="$(brew uses --eval-all --include-build --formula $FORMULA)"
+          ALL_DEPENDENTS="$(cat <<<$recursive_non_build_dependents <<<$build_dependents | sort -u)"
+          printf 'ALL_DEPENDENTS=%s\n' "$ALL_DEPENDENTS" >> "$GITHUB_ENV"
+          printf '### `python@3.10` dependents\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew deps --tree --include-build --annotate libsndfile)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$ALL_DEPENDENTS" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Run `brew info libsndfile`.
+      - name: Count `python@3.10` dependents.
         run: |
-          printf '### `brew info libsndfile` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '### `python@3.10` dependents count\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew info libsndfile)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(wc -l <<<$ALL_DEPENDENTS)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
