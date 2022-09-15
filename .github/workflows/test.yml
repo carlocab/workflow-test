@@ -40,5 +40,5 @@ jobs:
         run: |
           printf '### `pkg-config --libs libffi` output\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(pkg-config --libs libfii)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(pkg-config --libs libffi)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
