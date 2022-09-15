@@ -42,3 +42,17 @@ jobs:
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           printf '%s\n' "$(pkg-config --libs libffi)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Show `pkg-config --libs-only-L libffi`.
+        run: |
+          printf '### `pkg-config --libs-only-L libffi` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(pkg-config --libs-only-L libffi)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Show `pkg-config --libs-only-l libffi`.
+        run: |
+          printf '### `pkg-config --libs-only-l libffi` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(pkg-config --libs-only-l libffi)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
