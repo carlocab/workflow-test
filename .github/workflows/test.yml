@@ -3,6 +3,7 @@ on: [push, pull_request, workflow_dispatch]
 
 env:
   HOMEBREW_DEVELOPER: 1
+  FORMULA: libffi
 
 jobs:
   tests:
@@ -28,16 +29,16 @@ jobs:
           printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show `libsndfile` dep tree
-        run: |
-          printf '### `brew deps libsndfile` output\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew deps --tree --include-build --annotate libsndfile)" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+      - name: Install `pkg-config`.
+        run: brew install pkg-config
 
-      - name: Run `brew info libsndfile`.
+      - name: Install `libffi` if needed.
+        if: runner.os != 'macOS'
+        run: brew install libffi
+
+      - name: Show `pkg-config --libs libffi`.
         run: |
-          printf '### `brew info libsndfile` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '### `pkg-config --libs libffi` output\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew info libsndfile)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(pkg-config --libs libfii)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
