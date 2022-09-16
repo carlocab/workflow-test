@@ -32,6 +32,16 @@ jobs:
       - name: Install formula.
         run: brew install "$FORMULA"
 
+      - name: Run `which -a ldd`.
+        run: |
+          printf '### `which -a ldd` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(which -a ldd)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Check if `glibc` is linked.
+        run: brew link glibc
+
       - name: Show formula version.
         run: |
           printf '### `%s --version` output\n' "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
