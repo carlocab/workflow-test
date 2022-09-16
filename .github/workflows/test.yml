@@ -39,8 +39,20 @@ jobs:
           printf '%s\n' "$(which -a ldd)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Check contents of `brew --prefix`
+        run: |
+          printf '### `ls -la "$(brew --prefix)/lib"` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(ls -la "$(brew --prefix)/lib")" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
       - name: Check if `glibc` is linked.
+        if: matrix.os != 'ubuntu-22.04'
         run: brew link glibc
+
+      - name: Check if `gcc@11` is linked.
+        if: matrix.os != 'ubuntu-22.04'
+        run: brew link gcc@11
 
       - name: Show formula version.
         run: |
