@@ -7,11 +7,7 @@ env:
 jobs:
   tests:
     name: Miscellaneous `brew` tests
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-10.15, macos-11, macos-12, ubuntu-20.04, ubuntu-22.04]
-      fail-fast: false
+    runs-on: ubuntu-22.04
     steps:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
@@ -28,16 +24,6 @@ jobs:
           printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show `libsndfile` dep tree
+      - name: Audit for Linux-only GCC dependencies.
         run: |
-          printf '### `brew deps libsndfile` output\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew deps --tree --include-build --annotate libsndfile)" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Run `brew info libsndfile`.
-        run: |
-          printf '### `brew info libsndfile` output\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew info libsndfile)" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          brew audit --strict --only=gcc_dependency --tap=homebrew/core
