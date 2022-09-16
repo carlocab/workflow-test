@@ -3,6 +3,7 @@ on: [push, pull_request, workflow_dispatch]
 
 env:
   HOMEBREW_DEVELOPER: 1
+  FORMULA: doxygen
 
 jobs:
   tests:
@@ -10,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-10.15, macos-11, macos-12, ubuntu-20.04, ubuntu-22.04]
+        os: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
       fail-fast: false
     steps:
       - name: Set up Homebrew
@@ -28,16 +29,19 @@ jobs:
           printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show `libsndfile` dep tree
+      - name: Install formula.
+        run: brew install "$FORMULA"
+
+      - name: Show formula version.
         run: |
-          printf '### `brew deps libsndfile` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '### `%s --version` output\n' "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew deps --tree --include-build --annotate libsndfile)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$("$FORMULA" --version)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Run `brew info libsndfile`.
+      - name: Run `brew test`.
         run: |
-          printf '### `brew info libsndfile` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '### `brew test --verbose %s` output\n' "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew info libsndfile)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(brew test --verbose "$FORMULA")" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
