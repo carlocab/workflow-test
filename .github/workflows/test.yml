@@ -3,6 +3,7 @@ on: [push, pull_request, workflow_dispatch]
 
 env:
   HOMEBREW_DEVELOPER: 1
+  FORMULA: qt
 
 jobs:
   tests:
@@ -10,31 +11,31 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-10.15, macos-11, macos-12, ubuntu-latest]
+        os: [macos-10.15, macos-11, macos-12, ubuntu-18.04, ubuntu-22.04]
       fail-fast: false
     steps:
-      - name: Set up Homebrew
+      - name: Set up Homebrew.
         uses: Homebrew/actions/setup-homebrew@master
 
-      - name: Checkout `master`
+      - name: Checkout `master`.
         run: git -C "$(brew --repository)" checkout master
 
       - name: Uninstall everything
         run: brew uninstall $(brew list)
 
-      - name: Install `r`
-        run: brew install r
+      - name: Install formula.
+        run: brew install "$FORMULA"
 
-      - name: Show `brew --version`
+      - name: Show `brew --version`.
         run: |
           printf '### Homebrew version\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           brew --version | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show `r` linkage
+      - name: Show formula linkage
         run: |
-          printf '### `r` linkage\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '### `%s` linkage\n' "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          brew linkage r | tee -a "$GITHUB_STEP_SUMMARY"
+          brew linkage "$FORMULA" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
