@@ -21,7 +21,10 @@ jobs:
         run: git -C "$(brew --repository)" checkout master
 
       - name: Uninstall everything
-        run: brew uninstall $(brew list)
+        run: |
+          installed=$(brew --list)
+          [[ -z "$installed" ]] && exit 0
+          brew uninstall --force $installed || true
 
       - name: Install formula.
         run: brew install "$FORMULA"
