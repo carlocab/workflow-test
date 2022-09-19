@@ -22,7 +22,7 @@ jobs:
 
       - name: Uninstall everything
         run: |
-          installed=$(brew --list)
+          installed=$(brew list)
           [[ -z "$installed" ]] && exit 0
           brew uninstall --force $installed || true
 
