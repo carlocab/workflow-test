@@ -3,7 +3,6 @@ on: [push, pull_request, workflow_dispatch]
 
 env:
   HOMEBREW_DEVELOPER: 1
-  FORMULA: gcc
 
 jobs:
   tests:
@@ -29,12 +28,8 @@ jobs:
           printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show formula dep tree.
+      - name: Check `gfortran`
         run: |
-          output="$(brew deps --tree --include-build --annotate "$FORMULA")"
-          status="$?"
-          printf '### `brew deps %s` output\n' "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$output" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          exit "$status"
+          brew install gcc
+          brew info gcc
+          which -a gfortran
