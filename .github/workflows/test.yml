@@ -3,7 +3,7 @@ on: [push, pull_request, workflow_dispatch]
 
 env:
   HOMEBREW_DEVELOPER: 1
-  FORMULA: gcc
+  FORMULA: openjdk
 
 jobs:
   tests:
@@ -29,9 +29,12 @@ jobs:
           printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show formula dep tree.
+      - name: Show `configure --help`.
         run: |
-          output="$(brew deps --tree --include-build --annotate "$FORMULA")"
+          brew unpack "$FORMULA"
+          cd $FORMULA-*
+          chmod +x configure
+          output="$(configure --help)"
           status="$?"
           printf '### `brew deps %s` output\n' "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
