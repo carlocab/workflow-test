@@ -34,7 +34,7 @@ jobs:
           brew unpack "$FORMULA"
           cd $FORMULA-*
           chmod +x configure
-          output="$(configure --help)"
+          output="$(./configure --help)"
           status="$?"
           printf '### `brew deps %s` output\n' "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
