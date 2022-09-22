@@ -3,7 +3,6 @@ on: [push, pull_request, workflow_dispatch]
 
 env:
   HOMEBREW_DEVELOPER: 1
-  FORMULA: openjdk
 
 jobs:
   tests:
@@ -31,9 +30,6 @@ jobs:
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Audit formula for Linux-only GCC dependency.
-        run: brew audit --strict --only=gcc_dependency "$FORMULA"
 
       - name: Audit for Linux-only GCC dependencies.
         run: |
