@@ -3,7 +3,7 @@ on: [push, pull_request, workflow_dispatch]
 
 env:
   HOMEBREW_DEVELOPER: 1
-  FORMULA: tsung
+  FORMULA: emscripten
 
 jobs:
   tests:
@@ -31,7 +31,7 @@ jobs:
 
       - name: Show formula dep tree.
         run: |
-          output="$(brew deps --tree "$FORMULA")"
+          output="$(brew deps --tree --include-build --annotate "$FORMULA")"
           status="$?"
           printf '### `brew deps %s` output\n' "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
