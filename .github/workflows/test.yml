@@ -18,6 +18,13 @@ jobs:
       - name: Checkout `master`
         run: git -C "$(brew --repository)" checkout master
 
+      - name: 'Checkout #13918'
+        run: |
+          pushd "$(brew --repository)"
+          git fetch origin pull/13918/head:fix_gcc_dependency
+          git checkout fix_gcc_dependency
+          popd
+
       - name: Show `brew --version`.
         run: |
           printf '### `brew --version` output\n' >> "$GITHUB_STEP_SUMMARY"
