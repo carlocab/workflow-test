@@ -3,7 +3,7 @@ on: [push, pull_request, workflow_dispatch]
 
 env:
   HOMEBREW_DEVELOPER: 1
-  FORMULA: gitg
+  FORMULA: wxpython
 
 jobs:
   tests:
