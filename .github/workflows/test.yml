@@ -29,8 +29,8 @@ jobs:
         run: |
           pushd "$(brew --repository homebrew/core)"
           git remote add carlocab https://github.com/carlocab/homebrew-core.git
-          git fetch carlocab
-          git checkout carlocab/zig-head
+          git fetch carlocab zig-head
+          git checkout zig-head
           popd
 
       - name: Show `brew --version`.
