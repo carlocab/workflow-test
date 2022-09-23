@@ -3,7 +3,7 @@ on: [push, pull_request, workflow_dispatch]
 
 env:
   HOMEBREW_DEVELOPER: 1
-  FORMULA: emscripten
+  FORMULA: llvm
 
 jobs:
   tests:
@@ -41,4 +41,11 @@ jobs:
           printf '### `%s` linkage\n' "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           brew linkage "$FORMULA" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Show formula reverse linkage
+        run: |
+          printf '### `%s` linkage\n' "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          brew linkage --reverse "$FORMULA" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
