@@ -28,8 +28,8 @@ jobs:
       - name: Install GCC.
         run: brew install gcc
 
-      - name: Link `binutils`.
-        run: brew link --force binutils
+      - name: Link `glibc`.
+        run: brew link --force glibc
 
       - name: Test GCC.
         run: |
