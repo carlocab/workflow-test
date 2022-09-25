@@ -55,6 +55,6 @@ jobs:
         run: |
           etc="$(brew --prefix)/etc"
           ls -la "$etc"
-          cat "${etc}/ls.so.conf"
+          cat "${etc}/ld.so.conf"
           ls -la "${etc}/ld.so.conf.d"
           cat "${etc}/ld.so.conf.d"/*
