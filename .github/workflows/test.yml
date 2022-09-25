@@ -58,3 +58,12 @@ jobs:
           cat "${etc}/ld.so.conf"
           ls -la "${etc}/ld.so.conf.d"
           cat "${etc}/ld.so.conf.d"/*
+
+      - name: Check binutils linkage
+        run: brew linkage binutils
+
+      - name: Use `ldd`.
+        run: |
+          ld="$(brew --prefix binutils)/bin/ld"
+          ldd "${ld}"
+          "$(brew --prefix glibc)/bin/ldd" "${ld}"
