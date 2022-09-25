@@ -50,3 +50,11 @@ jobs:
           EOS
           "$(brew --prefix gcc)/bin/gcc-12" test.c -lc
           ./a.out
+
+      - name: Check ld.so.conf and related files
+        run: |
+          etc="$(brew --prefix)/etc"
+          ls -la "$etc"
+          cat "${etc}/ls.so.conf"
+          ls -la "${etc}/ld.so.conf.d"
+          cat "${etc}/ld.so.conf.d"/*
