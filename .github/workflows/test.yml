@@ -14,6 +14,7 @@ jobs:
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
         formula: [hello, llvm, gcc, python@3.10, sqlite, icu4c, node, glib, readline, harfbuzz, icu4c]
+        link: [true, false]
       fail-fast: false
     steps:
       - name: Make sure `brew` is in PATH
@@ -63,6 +64,10 @@ jobs:
 
       - name: Install test dependencies
         run: brew install --only-dependencies --include-test "$FORMULA"
+
+      - name: Link `glibc` if needed.
+        if: matrix.link && matrix.os != 'ubuntu-22.04'
+        run: brew link --force glibc
 
       - name: Test formula
         run: |
