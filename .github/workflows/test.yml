@@ -12,7 +12,7 @@ jobs:
       FORMULA: ${{ matrix.formula }}
     strategy:
       matrix:
-        os: [macos-10.15, macos-11, macos-12, ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
+        os: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
         formula: [hello, llvm, gcc, python@3.10, sqlite, icu4c, node, glib, readline, harfbuzz, icu4c]
       fail-fast: false
     steps:
@@ -42,6 +42,13 @@ jobs:
           printf '### `brew --version` output\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: List installed formulae
+        run: |
+          printf '### `brew list --formula` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(brew list --formula)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Install formula
