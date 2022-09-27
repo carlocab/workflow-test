@@ -35,7 +35,6 @@ jobs:
           pushd "$(brew --repository)"
           git fetch origin pull/13916/head:unversioned-gcc-runtime
           git checkout unversioned-gcc-runtime
-          git rebase origin/master
           popd
 
       - name: Show `brew --version`.
