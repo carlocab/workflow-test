@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Make sure `brew` is in PATH
-        if: runner.os == Linux
+        if: runner.os == 'Linux'
         run: |
           eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
           printf 'PATH=%s\n' "$PATH" >> "$GITHUB_ENV"
