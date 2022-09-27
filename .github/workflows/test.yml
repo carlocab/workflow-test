@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-10.15, macos-11, macos-12, ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
-        formula: [hello, llvm, gcc, python@3.10, sqlite, icu4c, node, glib, readline harfbuzz icu4c]
+        formula: [hello, llvm, gcc, python@3.10, sqlite, icu4c, node, glib, readline, harfbuzz, icu4c]
       fail-fast: false
     steps:
       - name: Make sure `brew` is in PATH
@@ -46,7 +46,21 @@ jobs:
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Install formula
-        run: brew install "$FORMULA"
+        run: |
+          if brew install "$FORMULA"
+          then
+            printf "**%s install successful!** :tada:\n" "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
+          else
+            printf "**%s install failed** :cry:\n" "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
 
       - name: Test formula
-        run: brew test --verbose "$FORMULA"
+        run: |
+          if brew test --verbose "$FORMULA"
+          then
+            printf "**%s test successful!** :tada:\n" "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
+          else
+            printf "**%s test failed** :cry:\n" "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
