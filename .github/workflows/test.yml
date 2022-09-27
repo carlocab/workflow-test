@@ -54,6 +54,9 @@ jobs:
             exit 1
           fi
 
+      - name: Install test dependencies
+        run: brew install --only-dependencies --include-test "$FORMULA"
+
       - name: Test formula
         run: |
           if brew test --verbose "$FORMULA"
