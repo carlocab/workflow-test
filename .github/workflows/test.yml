@@ -12,17 +12,10 @@ jobs:
       FORMULA: ${{ matrix.formula }}
     strategy:
       matrix:
-        os: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
+        os: [macos-10.15, macos-11, macos-12, ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
         formula: [hello, llvm, gcc, python@3.10, sqlite, icu4c, node, glib, readline, harfbuzz, icu4c]
-        link: [true, false]
       fail-fast: false
     steps:
-      - name: Make sure `brew` is in PATH
-        if: runner.os == 'Linux'
-        run: |
-          eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
-          printf 'PATH=%s\n' "$PATH" >> "$GITHUB_ENV"
-
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
         with:
@@ -33,9 +26,9 @@ jobs:
 
       - name: Check out GCC PR
         run: |
-          pushd "$(brew --repository)"
-          git fetch origin pull/13916/head:unversioned-gcc-runtime
-          git checkout unversioned-gcc-runtime
+          pushd "$(brew --repository homebrew/core)"
+          git fetch origin pull/111830/head:gcc-specs-fix
+          git checkout gcc-specs-fix
           popd
 
       - name: Show `brew --version`.
@@ -62,12 +55,12 @@ jobs:
             exit 1
           fi
 
+      - name: Postinstall GCC if needed
+        if: runner.os == 'Linux'
+        run: brew postinstall gcc
+
       - name: Install test dependencies
         run: brew install --only-dependencies --include-test "$FORMULA"
-
-      - name: Link `glibc` if needed.
-        if: matrix.link && matrix.os != 'ubuntu-22.04'
-        run: brew link --force glibc
 
       - name: Test formula
         run: |
