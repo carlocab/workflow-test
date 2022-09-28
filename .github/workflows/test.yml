@@ -56,7 +56,7 @@ jobs:
           fi
 
       - name: Postinstall GCC if needed
-        if: runner.os == 'Linux'
+        if: runner.os == 'Linux' && matrix.os != 'ubuntu-22.04'
         run: brew postinstall gcc
 
       - name: Install test dependencies
