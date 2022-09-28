@@ -12,8 +12,10 @@ jobs:
       FORMULA: ${{ matrix.formula }}
     strategy:
       matrix:
-        os: [macos-10.15, macos-11, macos-12, ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
-        formula: [hello, llvm, gcc, python@3.10, sqlite, icu4c, node, glib, readline, harfbuzz, icu4c]
+        os: [ubuntu-18.04, ubuntu-20.04]
+        formula: [llvm, glib]
+        link-binutils: [true, false]
+        link-glibc: [true, false]
       fail-fast: false
     steps:
       - name: Set up Homebrew
@@ -58,6 +60,14 @@ jobs:
       - name: Postinstall GCC if needed
         if: runner.os == 'Linux' && matrix.os != 'ubuntu-22.04'
         run: brew postinstall gcc
+
+      - name: Link `glibc` if requested
+        if: matrix.link-glibc
+        run: brew link --force glibc
+
+      - name: Link `binutils` if requested
+        if: matrix.link-binutils
+        run: brew link --force binutils
 
       - name: Install test dependencies
         run: brew install --only-dependencies --include-test "$FORMULA"
