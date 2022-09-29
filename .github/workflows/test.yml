@@ -3,6 +3,7 @@ on: [push, pull_request, workflow_dispatch]
 
 env:
   HOMEBREW_DEVELOPER: 1
+  FORMULA: mold
 
 jobs:
   tests:
@@ -13,9 +14,6 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04]
-        formula: [llvm, glib, llvm@14, llvm@13]
-        link-binutils: [true, false]
-        link-glibc: [true, false]
       fail-fast: false
     steps:
       - name: Set up Homebrew
@@ -25,13 +23,6 @@ jobs:
 
       - name: Checkout `master`
         run: git -C "$(brew --repository)" checkout master
-
-      - name: Check out GCC PR
-        run: |
-          pushd "$(brew --repository homebrew/core)"
-          git fetch origin pull/111830/head:gcc-specs-fix
-          git checkout gcc-specs-fix
-          popd
 
       - name: Show `brew --version`.
         run: |
@@ -47,27 +38,21 @@ jobs:
           printf '%s\n' "$(brew list --formula)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Install formula
-        run: |
-          if brew install "$FORMULA"
-          then
-            printf "**%s install successful!** :tada:\n" "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
-          else
-            printf "**%s install failed** :cry:\n" "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
-            exit 1
-          fi
+      - name: Set logs directory
+        run: printf 'HOMEBREW_LOGS=%s\n' "$(pwd)/Logs" >> "$GITHUB_ENV"
 
-      - name: Postinstall GCC if needed
-        if: runner.os == 'Linux' && matrix.os != 'ubuntu-22.04'
+      - name: Postinstall gcc
         run: brew postinstall gcc
 
-      - name: Link `glibc` if requested
-        if: matrix.link-glibc
-        run: brew link --force glibc
-
-      - name: Link `binutils` if requested
-        if: matrix.link-binutils
-        run: brew link --force binutils
+      - name: Install formula from source
+        run: |
+          if brew install --build-from-source "$FORMULA"
+          then
+            printf ":white_check_mark: **%s install successful!** :white_check_mark:\n" "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
+          else
+            printf ":x: **%s install failed** :x:\n" "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
 
       - name: Install test dependencies
         run: brew install --only-dependencies --include-test "$FORMULA"
@@ -76,8 +61,14 @@ jobs:
         run: |
           if brew test --verbose "$FORMULA"
           then
-            printf "**%s test successful!** :tada:\n" "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
+            printf ":white_check_mark: **%s test successful!** :white_check_mark:\n" "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
           else
-            printf "**%s test failed** :cry:\n" "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
+            printf ":x: **%s test failed** :x:\n" "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          path: Logs
