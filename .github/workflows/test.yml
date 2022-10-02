@@ -9,8 +9,6 @@ jobs:
   tests:
     name: Miscellaneous `brew` tests
     runs-on: ${{ matrix.os }}
-    env:
-      FORMULA: ${{ matrix.formula }}
     strategy:
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04]
