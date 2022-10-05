@@ -3,7 +3,6 @@ on: [push, pull_request, workflow_dispatch]
 
 env:
   HOMEBREW_DEVELOPER: 1
-  FORMULA: emscripten
 
 jobs:
   tests:
@@ -12,6 +11,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-10.15, macos-11, macos-12, ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
+        formula: [xz, binutils, gcc]
       fail-fast: false
     steps:
       - name: Set up Homebrew
@@ -30,6 +30,8 @@ jobs:
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Show formula dep tree.
+        env:
+          FORMULA: ${{ matrix.formula }}
         run: |
           output="$(brew deps --tree --include-build --annotate "$FORMULA")"
           status="$?"
