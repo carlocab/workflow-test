@@ -44,9 +44,10 @@ jobs:
 
       - name: Check Homebrew `ld.so`
         run:
-          output="$(ls -la "$(brew --prefix)/lib")"
+          HOMEBREW_PREFIX="$(brew --prefix)"
+          output="$(ls -la ${HOMEBREW_PREFIX}/lib)"
           status="$?"
-          printf '### `ls -la %s` output\n' "$(brew --prefix)/lib" >> "$GITHUB_STEP_SUMMARY"
+          printf '### `ls -la %s` output\n' "${HOMEBREW_PREFIX}/lib" >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           printf '%s\n' "$output" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
