@@ -3,6 +3,7 @@ on: [push, pull_request, workflow_dispatch]
 
 env:
   HOMEBREW_DEVELOPER: 1
+  FORMULA: hello
 
 jobs:
   tests:
@@ -10,8 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-10.15, macos-11, macos-12, ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
-        formula: [xz, binutils, gcc]
+        os: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
       fail-fast: false
     steps:
       - name: Set up Homebrew
@@ -29,13 +29,24 @@ jobs:
           printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Install formula
+        run: brew install "$FORMULA"
+
       - name: Show formula dep tree.
-        env:
-          FORMULA: ${{ matrix.formula }}
         run: |
           output="$(brew deps --tree --include-build --annotate "$FORMULA")"
           status="$?"
           printf '### `brew deps %s` output\n' "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$output" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          exit "$status"
+
+      - name: Check Homebrew `ld.so`
+        run:
+          output="$(ls -la "$(brew --prefix)/lib")"
+          status="$?"
+          printf '### `ls -la %s` output\n' "$(brew --prefix)/lib" >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           printf '%s\n' "$output" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
