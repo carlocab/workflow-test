@@ -3,7 +3,6 @@ on: [push, pull_request, workflow_dispatch]
 
 env:
   HOMEBREW_DEVELOPER: 1
-  HOMEBREW_INSTALL_FROM_API: 1
   FORMULA: ldid
 
 jobs:
@@ -22,9 +21,6 @@ jobs:
 
       - name: Checkout `master`
         run: git -C "$(brew --repository)" checkout master
-
-      - name: Untap homebrew/core.
-        run: brew untap homebrew/core
 
       - name: Show `brew --version`.
         run: |
