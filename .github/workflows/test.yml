@@ -4,7 +4,7 @@ on: [push, pull_request, workflow_dispatch]
 env:
   HOMEBREW_DEVELOPER: 1
   HOMEBREW_INSTALL_FROM_API: 1
-  FORMULA: neofetch
+  FORMULA: ldid
 
 jobs:
   tests:
@@ -49,3 +49,13 @@ jobs:
 
       - name: Install formula.
         run: brew install "$FORMULA"
+
+      - name: Test formula.
+        run: |
+          output="$(brew test --verbose "$FORMULA")"
+          status="$?"
+          printf '### `brew test %s` output\n' "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$output" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          exit "$status"
