@@ -3,6 +3,7 @@ on: [push, pull_request, workflow_dispatch]
 
 env:
   HOMEBREW_DEVELOPER: 1
+  HOMEBREW_NO_AUTO_UPDATE: 1
 
 jobs:
   tests:
@@ -11,7 +12,6 @@ jobs:
     strategy:
       matrix:
         os: [macos-10.15, macos-11, macos-12, ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
-        formula: [xz, binutils, gcc]
       fail-fast: false
     steps:
       - name: Set up Homebrew
@@ -22,6 +22,9 @@ jobs:
       - name: Checkout `master`
         run: git -C "$(brew --repository)" checkout master
 
+      - name: Checkout homebrew/core commit
+        run: git -C "$(brew --repository homebrew/core)" checkout 11c02a759aea321055d13b6d3b0ee35923d9cc62
+
       - name: Show `brew --version`.
         run: |
           printf '### `brew --version` output\n' >> "$GITHUB_STEP_SUMMARY"
@@ -29,14 +32,8 @@ jobs:
           printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show formula dep tree.
-        env:
-          FORMULA: ${{ matrix.formula }}
-        run: |
-          output="$(brew deps --tree --include-build --annotate "$FORMULA")"
-          status="$?"
-          printf '### `brew deps %s` output\n' "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$output" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          exit "$status"
+      - name: Install testing formulae
+        run: brew install jpeg-xl pkg-config
+
+      - name: Test `pkg-config`
+        run: pkg-config --list-all --debug
