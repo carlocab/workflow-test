@@ -72,7 +72,7 @@ jobs:
 
       - name: Pass `--gcc-toolchain` to clang
         run: |
-          sed -i -E -e 's/(clang(\+\+)?",)/\1 "--gcc-toolchain=#{Formula["gcc"].opt_prefix}",/' "$(brew --repository homebrew/core)/Formula/llvm.rb"
+          sed -i -E -e 's/(clang(\+\+)?",)/\1 "-v", "--gcc-toolchain=#{Formula["gcc"].opt_prefix}",/' "$(brew --repository homebrew/core)/Formula/llvm.rb"
 
       - name: Install test dependencies
         run: brew install --only-dependencies --include-test "$FORMULA"
