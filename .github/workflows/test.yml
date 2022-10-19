@@ -49,6 +49,9 @@ jobs:
             exit 1
           fi
 
+      - name: Link `glibc`
+        run: brew link --force glibc
+
       - name: Write `clang` config files
         run: |
           llvm_prefix="$(brew --prefix llvm)"
