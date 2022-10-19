@@ -49,8 +49,8 @@ jobs:
             exit 1
           fi
 
-      - name: Link `glibc`
-        run: brew link --force glibc
+      - name: Link `binutils`
+        run: brew link --force binutils
 
       - name: Write `clang` config files
         run: |
