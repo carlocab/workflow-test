@@ -58,10 +58,12 @@ jobs:
           gcc_prefix="$(brew --prefix gcc)"
 
           cat <<EOS > "$llvm_prefix/bin/clang.cfg"
+          -v
           --gcc-toolchain=$gcc_prefix
           EOS
 
           cat <<EOS > "$llvm_prefix/bin/clang++.cfg"
+          -v
           --gcc-toolchain=$gcc_prefix
           EOS
 
