@@ -39,6 +39,16 @@ jobs:
       - name: Set logs directory
         run: printf 'HOMEBREW_LOGS=%s\n' "$(pwd)/Logs" >> "$GITHUB_ENV"
 
+      - name: Install formula
+        run: |
+          if brew install "$FORMULA"
+          then
+            printf ":white_check_mark: **%s install successful!** :white_check_mark:\n" "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
+          else
+            printf ":x: **%s install failed** :x:\n" "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
       - name: Write `clang` config files
         run: |
           llvm_prefix="$(brew --prefix llvm)"
@@ -51,16 +61,6 @@ jobs:
           cat <<EOS > "$llvm_prefix/bin/clang++.cfg"
           --gcc-toolchain=$gcc_prefix
           EOS
-
-      - name: Install formula from source
-        run: |
-          if brew install "$FORMULA"
-          then
-            printf ":white_check_mark: **%s install successful!** :white_check_mark:\n" "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
-          else
-            printf ":x: **%s install failed** :x:\n" "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
-            exit 1
-          fi
 
       - name: Install test dependencies
         run: brew install --only-dependencies --include-test "$FORMULA"
