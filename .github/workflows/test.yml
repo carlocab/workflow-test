@@ -49,9 +49,6 @@ jobs:
             exit 1
           fi
 
-      - name: Link `binutils`
-        run: brew link --force binutils
-
       - name: Write `clang` config files
         run: |
           llvm_prefix="$(brew --prefix llvm)"
@@ -73,9 +70,9 @@ jobs:
           -L${glibc_prefix}/lib
           EOS
 
-      - name: Pass `-v` to clang
+      - name: Pass `--gcc-toolchain` to clang
         run: |
-          sed -i -E -e 's/(clang(\+\+)?",)/\1 "-v",/' "$(brew --repository homebrew/core)/Formula/llvm.rb"
+          sed -i -E -e 's/(clang(\+\+)?",)/\1 "--gcc-toolchain=#{Formula["gcc"].opt_prefix}",/' "$(brew --repository homebrew/core)/Formula/llvm.rb"
 
       - name: Install test dependencies
         run: brew install --only-dependencies --include-test "$FORMULA"
