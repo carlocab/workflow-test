@@ -56,15 +56,21 @@ jobs:
         run: |
           llvm_prefix="$(brew --prefix llvm)"
           gcc_prefix="$(brew --prefix gcc)"
+          glibc_prefix="$(brew --prefix glibc)"
+          target_triple="$(clang -print-target-triple)"
 
           cat <<EOS > "$llvm_prefix/bin/clang.cfg"
-          -v
           --gcc-toolchain=$gcc_prefix
+          -Wl,-dynamic-linker="$(brew --prefix)/lib/ld.so"
+          -B${glibc_prefix}/lib
+          -L${glibc_prefix}/lib
           EOS
 
           cat <<EOS > "$llvm_prefix/bin/clang++.cfg"
-          -v
           --gcc-toolchain=$gcc_prefix
+          -Wl,-dynamic-linker="$(brew --prefix)/lib/ld.so"
+          -B${glibc_prefix}/lib
+          -L${glibc_prefix}/lib
           EOS
 
       - name: Pass `-v` to clang
