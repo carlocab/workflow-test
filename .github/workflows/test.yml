@@ -67,6 +67,10 @@ jobs:
           --gcc-toolchain=$gcc_prefix
           EOS
 
+      - name: Pass `-v` to clang
+        run: |
+          sed -i -E -e 's/(clang(\+\+)?",)/\1 "-v",/' "$(brew --repository homebrew/core)/Formula/llvm.rb"
+
       - name: Install test dependencies
         run: brew install --only-dependencies --include-test "$FORMULA"
 
