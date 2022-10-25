@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-10.15, macos-11, macos-12, ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
-        formula: [xz, binutils, gcc]
+        formula: [llvm]
       fail-fast: false
     steps:
       - name: Set up Homebrew
@@ -29,11 +29,11 @@ jobs:
           printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show formula dep tree.
+      - name: Show formula info.
         env:
           FORMULA: ${{ matrix.formula }}
         run: |
-          output="$(brew deps --tree --include-build --annotate "$FORMULA")"
+          output="$(brew info --formula "$FORMULA")"
           status="$?"
           printf '### `brew deps %s` output\n' "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
