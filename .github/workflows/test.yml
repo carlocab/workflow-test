@@ -3,6 +3,7 @@ on: [push, pull_request, workflow_dispatch]
 
 env:
   HOMEBREW_DEVELOPER: 1
+  HOMEBREW_NO_INSTALL_FROM_API: 1
 
 jobs:
   tests:
@@ -11,7 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-10.15, macos-11, macos-12, ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
-        formula: [llvm]
+        formula: [php]
       fail-fast: false
     steps:
       - name: Set up Homebrew
@@ -40,3 +41,16 @@ jobs:
           printf '%s\n' "$output" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           exit "$status"
+
+      - name: Install formula.
+        env:
+          FORMULA: ${{ matrix.formula }}
+        run: brew install "$FORMULA"
+
+      - name: Test formula.
+        env:
+          FORMULA: ${{ matrix.formula }}
+        run: brew test --verbose "$FORMULA"
+
+      - name: Run `php -v`
+        run: php -v
