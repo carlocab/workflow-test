@@ -62,7 +62,9 @@ jobs:
       - name: Install formula dependencies.
         env:
           FORMULA: ${{ matrix.formula }}
-        run: brew install --only-dependencies --include-test --overwrite "$FORMULA"
+        run: |
+          brew link --overwrite python@3.11
+          brew install --only-dependencies --include-test "$FORMULA"
 
       - name: Test formula.
         env:
