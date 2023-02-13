@@ -78,5 +78,5 @@ jobs:
       - name: Try compiling with LLVM Clang
         run: |
           echo "int main(){}" > test.c
-          /usr/local/opt/llvm/bin/clang test.c
+          /usr/local/opt/llvm/bin/clang -v test.c
           ./a.out
