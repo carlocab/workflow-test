@@ -59,10 +59,10 @@ jobs:
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           exit "$status"
 
-      - name: Install formula dependences.
+      - name: Install formula dependencies.
         env:
           FORMULA: ${{ matrix.formula }}
-        run: brew install --only-dependencies --include-test "$FORMULA"
+        run: brew install --only-dependencies --include-test --overwrite "$FORMULA"
 
       - name: Test formula.
         env:
