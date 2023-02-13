@@ -63,6 +63,7 @@ jobs:
         env:
           FORMULA: ${{ matrix.formula }}
         run: |
+          brew unlink python@3.11
           brew link --overwrite python@3.11
           brew install --only-dependencies --include-test "$FORMULA"
 
