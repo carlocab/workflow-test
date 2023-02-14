@@ -29,7 +29,7 @@ jobs:
 
       - name: Run `brew audit`
         run: |
-          formulae="$(ls "$(brew --repository homebrew/core)" | sed 's/\.rb$//g')"
+          formulae="$(ls "$(brew --repository homebrew/core)/Formula" | sed 's/\.rb$//g')"
           printf '### `brew audit` output\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           printf '%s\n' "$(brew audit --online --skip-style --formulae $formulae)" | tee -a "$GITHUB_STEP_SUMMARY"
