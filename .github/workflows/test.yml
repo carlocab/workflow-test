@@ -8,12 +8,7 @@ env:
 jobs:
   tests:
     name: Miscellaneous `brew` tests
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-11, macos-12]
-        formula: [php]
-      fail-fast: false
+    runs-on: ubuntu-latest
     steps:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
@@ -21,7 +16,9 @@ jobs:
           test-bot: false
 
       - name: Checkout `master`
-        run: git -C "$(brew --repository)" checkout master
+        run: |
+          git -C "$(brew --repository)" checkout master
+          git -C "$(brew --repository homebrew/core)" checkout master
 
       - name: Show `brew --version`.
         run: |
@@ -30,39 +27,10 @@ jobs:
           printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Show formula info.
-        env:
-          FORMULA: ${{ matrix.formula }}
+      - name: Run `brew audit`
         run: |
-          output="$(brew info --formula "$FORMULA")"
-          status="$?"
-          printf '### `brew info %s` output\n' "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
+          formulae="$(ls "$(brew --repository homebrew/core)" | sed 's/\.rb$//g')"
+          printf '### `brew audit` output\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$output" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(brew audit --online --skip-style --formulae $formulae)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          exit "$status"
-
-      - name: Install formula.
-        env:
-          FORMULA: ${{ matrix.formula }}
-        run: brew install "$FORMULA"
-
-      - name: Show formula linkage.
-        env:
-          FORMULA: ${{ matrix.formula }}
-        run: |
-          output="$(brew linkage "$FORMULA")"
-          status="$?"
-          printf '### `brew linkage %s` output\n' "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$output" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          exit "$status"
-
-      - name: Test formula.
-        env:
-          FORMULA: ${{ matrix.formula }}
-        run: brew test --verbose "$FORMULA"
-
-      - name: Run `php -v`
-        run: php -v
