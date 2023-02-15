@@ -4,6 +4,7 @@ on: [push, pull_request, workflow_dispatch]
 env:
   HOMEBREW_DEVELOPER: 1
   HOMEBREW_NO_INSTALL_FROM_API: 1
+  HOMEBREW_NO_AUTO_UPDATE: 1
 
 jobs:
   tests:
@@ -12,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-11, macos-12, ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
-        formula: [phpbrew]
+        formula: [php]
       fail-fast: false
     steps:
       - name: Set up Homebrew
@@ -54,6 +55,18 @@ jobs:
           output="$(brew linkage "$FORMULA")"
           status="$?"
           printf '### `brew linkage %s` output\n' "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$output" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          exit "$status"
+
+      - name: Show formula reverse linkage.
+        env:
+          FORMULA: ${{ matrix.formula }}
+        run: |
+          output="$(brew linkage --reverse "$FORMULA")"
+          status="$?"
+          printf '### `brew linkage --reverse %s` output\n' "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           printf '%s\n' "$output" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
