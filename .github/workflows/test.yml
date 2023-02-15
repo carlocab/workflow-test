@@ -11,8 +11,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-11, macos-12]
-        formula: [php]
+        os: [macos-11, macos-12, ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
+        formula: [phpbrew]
       fail-fast: false
     steps:
       - name: Set up Homebrew
@@ -62,7 +62,11 @@ jobs:
       - name: Test formula.
         env:
           FORMULA: ${{ matrix.formula }}
-        run: brew test --verbose "$FORMULA"
-
-      - name: Run `php -v`
-        run: php -v
+        run: |
+          output="$(brew test --verbose "$FORMULA")"
+          status="$?"
+          printf '### `brew test %s` output\n' "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$output" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          exit "$status"
