@@ -72,6 +72,16 @@ jobs:
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           exit "$status"
 
+      - name: Upgrade formula and dependencies.
+        env:
+          FORMULA: ${{ matrix.formula }}
+        run: brew upgrade "$FORMULA" $(brew deps "$FORMULA")
+
+      - name: Install test dependencies
+        env:
+          FORMULA: ${{ matrix.formula }}
+        run: brew install --only-dependencies --include-test "$FORMULA"
+
       - name: Test formula.
         env:
           FORMULA: ${{ matrix.formula }}
