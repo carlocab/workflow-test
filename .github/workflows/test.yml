@@ -51,11 +51,14 @@ jobs:
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           exit "$status"
 
-      - name: Examine homebrew/core repository
-        run: |
-          cd "$(brew --repository homebrew/core)"
-          git status
-          git log --patch -10
+      - name: Copy `formula.json` to current directory
+        run: cp "$(brew --cache)/api/formula.json" .
+
+      - name: Upload `formula.json`
+        uses: actions/upload-artifact@main
+        with:
+          name: ${{ matrix.os }}/data
+          path: formula.json
 
       - name: Install formula.
         env:
