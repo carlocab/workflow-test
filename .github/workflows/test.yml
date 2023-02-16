@@ -25,23 +25,29 @@ jobs:
       - name: Show `brew --version`.
         run: |
           printf '### `brew --version` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '\n<details><summary>Details</summary>\n<p>\n\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '\n</p>\n</details>\n' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Show `brew config`.
         run: |
           printf '### `brew config` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '\n<details><summary>Details</summary>\n<p>\n\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           printf '%s\n' "$(brew config)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '\n</p>\n</details>\n' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Show `brew doctor`.
         run: |
           printf '### `brew doctor` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '\n<details><summary>Details</summary>\n<p>\n\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew doctor &>)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(brew doctor 2&>1)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '\n</p>\n</details>\n' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Show formula info.
         env:
@@ -50,10 +56,21 @@ jobs:
           output="$(brew info --formula "$FORMULA")"
           status="$?"
           printf '### `brew info %s` output\n' "$FORMULA" >> "$GITHUB_STEP_SUMMARY"
+          printf '\n<details><summary>Details</summary>\n<p>\n\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           printf '%s\n' "$output" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '\n</p>\n</details>\n' >> "$GITHUB_STEP_SUMMARY"
           exit "$status"
+
+      - name: Check podman version
+        run: |
+          if brew info podman | grep '4\.4\.0'
+          then
+            printf '# LOOK HERE :tada:\n' >> "$GITHUB_STEP_SUMMARY"
+          else
+            exit 1
+          fi
 
       - name: Copy `formula.json` to current directory
         run: cp "$(brew --cache)/api/formula.json" .
