@@ -1,6 +1,9 @@
 name: CI
 on: [push, pull_request, workflow_dispatch]
 
+env:
+  HOMEBREW_NO_COLOR: 1
+
 jobs:
   tests:
     name: Miscellaneous `brew` tests
@@ -9,6 +12,7 @@ jobs:
       matrix:
         os: [macos-11, macos-12, ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
         formula: [podman]
+        trial: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
       fail-fast: false
     steps:
       - name: Add `brew` to `PATH`
@@ -36,7 +40,7 @@ jobs:
         run: |
           printf '### `brew doctor` output\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew doctor)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(brew doctor &>)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Show formula info.
@@ -57,7 +61,7 @@ jobs:
       - name: Upload `formula.json`
         uses: actions/upload-artifact@main
         with:
-          name: ${{ matrix.os }}-data
+          name: ${{ matrix.os }}-data-${{ matrix.trial }}
           path: formula.json
 
       - name: Install formula.
@@ -110,6 +114,9 @@ jobs:
         env:
           FORMULA: ${{ matrix.formula }}
         run: brew install --only-dependencies --include-test "$FORMULA"
+
+      - name: Install bundler gems.
+        run: brew install-bundler-gems
 
       - name: Test formula.
         env:
