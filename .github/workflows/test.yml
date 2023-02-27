@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-11, macos-12, ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
-        formula: [podman]
+        formula: [dvc, gitless, literate-git]
       fail-fast: false
     steps:
       - name: Set up Homebrew
