@@ -3,7 +3,7 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   tests:
-    name: Miscellaneous `brew` tests
+    name: Test Xcode
     runs-on: macos-11
     strategy:
       matrix:
