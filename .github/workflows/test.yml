@@ -13,7 +13,7 @@ jobs:
       - name: Show `xcode-select -p`
         run: xcode-select -p
 
-      - name: Switch to Xcode 12.5.1
+      - name: Switch to Xcode ${{ matrix.xcode }}
         run: sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
 
       - name: Show `xcode-select -p` after switch
