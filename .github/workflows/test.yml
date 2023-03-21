@@ -1,5 +1,18 @@
 name: CI
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      merge_strategy:
+        type: choice
+        description: "merge strategy"
+        options:
+          - merge
+          - rebase
+          - squash
+        default: rebase
+        required: false
 
 env:
   HOMEBREW_DEVELOPER: 1
@@ -16,6 +29,9 @@ jobs:
         formula: [dvc, gitless, literate-git]
       fail-fast: false
     steps:
+      - name: Show chosen merge strategy
+        run: echo 'You chose strategy ${{inputs.merge_strategy}}'
+
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
         with:
