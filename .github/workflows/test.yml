@@ -25,4 +25,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Show chosen merge strategy
-        run: echo 'You chose strategy ${{github.event.inputs.merge_strategy}}'
+        run: echo 'You chose strategy ${{inputs.merge_strategy}}'
