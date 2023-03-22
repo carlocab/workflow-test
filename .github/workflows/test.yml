@@ -99,6 +99,7 @@ jobs:
           brew install --overwrite python@3.11
           brew install cmake
           export CMAKE_PREFIX_PATH="$(brew --prefix)"
+          brew link --force "$FORMULA"
 
           cat <<CMAKE > CMakeLists.txt
           cmake_minimum_required(VERSION 3.26)
