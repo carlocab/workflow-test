@@ -5,6 +5,7 @@ env:
   HOMEBREW_DEVELOPER: 1
   HOMEBREW_NO_INSTALL_FROM_API: 1
   HOMEBREW_NO_AUTO_UPDATE: 1
+  HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
 
 jobs:
   tests:
@@ -95,6 +96,8 @@ jobs:
           exit "$status"
 
       - name: Test CMake build
+        env:
+          FORMULA: ${{ matrix.formula }}
         run: |
           brew install --overwrite python@3.11
           brew install cmake
