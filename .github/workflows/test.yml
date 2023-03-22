@@ -12,8 +12,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-11, macos-12, ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
-        formula: [dvc, gitless, literate-git]
+        os: [macos-11, macos-12, ubuntu-20.04, ubuntu-22.04]
+        formula: [pyside@2]
       fail-fast: false
     steps:
       - name: Set up Homebrew
@@ -93,3 +93,18 @@ jobs:
           printf '%s\n' "$output" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           exit "$status"
+
+      - name: Test CMake build
+        run: |
+          brew install --overwrite python@3.11
+          brew install cmake
+          export CMAKE_PREFIX_PATH="$(brew --prefix)"
+
+          cat <<CMAKE > CMakeLists.txt
+          cmake_minimum_required(VERSION 3.26)
+          project(foo)
+          find_package(Shiboken2)
+          CMAKE
+
+          cmake -S . -B build -DPYTHON_EXECUTABLE=python3.10
+          cmake --build build
