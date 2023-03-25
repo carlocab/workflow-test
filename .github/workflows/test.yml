@@ -14,7 +14,7 @@ jobs:
       out: ${{ steps.first.outputs.out }}
     steps:
       - id: first
-        run: echo "out=false" >> "$GITHUB_OUTPUT"
+        run: echo "out=ubuntu-18.04" >> "$GITHUB_OUTPUT"
 
   tests:
     name: Miscellaneous `brew` tests
@@ -26,8 +26,8 @@ jobs:
         include:
           - os: macos-11
             echo: true
-          - os: ubuntu-18.04
-            echo: ${{fromJson(needs.pre_tests.outputs.out)}}
+          - os: ${{fromJson(needs.pre_tests.outputs.out)}}
+            echo: true
       fail-fast: false
     steps:
       - run: echo hello
