@@ -17,7 +17,7 @@ jobs:
       - id: first
         run: |
           echo "out=ubuntu-18.04" >> "$GITHUB_OUTPUT"
-          echo "runners=[macos-11, macos-12, ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]"
+          echo 'runners=["macos-11", "macos-12", "ubuntu-18.04", "ubuntu-20.04", "ubuntu-22.04"]' >> "$GITHUB_OUTPUT"
 
 
   tests:
