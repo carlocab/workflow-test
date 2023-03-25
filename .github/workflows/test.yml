@@ -31,7 +31,7 @@ jobs:
           - os: macos-11
             echo: true
           - os: ubuntu-18.04
-            echo: ${{needs.pre_tests.outputs.out}}
+            echo: ${{fromJson(needs.pre_tests.outputs.out)}}
       fail-fast: false
     steps:
       - run: echo hello
