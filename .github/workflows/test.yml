@@ -34,7 +34,9 @@ jobs:
             echo: ${{fromJson(needs.pre_tests.outputs.out)}}
       fail-fast: false
     steps:
-      - run: echo hello
+      - run: echo hello && false
         if: matrix.echo
       - run: echo world
         if: ${{!matrix.echo}}
+      - run: echo 'it worked!'
+        if: always() && matrix.echo
