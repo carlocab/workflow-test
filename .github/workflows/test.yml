@@ -7,16 +7,28 @@ env:
   HOMEBREW_NO_AUTO_UPDATE: 1
 
 jobs:
+  pre_tests:
+    name: Pre-test
+    runs-on: ubuntu-latest
+    outputs:
+      out: ${{ steps.first.outputs.out }}
+    steps:
+      - id: first
+        run: echo "out=false" >> "$GITHUB_OUTPUT"
+
   tests:
     name: Miscellaneous `brew` tests
     runs-on: ${{ matrix.os }}
+    needs: pre_tests
     strategy:
       matrix:
         os: [macos-11, macos-12, ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
         include:
           - os: macos-11
             echo: true
+          - os: ubuntu-18.04
+            echo: ${{fromJson(needs.pre_tests.outputs.out)}}
       fail-fast: false
     steps:
       - run: echo hello
-        if: matrix.echo || matrix.os == 'ubuntu-20.04'
+        if: matrix.echo
