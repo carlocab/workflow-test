@@ -16,12 +16,12 @@ jobs:
     steps:
       - id: first
         run: |
-          echo "out=ubuntu-18.04" >> "$GITHUB_OUTPUT"
-          echo 'runners=["macos-11", "macos-12", "ubuntu-20.04", "ubuntu-22.04"]' >> "$GITHUB_OUTPUT"
+          echo "out=true" >> "$GITHUB_OUTPUT"
+          echo 'runners=["macos-11", "macos-12", "ubuntu-18.04", "ubuntu-20.04", "ubuntu-22.04"]' >> "$GITHUB_OUTPUT"
 
 
   tests:
-    name: Miscellaneous `brew` tests
+    name: Test
     runs-on: ${{ matrix.os }}
     needs: pre_tests
     strategy:
@@ -30,9 +30,11 @@ jobs:
         include:
           - os: macos-11
             echo: true
-          - os: ${{needs.pre_tests.outputs.out}}
-            echo: true
+          - os: ubuntu-18.04
+            echo: ${{needs.pre_tests.outputs.out}}
       fail-fast: false
     steps:
       - run: echo hello
         if: matrix.echo
+      - run: echo world
+        if: !matrix.echo
