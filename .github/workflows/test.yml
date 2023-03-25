@@ -26,7 +26,7 @@ jobs:
         include:
           - os: macos-11
             echo: true
-          - os: ${{fromJson(needs.pre_tests.outputs.out)}}
+          - os: ${{needs.pre_tests.outputs.out}}
             echo: true
       fail-fast: false
     steps:
