@@ -12,9 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       out: ${{ steps.first.outputs.out }}
+      runners: ${{ steps.first.outputs.runners }}
     steps:
       - id: first
-        run: echo "out=ubuntu-18.04" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "out=ubuntu-18.04" >> "$GITHUB_OUTPUT"
+          echo "runners=[macos-11, macos-12, ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]"
+
 
   tests:
     name: Miscellaneous `brew` tests
@@ -22,7 +26,7 @@ jobs:
     needs: pre_tests
     strategy:
       matrix:
-        os: [macos-11, macos-12, ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
+        os: ${{fromJson(needs.pre_tests.outputs.runners)}}
         include:
           - os: macos-11
             echo: true
