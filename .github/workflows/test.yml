@@ -8,8 +8,9 @@ jobs:
   tests:
     name: Test
     runs-on: ubuntu-latest
-    matrix:
-      do_deps: [true, false]
+    strategy:
+      matrix:
+        do_deps: [true, false]
     outputs:
       runner: ${{steps.runner.outputs.runner}}
     steps:
