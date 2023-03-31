@@ -1,6 +1,9 @@
 name: CI
 on: [push, workflow_dispatch]
 
+env:
+  MESSAGE: "This is a long message, that may contain a [URL](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork)."
+
 jobs:
   tests:
     name: Test
@@ -15,3 +18,4 @@ jobs:
       - name: Another step
         run: |
           printf 'output from previous step was: ${{steps.test.outputs.output}}\n' | tee -a "$GITHUB_STEP_SUMMARY"
+          printf "This is a message: %s\n" "$MESSAGE" | tee -a "$GITHUB_STEP_SUMMARY"
