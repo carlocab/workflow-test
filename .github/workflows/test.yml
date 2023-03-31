@@ -39,4 +39,4 @@ jobs:
     if: fromJson(needs.tests.outputs.nonexistent)
     runs-on: ${{needs.tests.outputs.runner}}
     steps:
-      - run: sleep 600
+      - run: sleep 1
