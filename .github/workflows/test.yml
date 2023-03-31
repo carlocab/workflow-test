@@ -37,6 +37,6 @@ jobs:
   dependent_tests:
     needs: tests
     runs-on: ${{needs.tests.outputs.runner}}
-    timeout-minutes: ${{fromJson(${{env.TIMEOUT}})}}
+    timeout-minutes: ${{env.TIMEOUT}}
     steps:
       - run: sleep 600
