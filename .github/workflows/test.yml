@@ -3,6 +3,7 @@ on: [push, workflow_dispatch]
 
 env:
   MESSAGE: "This is a long message, that may contain a [URL](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork)."
+  TIMEOUT: 1
 
 jobs:
   tests:
@@ -35,6 +36,7 @@ jobs:
 
   dependent_tests:
     needs: tests
-    runs-on: ${{needs.tests.outputs.nonexistent}}
+    runs-on: ${{needs.tests.outputs.runner}}
+    timeout-minutes: ${{fromJson(${{env.TIMEOUT}})}}
     steps:
-      - run: echo hello
+      - run: sleep 600
