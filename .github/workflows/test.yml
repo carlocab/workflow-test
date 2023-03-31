@@ -1,16 +1,16 @@
 name: CI
-on: 
-  workflow_dispatch:
-    inputs:
-      message:
-        description: "The message to send"
-        required: false
+on: [push, workflow_dispatch]
 
 jobs:
   tests:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - name: Test message input
+      - name: Test outputs
+        id: test
         run: |
-          echo '${{inputs.message && format('Your message: {0}', inputs.message) || 'You did not input a message :('}}'
+          printf 'output=hello\n' >> "$GITHUB_OUTPUT"
+          printf 'output was ${{outputs.output}}\n' | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Another step
+        run: printf 'output from previous step was: ${{steps.test.outputs.output}}\n' | tee -a "$GITHUB_STEP_SUMMARY"
