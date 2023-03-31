@@ -35,6 +35,6 @@ jobs:
 
   dependent_tests:
     needs: tests
-    runs-on: ${{needs.tests.outputs.runner}}
+    runs-on: ${{needs.tests.outputs.nonexistent}}
     steps:
       - run: echo hello
