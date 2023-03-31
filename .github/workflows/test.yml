@@ -8,6 +8,10 @@ jobs:
   tests:
     name: Test
     runs-on: ubuntu-latest
+    matrix:
+      do_deps: [true, false]
+    outputs:
+      runner: ${{steps.runner.outputs.runner}}
     steps:
       - name: Test outputs
         id: test
@@ -19,3 +23,17 @@ jobs:
         run: |
           printf 'output from previous step was: ${{steps.test.outputs.output}}\n' | tee -a "$GITHUB_STEP_SUMMARY"
           printf "This is a message: %s\n" "$MESSAGE" | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Determine dependent runner
+        id: runner
+        run: |
+          if ${{matrix.do_deps}}
+          then
+            echo "runner=ubuntu-latest" >> "$GITHUB_OUTPUT"
+          fi
+
+  dependent_tests:
+    needs: tests
+    runs-on: ${{needs.tests.outputs.runner}}
+    steps:
+      - run: echo hello
