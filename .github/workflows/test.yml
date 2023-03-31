@@ -36,6 +36,7 @@ jobs:
 
   dependent_tests:
     needs: tests
+    if: fromJson(needs.tests.outputs.nonexistent)
     runs-on: ${{needs.tests.outputs.runner}}
     timeout-minutes: ${{env.TIMEOUT}}
     steps:
