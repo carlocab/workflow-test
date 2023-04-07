@@ -2,8 +2,8 @@ name: CI
 on: [push, workflow_dispatch]
 
 env:
-  MESSAGE: "This is a long message, that may contain a [URL](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork)."
-  TIMEOUT: 1
+  URL: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork
+  MESSAGE: This is a long message, that may contain a [URL]($URL).
 
 jobs:
   tests:
@@ -14,6 +14,7 @@ jobs:
         do_deps: [true, false]
     outputs:
       runner: ${{steps.runner.outputs.runner}}
+      dodeps: ${{steps.runner.outputs.dodeps}}
     steps:
       - name: Test outputs
         id: test
@@ -32,11 +33,14 @@ jobs:
           if ${{matrix.do_deps}}
           then
             echo "runner=ubuntu-latest" >> "$GITHUB_OUTPUT"
+            echo "dodeps=true" >> "$GITHUB_OUTPUT"
+          else
+            exit 1
           fi
 
   dependent_tests:
     needs: tests
-    if: fromJson(needs.tests.outputs.nonexistent)
+    if: fromJson(needs.tests.outputs.dodeps)
     runs-on: ${{needs.tests.outputs.runner}}
     steps:
       - run: sleep 1
