@@ -2,8 +2,9 @@ name: CI
 on: [push, workflow_dispatch]
 
 env:
-  URL: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork
-  MESSAGE: This is a long message, that may contain a [URL](${{env.URL}}).
+  MESSAGE: >
+    This is a long message, that may contain a
+    [URL](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork).
 
 jobs:
   tests:
