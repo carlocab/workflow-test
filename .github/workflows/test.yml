@@ -34,6 +34,7 @@ jobs:
         run: |
           if ${{matrix.do_deps}}
           then
+            sleep 15
             echo "runner=ubuntu-latest" >> "$GITHUB_OUTPUT"
             echo "dodeps=true" >> "$GITHUB_OUTPUT"
           else
@@ -47,4 +48,4 @@ jobs:
     steps:
       - run: sleep 1
       - run: |
-          printf 'conclusion was ${{needs.tests.conclusion}}\n' | tee -a "$GITHUB_STEP_SUMMARY"
+          printf 'conclusion was ${{needs.tests.result}}\n' | tee -a "$GITHUB_STEP_SUMMARY"
