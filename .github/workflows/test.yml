@@ -3,7 +3,7 @@ on: [push, workflow_dispatch]
 
 env:
   URL: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork
-  MESSAGE: This is a long message, that may contain a [URL]($URL).
+  MESSAGE: This is a long message, that may contain a [URL](${{env.URL}}).
 
 jobs:
   tests:
@@ -40,7 +40,9 @@ jobs:
 
   dependent_tests:
     needs: tests
-    if: fromJson(needs.tests.outputs.dodeps)
+    if: fromJson(needs.tests.outputs.dodeps) && (success() || failure())
     runs-on: ${{needs.tests.outputs.runner}}
     steps:
       - run: sleep 1
+      - run: |
+          printf 'conclusion was ${{needs.tests.conclusion}}\n' | tee -a "$GITHUB_STEP_SUMMARY"
