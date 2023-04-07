@@ -13,6 +13,7 @@ jobs:
     strategy:
       matrix:
         do_deps: [true, false]
+      fail-fast: false
     outputs:
       runner: ${{steps.runner.outputs.runner}}
       dodeps: ${{steps.runner.outputs.dodeps}}
