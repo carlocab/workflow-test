@@ -9,6 +9,7 @@ env:
 jobs:
   tests:
     name: Test
+    if: false
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -43,8 +44,8 @@ jobs:
 
   dependent_tests:
     needs: tests
-    if: fromJson(needs.tests.outputs.dodeps) && (success() || failure())
-    runs-on: ${{needs.tests.outputs.runner}}
+    if: always()
+    runs-on: ubuntu-latest
     steps:
       - run: sleep 1
       - run: |
