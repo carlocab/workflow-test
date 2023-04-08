@@ -9,7 +9,6 @@ env:
 jobs:
   tests:
     name: Test
-    if: false
     runs-on: macos-latest
     strategy:
       matrix:
