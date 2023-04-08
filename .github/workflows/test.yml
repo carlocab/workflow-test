@@ -10,7 +10,7 @@ jobs:
   tests:
     name: Test
     if: false
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     strategy:
       matrix:
         do_deps: [true, false]
@@ -24,6 +24,9 @@ jobs:
         run: |
           printf 'output=hello\n' >> "$GITHUB_OUTPUT"
           printf 'output was ${{steps.test.outputs.output}}\n' | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Dump contents of /Library/Frameworks
+        run: ls -la /Library/Frameworks
 
       - name: Another step
         run: |
