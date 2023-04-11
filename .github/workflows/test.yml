@@ -18,6 +18,7 @@ jobs:
         id: test
         run: |
           printf 'output=hello\n' >> "$GITHUB_OUTPUT"
+          printf 'HOME=%s\n' "$HOME" | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Another step
         run: |
