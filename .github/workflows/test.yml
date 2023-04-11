@@ -29,6 +29,8 @@ jobs:
         run: |
           echo "runner=ubuntu-latest" >> "$GITHUB_OUTPUT"
           echo "dodeps=true" >> "$GITHUB_OUTPUT"
+          false
+          true
 
   dependent_tests:
     needs: tests
