@@ -37,3 +37,6 @@ jobs:
 
       - name: Check `GITHUB_WORKSPACE`
         run: printf '`GITHUB_WORKSPACE=%s`\n' "$GITHUB_WORKSPACE" | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Check working directory
+        run: printf '`PWD=%s`\n' "$(pwd)" | tee -a "$GITHUB_STEP_SUMMARY"
