@@ -20,7 +20,9 @@ jobs:
           printf 'output=hello\n' >> "$GITHUB_OUTPUT"
           printf 'HOME=%s\n' "$HOME" | tee -a "$GITHUB_STEP_SUMMARY"
           original_uid="$(stat --printf='%u' "$GITHUB_WORKSPACE")"
-          printf 'original_uid=%s\n' "$original_uid" | tee -a "$GITHUB_STEP_SUMMARY"
+          ls_uid="$(ls -nd "$GITHUB_WORKSPACE" | awk 'NR==1 {print $3}')"
+          printf 'original_uid=%d\n' "$original_uid" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf 'ls_uid=%d\n' "$ls_uid" | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Another step
         run: |
