@@ -19,6 +19,11 @@ jobs:
           printf '%s\n' "$(env)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
+      - run: |
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(jq . < "$GITHUB_EVENT_PATH")" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
       - name: Test outputs
         id: test
         run: |
@@ -39,8 +44,6 @@ jobs:
         run: |
           echo "runner=ubuntu-latest" >> "$GITHUB_OUTPUT"
           echo "dodeps=true" >> "$GITHUB_OUTPUT"
-          false
-          true
 
   dependent_tests:
     needs: tests
