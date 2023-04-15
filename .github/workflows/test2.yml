@@ -1,0 +1,23 @@
+on:
+  workflow_run:
+    workflows:
+      - CI
+    types:
+      - completed
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump runner env
+        run:
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          env | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Dump `GITHUB_EVENT_PATH` contents
+        run:
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          jq . "$GITHUB_EVENT_PATH" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
