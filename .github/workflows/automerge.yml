@@ -125,6 +125,9 @@ jobs:
     env:
       HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       PR: ${{ needs.status-check.outputs.pull-number }}
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
