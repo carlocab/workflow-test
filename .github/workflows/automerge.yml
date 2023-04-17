@@ -9,7 +9,7 @@ on:
       - completed
 
 concurrency:
-  group: automerge-${{ github.event.workflow_run.pull_requests[0].number || github.event.workflow_run.id }}
+  group: automerge-${{ github.event.workflow_run.event }}-${{ github.event.workflow_run.pull_requests[0].number || github.event.workflow_run.id }}
   cancel-in-progress: true
 
 env:
@@ -31,6 +31,7 @@ jobs:
     outputs:
       pull-number: ${{ steps.pr.outputs.number }}
       approved: ${{ steps.approval-status.outputs.approved }}
+      complete: ${{ steps.approval-status.outputs.complete }}
     permissions:
       contents: read
       pull-requests: read
@@ -70,7 +71,7 @@ jobs:
           )
           echo "publishable=$publishable" >> "$GITHUB_OUTPUT"
 
-      - name: Get approval status
+      - name: Get approval and CI status
         if: steps.check-labels.outputs.publishable == 'yes'
         id: approval-status
         env:
@@ -81,6 +82,7 @@ jobs:
           timeout=10
 
           approved=no
+          complete=no
           while [[ "$attempt" -le "$max_attempts" ]]
           do
             while IFS='' read -r review
@@ -91,6 +93,7 @@ jobs:
                 break
               fi
             done < <(
+              [[ "$approved" = "no" ]] &&
               gh api \
                 --header 'Accept: application/vnd.github+json' \
                 --header 'X-GitHub-Api-Version: 2022-11-28' \
@@ -98,7 +101,12 @@ jobs:
                 --jq '.[].state'
             )
 
-            if [[ "$approved" = "yes" ]]
+            if [[ "$complete" = "no" ]] && gh pr checks "$PR"
+            then
+              complete=yes
+            fi
+
+            if [[ "$approved" = "yes" ]] && [[ "$complete" = "yes" ]]
             then
               break
             fi
@@ -113,7 +121,7 @@ jobs:
   merge:
     runs-on: ubuntu-latest
     needs: status-check
-    if: needs.status-check.outputs.approved == 'yes'
+    if: needs.status-check.outputs.approved == 'yes' && needs.status-check.outputs.complete == 'yes'
     container:
       image: ghcr.io/homebrew/ubuntu22.04:master
     permissions:
@@ -131,38 +139,4 @@ jobs:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
-      - name: Check CI status
-        id: ci-status
-        run: |
-          attempt=0
-          max_attempts=10
-          timeout=10
-
-          owner='${{ github.repository_owner }}'
-          repo="$(cut -f2 -d/ <<< "$GH_REPO")"
-
-          while [[ "$attempt" -le "$max_attempts" ]]
-          do
-            workflow_status="$(
-              brew ruby <<RUBY
-          puts GitHub.get_workflow_run("$owner","$repo", $PR)
-                     .first
-                     .first
-                     .fetch("status", nil)
-          RUBY
-            )"
-
-            if [[ "$workflow_status" = "COMPLETED" ]]
-            then
-              break
-            fi
-
-            echo "::notice ::CI not yet complete. Checking again in ${timeout}s..."
-            sleep "$timeout"
-            attempt=$(( attempt + 1 ))
-            timeout=$(( timeout * 2 ))
-          done
-          echo "status=$workflow_status" >> "$GITHUB_OUTPUT"
-
       - run: echo brew pr-publish "$PR"
-        if: steps.ci-status.outputs.status == 'COMPLETED'
