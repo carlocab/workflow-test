@@ -22,6 +22,8 @@ env:
 jobs:
   status-check:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     if: >
       github.event.workflow_run.conclusion == 'success' &&
       (github.event.workflow_run.event == 'pull_request' ||
@@ -35,11 +37,10 @@ jobs:
       actions: read
       checks: read
     steps:
-      - uses: Homebrew/actions/download-artifact@master
-        with:
-          workflow: ${{ github.event.workflow_run.name == 'CI' && 'tests.yml' || 'reviews.yml' }}
-          commit: ${{ github.event.workflow_run.head_sha }}
-          name: pull-number
+      - name: Download `pull-number` artifact
+        run: gh run download --name pull-number "$WORKFLOW_ID" 
+        env:
+          WORKFLOW_ID: ${{ github.event.workflow_run.id }}
 
       - run: echo "number=$(cat number)" >> "$GITHUB_OUTPUT"
         id: pr
@@ -47,7 +48,6 @@ jobs:
       - name: Check PR labels
         id: check-labels
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR: ${{ steps.pr.outputs.number }}
         run: |
           publishable=yes
@@ -74,7 +74,6 @@ jobs:
         if: steps.check-labels.outputs.publishable == 'yes'
         id: approval-status
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR: ${{ steps.pr.outputs.number }}
         run: |
           attempt=0
