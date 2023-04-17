@@ -1,0 +1,166 @@
+name: automerge
+
+on:
+  workflow_run:
+    workflows:
+      - CI
+      - Track approved PRs
+    types:
+      - completed
+
+concurrency:
+  group: automerge-${{ github.event.workflow_run.pull_requests[0].number || github.event.workflow_run.id }}
+  cancel-in-progress: true
+
+env:
+  HOMEBREW_DEVELOPER: 1
+  HOMEBREW_NO_AUTO_UPDATE: 1
+  GH_REPO: ${{ github.repository }}
+  GH_NO_UPDATE_NOTIFIER: 1
+  GH_PROMPT_DISABLED: 1
+
+jobs:
+  status-check:
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      (github.event.workflow_run.event == 'pull_request' ||
+       github.event.workflow_run.name != 'CI')
+    outputs:
+      pull-number: ${{ steps.pr.outputs.number }}
+      approved: ${{ steps.approval-status.outputs.approved }}
+    permissions:
+      contents: read
+      pull-requests: read
+      actions: read
+      checks: read
+    steps:
+      - uses: Homebrew/actions/download-artifact@master
+        with:
+          workflow: ${{ github.event.workflow_run.name == 'CI' && 'tests.yml' || 'reviews.yml' }}
+          commit: ${{ github.event.workflow_run.head_sha }}
+          name: pull-number
+
+      - run: echo "number=$(cat number)" >> "GITHUB_OUTPUT"
+        id: pr
+
+      - name: Check PR labels
+        id: check-labels
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ steps.pr.outputs.number }}
+        run: |
+          publishable=yes
+          while IFS='' read -r label
+          do
+            if [[ "$label" = "do not merge" ]] ||
+               [[ "$label" = "new formula" ]] ||
+               [[ "$label" = "automerge-skip" ]] ||
+               [[ "$label" = "CI-published-bottle-commits" ]]
+            then
+              publishable=no
+              break
+            fi
+          done < <(
+            gh api \
+              --header 'Accept: application/vnd.github+json' \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "repos/$GH_REPO/pulls/$PR" \
+              --jq '.labels[].name'
+          )
+          echo "publishable=$publishable" >> "$GITHUB_OUTPUT"
+
+      - name: Get approval status
+        if: steps.check-labels.outputs.publishable == 'yes'
+        id: approval-status
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ steps.pr.outputs.number }}
+        run: |
+          attempt=0
+          max_attempts=10
+          timeout=10
+
+          approved=no
+          while [[ "$attempt" -le "$max_attempts" ]]
+          do
+            while IFS='' read -r review
+            do
+              if [[ "$review" = "SUBMITTED" ]]
+              then
+                approved=yes
+                break
+              fi
+            done < <(
+              gh api \
+                --header 'Accept: application/vnd.github+json' \
+                --header 'X-GitHub-Api-Version: 2022-11-28' \
+                "repos/$GH_REPO/pulls/$PR/reviews" \
+                --jq '.[].state'
+            )
+
+            if [[ "$approved" = "yes" ]]
+            then
+              break
+            fi
+
+            echo "::notice ::PR #$PR not yet approved. Checking again in ${timeout}s..."
+            sleep "$timeout"
+            attempt=$(( attempt + 1 ))
+            timeout=$(( timeout * 2 ))
+          done
+          echo "approved=$approved" >> "$GITHUB_OUTPUT"
+
+  merge:
+    runs-on: ubuntu-latest
+    needs: status-check
+    if: needs.status-check.outputs.approved == 'yes'
+    container:
+      image: ghcr.io/homebrew/ubuntu22.04:master
+    permissions:
+      contents: read
+      pull-requests: read
+      checks: read
+      actions: write # to dispatch publish workflow
+    env:
+      HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PR: ${{ needs.status-check.outputs.pull-number }}
+    steps:
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Check CI status
+        id: ci-status
+        run: |
+          attempt=0
+          max_attempts=10
+          timeout=10
+
+          owner='${{ github.repository_owner }}'
+          repo="$(cut -f2 -d/ <<< "$GH_REPO")"
+
+          while [[ "$attempt" -le "$max_attempts" ]]
+          do
+            workflow_status="$(
+              brew ruby <<RUBY
+          puts GitHub.get_workflow_run("$owner","$repo", $PR)
+                     .first
+                     .first
+                     .fetch("status", nil)
+          RUBY
+            )"
+
+            if [[ "$workflow_status" = "COMPLETED" ]]
+            then
+              break
+            fi
+
+            echo "::notice ::CI not yet complete. Checking again in ${timeout}s..."
+            sleep "$timeout"
+            attempt=$(( attempt + 1 ))
+            timeout=$(( timeout * 2 ))
+          done
+          echo "status=$workflow_status" >> "$GITHUB_OUTPUT"
+
+      - run: echo brew pr-publish "$PR"
+        if: steps.ci-status.outputs.status == 'COMPLETED'

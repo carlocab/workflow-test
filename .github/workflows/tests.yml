@@ -1,0 +1,44 @@
+name: CI
+on: [push, pull_request, workflow_dispatch]
+
+env:
+  HOMEBREW_DEVELOPER: 1
+  HOMEBREW_NO_INSTALL_FROM_API: 1
+  HOMEBREW_NO_AUTO_UPDATE: 1
+
+jobs:
+  record_pull_number:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Save pull request number
+        env:
+          PR: ${{github.event.number}}
+        run: |
+          mkdir -p pr
+          echo "$PR" > pr/number
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: pull-number
+          path: pr
+
+  tests:
+    name: Miscellaneous `brew` tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, ubuntu-22.04]
+      fail-fast: false
+    steps:
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+        with:
+          test-bot: false
+
+      - name: Show `brew --version`.
+        run: |
+          printf '### `brew --version` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
