@@ -86,7 +86,7 @@ jobs:
           do
             while IFS='' read -r review
             do
-              if [[ "$review" = "SUBMITTED" ]]
+              if [[ "$review" = "COMMENTED" ]]
               then
                 approved=yes
                 break
