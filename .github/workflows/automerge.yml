@@ -38,6 +38,18 @@ jobs:
       actions: read
       checks: read
     steps:
+      - name: Dump environment
+        run: |
+          printf '```\n'
+          env | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n'
+
+      - name: Dump payload
+        run: |
+          printf '```\n'
+          jq . "$GITHUB_EVENT_PATH" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n'
+
       - name: Download `pull-number` artifact
         run: gh run download --name pull-number "$WORKFLOW_ID" 
         env:
