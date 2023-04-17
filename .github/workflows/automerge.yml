@@ -117,6 +117,7 @@ jobs:
             timeout=$(( timeout * 2 ))
           done
           echo "approved=$approved" >> "$GITHUB_OUTPUT"
+          echo "complete=$complete" >> "$GITHUB_OUTPUT"
 
   merge:
     runs-on: ubuntu-latest
