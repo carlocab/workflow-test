@@ -15,6 +15,6 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: pull_number
+          name: pull-number
           path: pr
 
