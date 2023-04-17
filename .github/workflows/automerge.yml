@@ -41,10 +41,7 @@ jobs:
           commit: ${{ github.event.workflow_run.head_sha }}
           name: pull-number
 
-      - run: |
-          ls -la || true
-          ls -la pr || true
-          echo "number=$(cat pr/number)" >> "GITHUB_OUTPUT"
+      - run: echo "number=$(cat number)" >> "$GITHUB_OUTPUT"
         id: pr
 
       - name: Check PR labels
