@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Save pull request number
-        run:
+        run: |
           mkdir -p pr
           echo '${{ github.event.pull_request.number }}' > pr/number
 
