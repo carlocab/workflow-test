@@ -16,6 +16,7 @@ jobs:
     if: github.event.workflow_run.event == 'pull_request'
     strategy:
       matrix:
+        # Testing comments here to double check that it works.
         PR: ${{ fromJson(toJson(github.event.workflow_run.pull_requests.*.number)) }}
       fail-fast: false
     permissions:
