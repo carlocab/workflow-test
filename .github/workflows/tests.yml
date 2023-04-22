@@ -8,10 +8,10 @@ env:
 
 jobs:
   record_pull_number:
-    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Save pull request number
+        if: github.event_name == 'pull_request'
         env:
           PR: ${{github.event.number}}
         run: |
@@ -19,6 +19,7 @@ jobs:
           echo "$PR" > pr/number
 
       - uses: actions/upload-artifact@v3
+        if: github.event_name == 'pull_request'
         with:
           name: pull-number
           path: pr
