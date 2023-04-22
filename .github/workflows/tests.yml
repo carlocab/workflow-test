@@ -23,6 +23,34 @@ jobs:
           name: pull-number
           path: pr
 
+      - name: Check CI labels
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const labelCountQuery = `query paginate($cursor:String, $owner:String!, $name:String!, $label:String!) {
+              repository(owner:$owner, name:$name) {
+                pullRequests(last: 100, states: OPEN, labels: [$label], after: $cursor) {
+                  totalCount
+                  pageInfo {
+                    hasPreviousPage
+                    endCursor
+                  }
+                }
+              }
+            };`
+
+            const response = await github.graphql.paginate(
+              labelCountQuery, {
+                owner: 'Homebrew',
+                name: 'homebrew-core',
+                label: 'bump-formula-pr'
+              }
+            );
+
+            const count = response.repository.pullRequests.totalCount
+            console.log(`Found ${count} PRs!`);
+
+
   tests:
     name: Miscellaneous `brew` tests
     runs-on: ubuntu-latest
