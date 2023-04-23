@@ -7,50 +7,14 @@ env:
   HOMEBREW_NO_AUTO_UPDATE: 1
 
 jobs:
-  record_pull_number:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Save pull request number
-        env:
-          PR: ${{github.event.number}}
-        run: |
-          mkdir -p pr
-          echo "$PR" > pr/number
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: pull-number
-          path: pr
-
   tests:
     name: Miscellaneous `brew` tests
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/homebrew/ubuntu22.04:master
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+      fail-fast: false
     steps:
-      - name: Test `if`
-        if: ${{
-            true &&
-            true &&
-            !false
-          }}
-        run: echo it worked!
-
-      - name: Show `gh version`.
-        run: |
-          printf '### `gh version` output\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(gh version)" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Show `gh pr merge --help`.
-        run: |
-          printf '### `gh pr merge --help` output\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(gh pr merge --help)" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
         with:
@@ -61,4 +25,20 @@ jobs:
           printf '### `brew --version` output\n' >> "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Show `brew info opencascade`.
+        run: |
+          printf '### `brew info opencascade` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(brew info opencascade)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - run: brew install opencascade
+
+      - name: Show opencascade linkage
+        run: |
+          printf '### `brew linkage opencascade` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(brew linkage opencascade)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
