@@ -42,3 +42,10 @@ jobs:
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           printf '%s\n' "$(brew linkage opencascade)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Show opencascade reverse linkage
+        run: |
+          printf '### `brew linkage --reverse opencascade` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(brew linkage --reverse opencascade)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
