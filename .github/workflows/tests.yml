@@ -30,8 +30,11 @@ jobs:
       image: ghcr.io/homebrew/ubuntu22.04:master
     steps:
       - name: Test `if`
-        if: >
-          !false
+        if: ${{
+            true &&
+            true &&
+            !false
+          }}
         run: echo it worked!
 
       - name: Show `gh version`.
