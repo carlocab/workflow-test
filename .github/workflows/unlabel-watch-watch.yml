@@ -1,0 +1,22 @@
+name: Show workflow_run payload
+
+on:
+  workflow_run:
+    workflows:
+      - Get event payload
+    types:
+      - completed
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          jq . <<< '${{ toJson(github.event.workflow_run) }}' | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: event
+          path: ${{ github.event_path }}
