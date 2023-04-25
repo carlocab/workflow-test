@@ -23,6 +23,16 @@ jobs:
           name: pull-number
           path: pr
 
+  contains_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - run: true
+        id: success
+      - run: false
+        id: failure
+      - run: echo 'it worked!'
+        if: contains([steps.success.conclusion, steps.failure.conclusion], 'failure')
+
   tests:
     name: Miscellaneous `brew` tests
     runs-on: ubuntu-latest
