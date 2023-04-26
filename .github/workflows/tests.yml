@@ -23,15 +23,16 @@ jobs:
           name: pull-number
           path: pr
 
-  contains_tests:
+  outputs_test:
     runs-on: ubuntu-latest
     steps:
-      - run: true
-        id: success
-      - run: false
-        id: failure
-      - run: echo 'it worked!'
-        if: contains([steps.success.conclusion, steps.failure.conclusion], 'failure')
+      - id: many-outputs
+        run: |
+          echo "out=foo" >> "$GITHUB_OUTPUT"
+          echo "out=bar" >> "$GITHUB_OUTPUT"
+          echo "out=baz" >> "$GITHUB_OUTPUT"
+
+      - run: echo '${{ steps.many-outputs.outputs.out }}'
 
   tests:
     name: Miscellaneous `brew` tests
