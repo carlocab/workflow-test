@@ -11,6 +11,7 @@ jobs:
     strategy:
       matrix:
         version: [10.15, 11, 12, 13]
+      fail-fast: false
     runs-on: macos-${{ matrix.version }}
     steps:
       - run: |
