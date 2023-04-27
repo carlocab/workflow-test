@@ -7,6 +7,18 @@ env:
   HOMEBREW_NO_AUTO_UPDATE: 1
 
 jobs:
+  show_installed_frameworks:
+    strategy:
+      matrix:
+        version: [macos-10.15, macos-11, macos-12, macos-13]
+    runs-on: macos-${{ matrix.version }}
+    steps:
+      - run: |
+          printf '### `ls -la /Library/Frameworks` output\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(ls -la /Library/Frameworks)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
   record_pull_number:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
