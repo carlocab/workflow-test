@@ -19,6 +19,8 @@ jobs:
           printf '%s\n' "$(ls -la /Library/Frameworks)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
+      - run: mv /Library/Frameworks/Mono.framework /tmp
+
   record_pull_number:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
