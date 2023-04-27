@@ -7,21 +7,6 @@ env:
   HOMEBREW_NO_AUTO_UPDATE: 1
 
 jobs:
-  show_installed_frameworks:
-    strategy:
-      matrix:
-        version: [10.15, 11, 12, 13]
-      fail-fast: false
-    runs-on: macos-${{ matrix.version }}
-    steps:
-      - run: |
-          printf '### `ls -la /Library/Frameworks` output\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(ls -la /Library/Frameworks)" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-
-      - run: mv /Library/Frameworks/Mono.framework /tmp
-
   record_pull_number:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
@@ -49,12 +34,40 @@ jobs:
 
       - run: echo '${{ steps.many-outputs.outputs.out }}'
 
+  more_tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+      fail-fast: false
+    steps:
+      - name: Show environment variables
+        run: |
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf 'HOME=%s\n' "$HOME" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf 'GITHUB_WORKSPACE=%s\n' "$GITHUB_WORKSPACE" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf 'pwd=%s\n' "$(pwd)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
   tests:
     name: Miscellaneous `brew` tests
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/homebrew/ubuntu22.04:master
     steps:
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+        with:
+          test-bot: false
+
+      - name: Show environment variables
+        run: |
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf 'HOME=%s\n' "$HOME" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf 'GITHUB_WORKSPACE=%s\n' "$GITHUB_WORKSPACE" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf 'pwd=%s\n' "$(pwd)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
       - name: Test `if`
         if: ${{
             true &&
@@ -76,11 +89,6 @@ jobs:
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           printf '%s\n' "$(gh pr merge --help)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Set up Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-        with:
-          test-bot: false
 
       - name: Show `brew --version`.
         run: |
