@@ -10,7 +10,7 @@ jobs:
   show_installed_frameworks:
     strategy:
       matrix:
-        version: [macos-10.15, macos-11, macos-12, macos-13]
+        version: [10.15, 11, 12, 13]
     runs-on: macos-${{ matrix.version }}
     steps:
       - run: |
