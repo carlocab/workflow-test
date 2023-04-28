@@ -21,6 +21,12 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
+      - name: Show `GITHUB_ variables`.
+        run: |
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(env | grep -E '^GITHUB_')" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
       - name: Save pull request number
         env:
           PR: ${{github.event.number}}
@@ -70,39 +76,7 @@ jobs:
         with:
           test-bot: false
 
-      - name: Show environment variables
         run: |
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf 'HOME=%s\n' "$HOME" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf 'GITHUB_WORKSPACE=%s\n' "$GITHUB_WORKSPACE" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf 'pwd=%s\n' "$(pwd)" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Test `if`
-        if: ${{
-            true &&
-            true &&
-            !false
-          }}
-        run: echo it worked!
-
-      - name: Show `gh version`.
-        run: |
-          printf '### `gh version` output\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(gh version)" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Show `gh pr merge --help`.
-        run: |
-          printf '### `gh pr merge --help` output\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(gh pr merge --help)" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Show `brew --version`.
-        run: |
-          printf '### `brew --version` output\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(env | grep -E '^GITHUB_')" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
