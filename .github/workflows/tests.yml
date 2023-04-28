@@ -14,8 +14,7 @@ jobs:
           gh api "${GH_API_HEADER_FLAGS[@]}" repos/Homebrew/homebrew-core/pulls/129512
         env:
           GH_API_HEADER_FLAGS: >
-            (--header 'Accept: application/vnd.github+json'
-             --header 'X-GitHub-Api-Version: 2022-11-28')
+            ("--header" "Accept: application/vnd.github+json" "--header" "X-GitHub-Api-Version: 2022-11-28")
 
   record_pull_number:
     if: github.event_name == 'pull_request'
