@@ -7,6 +7,17 @@ env:
   HOMEBREW_NO_AUTO_UPDATE: 1
 
 jobs:
+  api_query_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            const response = await github.request(
+              "GET /repos/Homebrew/homebrew-core/pulls/129590"
+            );
+            console.log(response)
+
   record_pull_number:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
