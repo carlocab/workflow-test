@@ -1,5 +1,5 @@
 name: CI
-on: [push, pull_request, workflow_dispatch]
+on: pull_request
 
 env:
   HOMEBREW_DEVELOPER: 1
@@ -9,63 +9,16 @@ env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  api_query_test:
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          gh api \
-            ${{ join(fromJson(env.GH_API_HEADER_FLAGS), ' ') }} \
-            repos/Homebrew/homebrew-core/pulls/129512
-
-  record_pull_number:
-    if: github.event_name == 'pull_request'
+  outside_container:
     runs-on: ubuntu-latest
     steps:
       - name: Show `GITHUB_ variables`.
         run: |
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(env | grep -E '^GITHUB_')" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(env | grep -E '^GITHUB_' | sort)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Save pull request number
-        env:
-          PR: ${{github.event.number}}
-        run: |
-          mkdir -p pr
-          echo "$PR" > pr/number
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: pull-number
-          path: pr
-
-  outputs_test:
-    runs-on: ubuntu-latest
-    steps:
-      - id: many-outputs
-        run: |
-          echo "out=foo" >> "$GITHUB_OUTPUT"
-          echo "out=bar" >> "$GITHUB_OUTPUT"
-          echo "out=baz" >> "$GITHUB_OUTPUT"
-
-      - run: echo '${{ steps.many-outputs.outputs.out }}'
-
-  more_tests:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest]
-      fail-fast: false
-    steps:
-      - name: Show environment variables
-        run: |
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf 'HOME=%s\n' "$HOME" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf 'GITHUB_WORKSPACE=%s\n' "$GITHUB_WORKSPACE" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf 'pwd=%s\n' "$(pwd)" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-
-  tests:
+  inside_container:
     name: Miscellaneous `brew` tests
     runs-on: ubuntu-latest
     container:
@@ -78,5 +31,5 @@ jobs:
 
         run: |
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(env | grep -E '^GITHUB_')" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(env | grep -E '^GITHUB_' | sort)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
