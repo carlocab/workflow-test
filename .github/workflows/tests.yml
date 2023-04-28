@@ -5,16 +5,16 @@ env:
   HOMEBREW_DEVELOPER: 1
   HOMEBREW_NO_INSTALL_FROM_API: 1
   HOMEBREW_NO_AUTO_UPDATE: 1
+  GH_API_HEADER_FLAGS: '["--header", "Accept: application/vnd.github+json", "--header", "X-GitHub-Api-Version: 2022-11-28"]'
 
 jobs:
   api_query_test:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          gh api "${GH_API_HEADER_FLAGS[@]}" repos/Homebrew/homebrew-core/pulls/129512
-        env:
-          GH_API_HEADER_FLAGS: >
-            ("--header" "Accept: application/vnd.github+json" "--header" "X-GitHub-Api-Version: 2022-11-28")
+          gh api \
+            ${{ join(fromJson(env.GH_API_HEADER_FLAGS), ' ') }} \
+            repos/Homebrew/homebrew-core/pulls/129512
 
   record_pull_number:
     if: github.event_name == 'pull_request'
