@@ -14,7 +14,7 @@ jobs:
         with:
           script: |
             const response = await github.request(
-              "GET /repos/Homebrew/homebrew-core/pulls/129590"
+              "GET /repos/Homebrew/homebrew-core/pulls/129585"
             );
             console.log(response)
 
