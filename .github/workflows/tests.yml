@@ -5,7 +5,8 @@ env:
   HOMEBREW_DEVELOPER: 1
   HOMEBREW_NO_INSTALL_FROM_API: 1
   HOMEBREW_NO_AUTO_UPDATE: 1
-  GH_API_HEADER_FLAGS: '["--header", "Accept: application/vnd.github+json", "--header", "X-GitHub-Api-Version: 2022-11-28"]'
+  GH_API_HEADER_FLAGS: '["--header", "Accept:application/vnd.github+json", "--header", "X-GitHub-Api-Version:2022-11-28"]'
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   api_query_test:
