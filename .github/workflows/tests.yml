@@ -29,7 +29,7 @@ jobs:
         with:
           test-bot: false
 
-        run: |
+      - run: |
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           printf '%s\n' "$(env | grep -E '^GITHUB_' | sort)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
