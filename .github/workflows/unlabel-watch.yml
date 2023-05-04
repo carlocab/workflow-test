@@ -4,6 +4,9 @@ on:
   pull_request_target:
     types:
       - unlabeled
+  check_run:
+    types:
+      - completed
 
 jobs:
   upload:
