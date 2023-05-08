@@ -43,10 +43,8 @@ jobs:
         os: [macos-11, macos-12, macos-13]
       fail-fast: false
     steps:
-      - run: /usr/bin/curl --version
-      - run: /usr/bin/curl --tlsv1.2 --head https://brew.sh/
       - name: Check curl download
-        run: /usr/bin/curl --remote-name --location https://downloads.xiph.org/releases/vorbis/vorbis-tools-1.4.2.tar.gz
+        run: /usr/bin/curl --remote-name --location --tls-max 1.2 https://downloads.xiph.org/releases/vorbis/vorbis-tools-1.4.2.tar.gz
 
   more_tests:
     runs-on: ${{ matrix.os }}
