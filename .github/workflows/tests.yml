@@ -9,98 +9,11 @@ env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  record_pull_number:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Save pull request number
-        env:
-          PR: ${{github.event.number}}
-        run: |
-          mkdir -p pr
-          echo "$PR" > pr/number
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: pull-number
-          path: pr
-
-  outputs_test:
-    runs-on: ubuntu-latest
-    steps:
-      - id: many-outputs
-        run: |
-          echo "out=foo" >> "$GITHUB_OUTPUT"
-          echo "out=bar" >> "$GITHUB_OUTPUT"
-          echo "out=baz" >> "$GITHUB_OUTPUT"
-
-      - run: echo '${{ steps.many-outputs.outputs.out }}'
-
-  test_curl:
+  test_m1:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-11, macos-12, macos-13]
+        os: [macos-latest-m1, macos-latest-arm, macos-latest-arm64]
       fail-fast: false
     steps:
-      - name: Check curl download
-        run: /usr/bin/curl --remote-name --location --tls-max 1.2 https://downloads.xiph.org/releases/vorbis/vorbis-tools-1.4.2.tar.gz
-
-  more_tests:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest]
-      fail-fast: false
-    steps:
-      - name: Show environment variables
-        run: |
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          env | sort -u | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-
-  tests:
-    name: Miscellaneous `brew` tests
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/homebrew/ubuntu22.04:master
-    steps:
-      - name: Set up Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-        with:
-          test-bot: false
-
-      - name: Show environment variables
-        run: |
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          env | sort -u | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Test `if`
-        if: ${{
-            true &&
-            true &&
-            !false
-          }}
-        run: echo it worked!
-
-      - name: Show `gh version`.
-        run: |
-          printf '### `gh version` output\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(gh version)" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Show `gh pr merge --help`.
-        run: |
-          printf '### `gh pr merge --help` output\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(gh pr merge --help)" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Show `brew --version`.
-        run: |
-          printf '### `brew --version` output\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(brew --version)" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+      - run: true
