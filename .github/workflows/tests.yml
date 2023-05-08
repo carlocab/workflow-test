@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest-m1, macos-latest-arm, macos-latest-arm64]
+        os: [macos-latest-m1, macos-latest-arm, macos-latest-arm64, macos-m1-latest, macos-arm-latest, macos-arm64-latest]
       fail-fast: false
     steps:
       - run: true
