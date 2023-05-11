@@ -1,19 +1,8 @@
 name: CI
 on: [push, pull_request, workflow_dispatch]
 
-env:
-  HOMEBREW_DEVELOPER: 1
-  HOMEBREW_NO_INSTALL_FROM_API: 1
-  HOMEBREW_NO_AUTO_UPDATE: 1
-  GH_API_HEADER_FLAGS: '["--header", "Accept:application/vnd.github+json", "--header", "X-GitHub-Api-Version:2022-11-28"]'
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 jobs:
-  test_m1:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest-m1, macos-latest-arm, macos-latest-arm64, macos-m1-latest, macos-arm-latest, macos-arm64-latest]
-      fail-fast: false
+  debug:
+    runs-on: ubuntu-latest
     steps:
-      - run: true
+      - run: echo '${{ runner.debug }}'
