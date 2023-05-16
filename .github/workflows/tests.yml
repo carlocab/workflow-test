@@ -9,3 +9,12 @@ jobs:
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           jq . "$GITHUB_EVENT_PATH" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/checkout@v3
+
+      - run: |
+          git fetch origin $SHA
+          git show $SHA
+        if: github.event.action == 'synchronize'
+        env:
+          SHA: ${{ github.event.before }}
