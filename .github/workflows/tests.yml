@@ -5,6 +5,11 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/upload-artifact@main
+        with:
+          name: event_payload
+          path: ${{ github.event_path }}
+
       - run: |
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           jq . "$GITHUB_EVENT_PATH" | tee -a "$GITHUB_STEP_SUMMARY"
