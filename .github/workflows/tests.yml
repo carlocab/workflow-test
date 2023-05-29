@@ -1,14 +1,8 @@
 name: CI
-on: [push, pull_request, workflow_dispatch]
+on: push
 
 jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - uses: Homebrew/actions/setup-homebrew@master
-
-      - shell: brew ruby {0}
-        env:
-          HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
-        run: |
-          ohai "Maintainers", JSON.pretty_generate(GitHub.members_by_team("Homebrew", "maintainers"))
+      - run: jq --version
