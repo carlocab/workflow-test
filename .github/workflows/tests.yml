@@ -5,21 +5,10 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/upload-artifact@main
-        with:
-          name: event_payload
-          path: ${{ github.event_path }}
+      - uses: Homebrew/actions/setup-homebrew@master
 
-      - run: |
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          jq . "$GITHUB_EVENT_PATH" | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-
-      - uses: actions/checkout@v3
-
-      - run: |
-          git fetch origin $SHA
-          git show $SHA
-        if: github.event.action == 'synchronize'
+      - shell: brew ruby {0}
         env:
-          SHA: ${{ github.event.before }}
+          HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
+        run: |
+          ohai "Maintainers", JSON.pretty_generate(GitHub.members_by_team("Homebrew", "maintainers"))
