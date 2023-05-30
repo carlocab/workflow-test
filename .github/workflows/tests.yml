@@ -1,8 +1,16 @@
 name: CI
-on: [push, pull_request, workflow_dispatch]
+on: [push, pull_request, pull_request_target, workflow_dispatch]
 
 jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - run: echo '${{ runner.debug }}'
+      - uses: actions/upload-artifact@main
+        with:
+          name: event_payload
+          path: ${{ github.event_path }}
+
+      - run: |
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+          jq . "$GITHUB_EVENT_PATH" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
