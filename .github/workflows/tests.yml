@@ -1,8 +1,25 @@
 name: CI
-on: [push, pull_request, workflow_dispatch]
+on:
+  workflow_dispatch:
+    inputs:
+      boolean:
+        type: boolean
+        description: boolean
+      choice:
+        type: choice
+        description: choice
+        options:
+          - foo
+          - bar
+      number:
+        type: number
+        description: number
+      string:
+        type: string
+        description: string
 
 jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - run: echo '${{ runner.debug }}'
+      - run: jq . <<< '${{ toJson(inputs) }}'
