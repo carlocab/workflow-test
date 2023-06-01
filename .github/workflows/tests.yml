@@ -8,3 +8,7 @@ jobs:
       - run: |
           echo "$GITHUB_REF"
           echo '${{ github.ref }}'
+
+      - run: echo 'variable=foo' >> "$GITHUB_ENV"
+
+      - run: echo "$variable"
