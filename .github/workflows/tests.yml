@@ -1,25 +1,10 @@
 name: CI
-on:
-  workflow_dispatch:
-    inputs:
-      boolean:
-        type: boolean
-        description: boolean
-      choice:
-        type: choice
-        description: choice
-        options:
-          - foo
-          - bar
-      number:
-        type: number
-        description: number
-      string:
-        type: string
-        description: string
+on: push
 
 jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - run: jq . <<< '${{ toJson(inputs) }}'
+      - run: |
+          echo "$GITHUB_REF"
+          echo '${{ github.ref }}'
