@@ -5,10 +5,8 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          echo "$GITHUB_REF"
-          echo '${{ github.ref }}'
+      - id: fake
+        run: false
 
-      - run: echo 'variable=foo' >> "$GITHUB_ENV"
-
-      - run: echo "$variable"
+      - if: fromJson(steps.fake.outputs.nonexistent) || !success()
+        run: echo "it worked"
