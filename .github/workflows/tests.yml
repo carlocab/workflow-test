@@ -20,3 +20,4 @@ jobs:
 
       - run: ./test.sh ${{ false && 'foo' || 'bar baz' }}
       - run:  /bin/bash test.sh ${{ false && 'foo' || 'bar baz' }}
+      - run: cat test.sh
