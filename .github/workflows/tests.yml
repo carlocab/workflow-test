@@ -12,6 +12,7 @@ jobs:
       - run: |
           cat <<BASH > test.sh
           #!/bin/bash
+          echo $1
           echo $@
           echo $#
           BASH
