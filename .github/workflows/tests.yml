@@ -13,7 +13,7 @@ jobs:
       - name: Show `GITHUB_ variables`.
         run: |
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(env | grep -E '^GITHUB_' | sort)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(env | sort)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Dump GitHub event payload
@@ -34,7 +34,7 @@ jobs:
 
       - run: |
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$(env | grep -E '^GITHUB_' | sort)" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$(env | sort)" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Dump GitHub event payload
