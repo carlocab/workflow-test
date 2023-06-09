@@ -5,8 +5,11 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - id: fake
-        run: false
+      - run: |
+          cat <<BASH > test.sh
+          #!/usr/bin/env bash
+          echo "$#"
+          BASH
+          chmod +x test.sh
 
-      - if: fromJson(steps.fake.outputs.nonexistent) || !success()
-        run: echo "it worked"
+          ./test.sh ${{ false && 'foo' || 'bar baz' }}
