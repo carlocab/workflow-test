@@ -13,7 +13,7 @@ jobs:
           cat <<'BASH' > test.sh
           #!/bin/bash
           echo $#
-          'BASH'
+          BASH
           chmod +x test.sh
 
       - run: ./test.sh ${{ false && 'foo' || 'bar baz' }}
