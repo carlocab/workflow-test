@@ -12,6 +12,7 @@ jobs:
       - run: |
           cat <<BASH > test.sh
           #!/bin/bash
+          echo $@
           echo $#
           BASH
           chmod +x test.sh
