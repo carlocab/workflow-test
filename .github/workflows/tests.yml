@@ -10,12 +10,10 @@ jobs:
     runs-on: ${{ matrix.runner }}
     steps:
       - run: |
-          cat <<BASH > test.sh
+          cat <<'BASH' > test.sh
           #!/bin/bash
-          echo $1
-          echo $@
           echo $#
-          BASH
+          'BASH'
           chmod +x test.sh
 
       - run: ./test.sh ${{ false && 'foo' || 'bar baz' }}
