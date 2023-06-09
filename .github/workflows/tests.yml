@@ -3,13 +3,18 @@ on: push
 
 jobs:
   debug:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        runner: [macos-latest, ubuntu-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.runner }}
     steps:
       - run: |
           cat <<BASH > test.sh
-          #!/usr/bin/env bash
-          echo "$#"
+          #!/bin/bash
+          echo $#
           BASH
           chmod +x test.sh
 
           ./test.sh ${{ false && 'foo' || 'bar baz' }}
+          /bin/bash test.sh ${{ false && 'foo' || 'bar baz' }}
