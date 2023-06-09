@@ -17,5 +17,5 @@ jobs:
           BASH
           chmod +x test.sh
 
-          ./test.sh ${{ false && 'foo' || 'bar baz' }}
-          /bin/bash test.sh ${{ false && 'foo' || 'bar baz' }}
+      - run: ./test.sh ${{ false && 'foo' || 'bar baz' }}
+      - run:  /bin/bash test.sh ${{ false && 'foo' || 'bar baz' }}
