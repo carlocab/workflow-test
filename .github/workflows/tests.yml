@@ -14,3 +14,10 @@ jobs:
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
           jq . "$GITHUB_EVENT_PATH" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+
+  download:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@main
+        with:
+          name: event_payload
