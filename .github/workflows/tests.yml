@@ -16,6 +16,7 @@ jobs:
           printf '```\n' >> "$GITHUB_STEP_SUMMARY"
 
   download:
+    needs: debug
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@main
