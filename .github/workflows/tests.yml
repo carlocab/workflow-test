@@ -3,19 +3,8 @@ on: push
 
 jobs:
   debug:
-    strategy:
-      matrix:
-        runner: [macos-latest, ubuntu-latest]
-      fail-fast: false
-    runs-on: ${{ matrix.runner }}
+    runs-on: ubuntu-latest
     steps:
-      - run: |
-          cat <<'BASH' > test.sh
-          #!/bin/bash
-          echo $#
-          BASH
-          chmod +x test.sh
-
-      - run: ./test.sh ${{ false && 'foo' || 'bar baz' }}
-      - run:  /bin/bash test.sh ${{ false && 'foo' || 'bar baz' }}
-      - run: cat test.sh
+      - uses: Homebrew/actions/setup-homebrew@master
+      - run: brew install swift
+      - run: brew linkage swift
