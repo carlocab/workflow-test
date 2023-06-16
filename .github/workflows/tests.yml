@@ -58,10 +58,15 @@ jobs:
           ret=0
 
           formulae="$(jq --raw-output '.[${{ matrix.index }}][]' split.json)"
+          formulae_json="$(xargs brew info --json=v2 <<< $formulae)"
+          bottled_formulae="$(
+            jq --raw-output \
+              '.formulae[] | select(.bottle.stable.files.x86_64_linux != null) | .full_name'
+          )"
 
-          xargs brew install <<< $formulae
+          xargs brew install <<< $bottled_formulae
 
-          for formula in $formulae
+          for formula in $bottled_formulae
           do
             if brew linkage $formula | grep -q libicu
             then
