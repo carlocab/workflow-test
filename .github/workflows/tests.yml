@@ -1,10 +1,70 @@
 name: CI
 on: push
 
+env:
+  HOMEBREW_NO_INSTALL_FROM_API: 1
+
 jobs:
-  debug:
+  generate-matrix:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/homebrew/ubuntu22.04:master
+      options: --user=linuxbrew
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
       - uses: Homebrew/actions/setup-homebrew@master
-      - run: brew install swift
-      - run: brew linkage swift
+
+      - id: matrix
+        run: |
+          printf '"%s"\n' $(brew uses --eval-all --recursive icu4c) |
+            jq --compact-output --slurp > icu4c_users.json
+
+          jq --compact-output '[_nwise(25)]' icu4c_users.json > split.json
+
+          split_length="$(jq --raw-output length split.json)"
+
+          matrix="$(
+            seq "$split_length" | jq --slurp --compact-output '[.[] - 1]'
+          )"
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@main
+        with:
+          name: formulae
+          path: split.json
+
+  check-linkage:
+    needs: generate-matrix
+    strategy:
+      matrix:
+        index: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
+      fail-fast: false
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/homebrew/ubuntu22.04:master
+      options: --user=linuxbrew
+    steps:
+      - uses: Homebrew/actions/setup-homebrew@master
+
+      - uses: actions/download-artifact@main
+        with:
+          name: formulae
+
+      - run: |
+          ret=0
+
+          formulae="$(jq --raw-output '.[${{ matrix.index }}][]' split.json)"
+
+          xargs brew install <<< $formulae
+
+          for formula in $formulae
+          do
+            if brew linkage $formula | grep -q libicu
+            then
+              echo "::notice ::${formula} has linkage with icu4c!"
+              ret=1
+            fi
+          done
+
+          exit "$ret"
