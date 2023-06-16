@@ -1,4 +1,6 @@
 name: Formula dependents linkage check
+run-name: Check linkage for dependencts of ${{ inputs.formula }}
+
 on:
   workflow_dispatch:
     inputs:
