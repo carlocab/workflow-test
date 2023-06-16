@@ -44,6 +44,9 @@ jobs:
     container:
       image: ghcr.io/homebrew/ubuntu22.04:master
       options: --user=linuxbrew
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: Homebrew/actions/setup-homebrew@master
 
