@@ -13,6 +13,7 @@ on:
         type: number
 
 env:
+  GITHUB_ACTIONS_MATRIX_JOB_LIMIT: 256
   HOMEBREW_NO_INSTALL_FROM_API: 1
   FORMULA: ${{ inputs.formula }}
   SIZE: ${{ inputs.job-size }}
@@ -25,6 +26,9 @@ jobs:
       options: --user=linuxbrew
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: Homebrew/actions/setup-homebrew@master
 
@@ -36,6 +40,14 @@ jobs:
           jq --compact-output "[_nwise(${SIZE})]" icu4c_users.json > split.json
 
           split_length="$(jq --raw-output length split.json)"
+
+          if [[ "${split_length}" -gt "${GITHUB_ACTIONS_MATRIX_JOB_LIMIT}" ]]
+          then
+            echo "::error ::Cannot dispatch ${split_length} jobs!"
+            echo "::error ::GitHub Actions can generate only ${GITHUB_ACTIONS_MATRIX_JOB_LIMIT} jobs per workflow run."
+            echo "::error ::You can try again with a larger \`job-size\` input."
+            exit 1
+          fi
 
           matrix="$(
             seq "$split_length" | jq --slurp --compact-output '[.[] - 1]'
@@ -79,8 +91,12 @@ jobs:
 
           for formula in ${installable_formulae[@]}
           do
-            echo "Installing ${formula}"
-            brew install --quiet --force --overwrite "$formula"
+            echo "Installing ${formula}..."
+            if ! brew install --quiet --force --overwrite "$formula"
+            then
+              echo "::warning ::Encountered an error while installing ${formula}"
+            fi
+
             if brew linkage $formula | grep -E -q "\($FORMULA\)$"
             then
               echo "::notice ::${formula} has linkage with icu4c!"
