@@ -111,6 +111,7 @@ jobs:
         with:
           name: linkage
           path: linkage-${{ matrix.index }}.txt
+          if-no-files-found: ignore
 
   conclusion:
     needs: check-linkage
