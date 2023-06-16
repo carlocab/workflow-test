@@ -20,7 +20,7 @@ jobs:
           printf '"%s"\n' $(brew uses --eval-all --recursive icu4c) |
             jq --compact-output --slurp > icu4c_users.json
 
-          jq --compact-output '[_nwise(25)]' icu4c_users.json > split.json
+          jq --compact-output '[_nwise(12)]' icu4c_users.json > split.json
 
           split_length="$(jq --raw-output length split.json)"
 
@@ -57,16 +57,17 @@ jobs:
       - run: |
           ret=0
 
-          formulae="$(jq --raw-output '.[${{ matrix.index }}][]' split.json)"
-          formulae_json="$(xargs brew info --json=v2 <<< $formulae)"
-          bottled_formulae="$(
+          formulae=($(jq --raw-output '.[${{ matrix.index }}][]' split.json))
+          formulae_json="$(brew info --json=v2 ${formulae[@]})"
+          bottled_formulae=($(
             jq --raw-output \
-              '.formulae[] | select(.bottle.stable.files.x86_64_linux != null) | .full_name'
-          )"
+              '.formulae[] | select(.bottle.stable.files.x86_64_linux != null) |
+                .full_name' <<< "$formulae_json"
+          ))
 
-          xargs brew install <<< $bottled_formulae
+          brew install ${bottled_formulae[@]}
 
-          for formula in $bottled_formulae
+          for formula in ${bottled_formulae[@]}
           do
             if brew linkage $formula | grep -q libicu
             then
