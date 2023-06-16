@@ -101,7 +101,7 @@ jobs:
 
             if brew linkage $formula | grep -E -q "\($FORMULA\)$"
             then
-              echo "::notice ::${formula} has linkage with icu4c!"
+              echo "::notice ::${formula} has linkage with ${FORMULA}!"
               echo "${formula}" >> "linkage-${INDEX}.txt"
             fi
             brew developer off
