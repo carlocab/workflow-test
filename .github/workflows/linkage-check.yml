@@ -121,7 +121,7 @@ jobs:
           name: linkage
 
       - run: |
-          printf "## Dependents with linkage to ${FORMULA}" >> "${GITHUB_STEP_SUMMARY}"
+          printf "## Dependents with linkage to ${FORMULA}\n" >> "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
           sort linkage-*.txt >> "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
