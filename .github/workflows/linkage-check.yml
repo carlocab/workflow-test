@@ -98,11 +98,13 @@ jobs:
             then
               echo "::warning ::Encountered an error while installing ${formula}"
             fi
+            brew list --formulae | xargs brew unlink # Handle formula conflicts
 
             if brew linkage $formula | grep -E -q "\($FORMULA\)$"
             then
               echo "::notice ::${formula} has linkage with ${FORMULA}!"
               echo "${formula}" >> "linkage-${INDEX}.txt"
+              brew linkage --cached "${formula}" >> "output-${INDEX}.txt"
             fi
             brew developer off
           done
@@ -113,6 +115,12 @@ jobs:
         with:
           name: linkage
           path: linkage-${{ matrix.index }}.txt
+          if-no-files-found: ignore
+
+      - uses: actions/upload-artifact@main
+        with:
+          name: output
+          path: output-${{ matrix.index }}.txt
           if-no-files-found: ignore
 
   conclusion:
@@ -128,3 +136,15 @@ jobs:
           printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
           sort linkage-*.txt >> "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
+
+      - uses: actions/download-artifact@main
+        with:
+          name: output
+
+      - run: cat output-*.txt > output.txt
+
+      - uses: actions/upload-artifact@main
+        with:
+          name: brew-output
+          path: output.txt
+          if-no-files-found: ignore
