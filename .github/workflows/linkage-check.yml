@@ -1,0 +1,111 @@
+name: Formula dependents linkage check
+on:
+  workflow_dispatch:
+    inputs:
+      formula:
+        description: Formula name
+        required: true
+        type: string
+      job-size:
+        description: Number of dependents per matrix job
+        required: false
+        default: 10
+        type: number
+
+env:
+  HOMEBREW_NO_INSTALL_FROM_API: 1
+  FORMULA: ${{ inputs.formula }}
+  SIZE: ${{ inputs.job-size }}
+
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/homebrew/ubuntu22.04:master
+      options: --user=linuxbrew
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - uses: Homebrew/actions/setup-homebrew@master
+
+      - id: matrix
+        run: |
+          printf '"%s"\n' $(brew uses --eval-all --recursive "${FORMULA}") |
+            jq --compact-output --slurp > icu4c_users.json
+
+          jq --compact-output "[_nwise(${SIZE})]" icu4c_users.json > split.json
+
+          split_length="$(jq --raw-output length split.json)"
+
+          matrix="$(
+            seq "$split_length" | jq --slurp --compact-output '[.[] - 1]'
+          )"
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@main
+        with:
+          name: formulae
+          path: split.json
+
+  check-linkage:
+    needs: generate-matrix
+    strategy:
+      matrix:
+        index: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
+      fail-fast: false
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/homebrew/ubuntu22.04:master
+      options: --user=linuxbrew
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: Homebrew/actions/setup-homebrew@master
+
+      - uses: actions/download-artifact@main
+        with:
+          name: formulae
+
+      - run: |
+          formulae=($(jq --raw-output ".[${INDEX}][]" split.json))
+          formulae_json="$(brew info --json=v2 ${formulae[@]})"
+          installable_formulae=($(
+            jq --raw-output \
+              '.formulae[] |
+                select(.bottle.stable.files.x86_64_linux != null and (.deprecated | not) and (.disabled | not)) |
+                .full_name' <<< "$formulae_json"
+          ))
+
+          for formula in ${installable_formulae[@]}
+          do
+            echo "Installing ${formula}"
+            brew install --quiet --force --overwrite "$formula"
+            if brew linkage $formula | grep -E -q "\($FORMULA\)$"
+            then
+              echo "::notice ::${formula} has linkage with icu4c!"
+              echo "${formula}" >> "linkage-${INDEX}.txt"
+            fi
+            brew developer off
+          done
+        env:
+          INDEX: ${{ matrix.index }}
+
+      - uses: actions/upload-artifact@main
+        with:
+          name: linkage
+          path: linkage-${{ matrix.index }}.txt
+
+  conclusion:
+    needs: check-linkage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@main
+        with:
+          name: linkage
+
+      - run: |
+          printf "## Dependents with linkage to ${FORMULA}" >> "${GITHUB_STEP_SUMMARY}"
+          printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
+          sort linkage-*.txt >> "${GITHUB_STEP_SUMMARY}"
+          printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
