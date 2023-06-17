@@ -5,6 +5,15 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - uses: Homebrew/actions/setup-homebrew@master
-      - run: brew install swift
-      - run: brew linkage swift
+      - run: |
+          FOO="foo
+          bar
+          baz"
+
+          echo "$FOO"
+          FOO="${FOO//'%'/'%25'}"
+          FOO="${FOO//$'\n'/'%0A'}"
+          FOO="${FOO//$'\r'/'%0D'}"
+
+          echo "::notice ::$FOO"
+
