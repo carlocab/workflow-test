@@ -16,5 +16,5 @@ jobs:
           FOO="${FOO//$'\r'/'%0D'}"
           echo "$FOO"
 
-          echo "::notice ::$FOO"
+          echo "::notice,title=bottle count::$FOO"
 
