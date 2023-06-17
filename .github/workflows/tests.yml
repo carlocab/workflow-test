@@ -14,6 +14,7 @@ jobs:
           FOO="${FOO//'%'/'%25'}"
           FOO="${FOO//$'\n'/'%0A'}"
           FOO="${FOO//$'\r'/'%0D'}"
+          echo "$FOO"
 
           echo "::notice ::$FOO"
 
