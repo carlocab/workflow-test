@@ -1,5 +1,5 @@
 name: Formula dependents linkage check
-run-name: Check linkage for dependencts of ${{ inputs.formula }}
+run-name: Check linkage for dependents of ${{ inputs.formula }}
 
 on:
   workflow_dispatch:
@@ -7,6 +7,10 @@ on:
       formula:
         description: Formula name
         required: true
+        type: string
+      linked-formula:
+        description: Formula to check linkage with
+        required: false
         type: string
       job-size:
         description: Number of dependents per matrix job
@@ -18,6 +22,7 @@ env:
   GITHUB_ACTIONS_MATRIX_JOB_LIMIT: 256
   HOMEBREW_NO_INSTALL_FROM_API: 1
   FORMULA: ${{ inputs.formula }}
+  LINKED_FORMULA: ${{ inputs.linked-formula }}
   SIZE: ${{ inputs.job-size }}
 
 jobs:
@@ -91,6 +96,7 @@ jobs:
                 .full_name' <<< "$formulae_json"
           ))
 
+          linkage_check="${LINKED_FORMULA:-${FORMULA}}"
           for formula in ${installable_formulae[@]}
           do
             echo "Installing ${formula}..."
@@ -100,7 +106,7 @@ jobs:
             fi
             brew list --formulae | xargs brew unlink # Handle formula conflicts
 
-            if brew linkage $formula | grep -E -q "\($FORMULA\)$"
+            if brew linkage $formula | grep -E -q "\(${linkage_check}\)$"
             then
               echo "::notice ::${formula} has linkage with ${FORMULA}!"
               echo "${formula}" >> "linkage-${INDEX}.txt"
@@ -132,7 +138,8 @@ jobs:
           name: linkage
 
       - run: |
-          printf "## Dependents with linkage to ${FORMULA}\n" >> "${GITHUB_STEP_SUMMARY}"
+          linkage_check="${LINKED_FORMULA:-${FORMULA}}"
+          printf "## Dependents of \`${FORMULA}\` with linkage to \`${linkage_check}\`\n" >> "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
           sort linkage-*.txt >> "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
