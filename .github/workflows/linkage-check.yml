@@ -96,6 +96,14 @@ jobs:
     steps:
       - uses: Homebrew/actions/setup-homebrew@master
 
+      - if: inputs.branch != 'master'
+        env:
+          BRANCH: ${{ inputs.branch }}
+        run: |
+          cd "$(brew --repository homebrew/core)"
+          git fetch origin "$BRANCH"
+          git checkout "$BRANCH"
+
       - uses: actions/download-artifact@main
         with:
           name: formulae
