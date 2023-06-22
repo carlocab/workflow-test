@@ -12,6 +12,11 @@ on:
         description: Formula to check linkage with
         required: false
         type: string
+      branch:
+        description: Branch to checkout
+        required: false
+        default: master
+        type: string
       job-size:
         description: Number of dependents per matrix job
         required: false
@@ -21,6 +26,7 @@ on:
 env:
   GITHUB_ACTIONS_MATRIX_JOB_LIMIT: 256
   HOMEBREW_NO_INSTALL_FROM_API: 1
+  HOMEBREW_NO_AUTO_UPDATE: 1
   FORMULA: ${{ inputs.formula }}
   LINKED_FORMULA: ${{ inputs.linked-formula }}
   SIZE: ${{ inputs.job-size }}
@@ -38,6 +44,14 @@ jobs:
         shell: bash
     steps:
       - uses: Homebrew/actions/setup-homebrew@master
+
+      - if: inputs.branch != 'master'
+        env:
+          BRANCH: ${{ inputs.branch }}
+        run: |
+          cd "$(brew --repository homebrew/core)"
+          git fetch origin "$BRANCH"
+          git checkout "$BRANCH"
 
       - id: matrix
         run: |
