@@ -27,6 +27,7 @@ env:
   GITHUB_ACTIONS_MATRIX_JOB_LIMIT: 256
   HOMEBREW_NO_INSTALL_FROM_API: 1
   HOMEBREW_NO_AUTO_UPDATE: 1
+  HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
   FORMULA: ${{ inputs.formula }}
   LINKED_FORMULA: ${{ inputs.linked-formula }}
   SIZE: ${{ inputs.job-size }}
@@ -126,7 +127,8 @@ jobs:
             then
               echo "::warning ::Encountered an error while installing ${formula}"
             fi
-            brew list --formulae | xargs brew unlink # Handle formula conflicts
+            formulae="$(brew list --formulae)"
+            [[ -n "$formulae" ]] && xargs brew unlink <<< $formulae # Handle formula conflicts
 
             if brew linkage $formula | grep -E -q "\(${linkage_check}\)$"
             then
