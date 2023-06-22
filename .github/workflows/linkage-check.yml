@@ -88,6 +88,7 @@ jobs:
         index: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
       fail-fast: false
     runs-on: ubuntu-latest
+    continue-on-error: true
     container:
       image: ghcr.io/homebrew/ubuntu22.04:master
       options: --user=linuxbrew
@@ -132,7 +133,7 @@ jobs:
 
             if brew linkage $formula | grep -E -q "\(${linkage_check}\)$"
             then
-              echo "::notice ::${formula} has linkage with ${FORMULA}!"
+              echo "::notice ::${formula} has linkage with ${linkage_check}!"
               echo "${formula}" >> "linkage-${INDEX}.txt"
               brew linkage --cached "${formula}" >> "output-${INDEX}.txt"
             fi
