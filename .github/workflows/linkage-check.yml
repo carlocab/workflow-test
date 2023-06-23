@@ -45,6 +45,8 @@ jobs:
         shell: bash
     steps:
       - uses: Homebrew/actions/setup-homebrew@master
+        with:
+          test-bot: false
 
       - if: inputs.branch != 'master'
         env:
@@ -101,6 +103,8 @@ jobs:
         shell: bash
     steps:
       - uses: Homebrew/actions/setup-homebrew@master
+        with:
+          test-bot: false
 
       - if: inputs.branch != 'master'
         env:
