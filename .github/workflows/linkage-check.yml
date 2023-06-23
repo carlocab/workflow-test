@@ -6,7 +6,7 @@ on:
     inputs:
       formula:
         description: Formula name
-        required: true
+        required: false
         type: string
       linked-formula:
         description: Formula to check linkage with
@@ -56,10 +56,14 @@ jobs:
 
       - id: matrix
         run: |
-          printf '"%s"\n' $(brew uses --eval-all --recursive "${FORMULA}") |
-            jq --compact-output --slurp > icu4c_users.json
+          if [[ -z "${FORMULA}" ]]
+          then
+            brew formulae
+          else
+            brew uses --eval-all --recursive "${FORMULA}"
+          fi | xargs printf '"%s"\n' | jq --compact-output --slurp > formulae.json
 
-          jq --compact-output "[_nwise(${SIZE})]" icu4c_users.json > split.json
+          jq --compact-output "[_nwise(${SIZE})]" formulae.json > split.json
 
           split_length="$(jq --raw-output length split.json)"
 
