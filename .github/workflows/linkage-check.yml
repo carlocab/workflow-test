@@ -124,7 +124,7 @@ jobs:
           installable_formulae=($(
             jq --raw-output \
               '.formulae[] |
-                select(.bottle.stable.files.x86_64_linux != null and (.deprecated | not) and (.disabled | not)) |
+                select((.bottle.stable.files.x86_64_linux != null or .bottle.stable.files.all != null) and (.disabled | not)) |
                 .full_name' <<< "$formulae_json"
           ))
 
