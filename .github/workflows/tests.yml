@@ -1,20 +1,34 @@
 name: CI
+
 on: push
 
 jobs:
-  debug:
+  build:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/homebrew/ubuntu22.04:master
+      options: --user=linuxbrew
+    timeout-minutes: 360
+    env:
+      HOMEBREW_LOGS: ${{ github.workspace }}/logs
     steps:
+      - uses: Homebrew/actions/setup-homebrew@master
+        with:
+          test-bot: false
+
       - run: |
-          FOO="foo
-          bar
-          baz"
+          cd "$(brew --repository homebrew/core)"
+          gh pr checkout 134428
+        env:
+          GH_TOKEN: ${{ github.token }}
 
-          echo "$FOO"
-          FOO="${FOO//'%'/'%25'}"
-          FOO="${FOO//$'\n'/'%0A'}"
-          FOO="${FOO//$'\r'/'%0D'}"
-          echo "$FOO"
+      - run: brew install --build-bottle apache-arrow
 
-          echo "::notice,title=bottle count::$FOO"
+      - run: file "$(brew --prefix apache-arrow)/lib/libarrow_acero.so"*
 
+      - run: brew install --build-from-source gdal
+
+      - uses: actions/upload-artifact@main
+        if: always()
+        with:
+          path: logs
