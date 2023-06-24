@@ -15,7 +15,7 @@ jobs:
       options: --user=linuxbrew
     timeout-minutes: 360
     env:
-      HOMEBREW_LOGS: ${{ github.workspace }}/logs
+      HOMEBREW_LOGS: ${{ github.workspace }}/logs-before
     steps:
       - uses: Homebrew/actions/setup-homebrew@master
         with:
@@ -31,17 +31,32 @@ jobs:
 
       - run: file "$(brew --prefix apache-arrow)/lib/libarrow_acero.so"*
 
+      - run: cp "$(brew --prefix apache-arrow)/lib/libarrow_acero.so"* logs-before/
+
+      - run: brew install --build-from-source --verbose gdal
+
+      - run: echo 'HOMEBREW_LOGS=${{ github.workspace }}/logs-after' >> "${GITHUB_ENV}"
+
+      - run: brew uninstall gdal
+
       - run: brew bottle apache-arrow
-
-      - run: |
-          brew uninstall apache-arrow
-          brew install ./apache-arrow*.tar.gz
-
-      - run: file "$(brew --prefix apache-arrow)/lib/libarrow_acero.so"*
-
-      - run: brew install --build-from-source gdal
 
       - uses: actions/upload-artifact@main
         if: always()
         with:
-          path: logs
+          name: arrow-bottle
+          path: apache-arrow*.tar.gz
+
+      - run: brew uninstall apache-arrow
+
+      - run: brew install ./apache-arrow*.tar.gz
+
+      - run: file "$(brew --prefix apache-arrow)/lib/libarrow_acero.so"*
+
+      - run: brew install --build-from-source --verbose gdal
+
+      - uses: actions/upload-artifact@main
+        if: always()
+        with:
+          name: logs
+          path: logs-*
