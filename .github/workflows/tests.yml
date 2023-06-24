@@ -26,6 +26,14 @@ jobs:
 
       - run: file "$(brew --prefix apache-arrow)/lib/libarrow_acero.so"*
 
+      - run: brew bottle apache-arrow
+
+      - run: |
+          brew uninstall apache-arrow
+          brew install ./apache-arrow*.tar.gz
+
+      - run: file "$(brew --prefix apache-arrow)/lib/libarrow_acero.so"*
+
       - run: brew install --build-from-source gdal
 
       - uses: actions/upload-artifact@main
