@@ -1,20 +1,46 @@
 name: CI
 on: push
 
+env:
+  HOMEBREW_DEVELOPER: 1
+  HOMEBREW_NO_AUTO_UPDATE: 1
+  HOMEBREW_NO_INSTALL_FROM_API: 1
+
 jobs:
-  debug:
-    runs-on: ubuntu-latest
+  test:
+    strategy:
+      matrix:
+        os:
+          - macos
+          - ubuntu
+        formula:
+          - abricate
+          - dafny
+          - ettercap
+          - mariadb@10.4
+          - mysql@5.7
+          - root
+          - sslyze
+      fail-fast: false
+    runs-on: ${{ matrix.os }}-latest
     steps:
+      - uses: Homebrew/actions/setup-homebrew@master
+        with:
+          test-bot: false
+
+      - name: Checkout OpenSSL migration branch
+        run: |
+          cd "$(brew --repository homebrew/core)"
+          git fetch origin
+          git checkout openssl-migration-staging
+
+      - run: brew install ${{ matrix.formula }}
+
+      - run: brew test --verbose ${{ matrix.formula }}
+
       - run: |
-          FOO="foo
-          bar
-          baz"
-
-          echo "$FOO"
-          FOO="${FOO//'%'/'%25'}"
-          FOO="${FOO//$'\n'/'%0A'}"
-          FOO="${FOO//$'\r'/'%0D'}"
-          echo "$FOO"
-
-          echo "::notice,title=bottle count::$FOO"
-
+          printf '## `brew linkage ${{ matrix.formula }}` output'
+          printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
+          brew linkage ${{ matrix.formula }} | tee -a "${GITHUB_STEP_SUMMARY}"
+          printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
+        if: always()
