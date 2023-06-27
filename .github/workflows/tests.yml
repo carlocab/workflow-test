@@ -3,18 +3,16 @@ on: push
 
 jobs:
   debug:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
+      - run: echo "/home/linuxbrew/.linuxbrew/bin" >> "${GITHUB_PATH}"
+
+      - run: brew update
+
+      - run: brew config
+
+      - run: brew install gcc
+
       - run: |
-          FOO="foo
-          bar
-          baz"
-
-          echo "$FOO"
-          FOO="${FOO//'%'/'%25'}"
-          FOO="${FOO//$'\n'/'%0A'}"
-          FOO="${FOO//$'\r'/'%0D'}"
-          echo "$FOO"
-
-          echo "::notice,title=bottle count::$FOO"
-
+          touch test.c
+          gcc-13 test.c
