@@ -108,7 +108,7 @@ jobs:
       fail-fast: false
     runs-on: ${{ inputs.runner }}
     continue-on-error: true
-    container: ${{ needs.generate-matrix.outputs.container }}
+    container: ${{ fromJson(needs.generate-matrix.outputs.container) }}
     defaults:
       run:
         shell: bash
