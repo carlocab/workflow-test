@@ -65,9 +65,14 @@ jobs:
       - if: startsWith(inputs.runner, 'macos')
         run: echo "HOMEBREW_SIMULATE_MACOS_ON_LINUX=1" >> "${GITHUB_ENV}"
 
-      - if: startsWith(inputs.runner, 'ubuntu')
-        id: container
-        run: echo 'container={"image":"ghcr.io/homebrew/ubuntu22.04:master","options":"--user=linuxbrew"}' >> "${GITHUB_OUTPUT}"
+      - id: container
+        run: |
+          if [[ '${{ inputs.runner }}' = macos-* ]]
+          then
+            echo 'container={}'
+          else
+            echo 'container={"image":"ghcr.io/homebrew/ubuntu22.04:master","options":"--user=linuxbrew"}'
+          fi >> "${GITHUB_OUTPUT}"
 
       - id: matrix
         run: |
