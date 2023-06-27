@@ -22,6 +22,11 @@ on:
         required: false
         default: 10
         type: number
+      runner:
+        description: Runner to check linkage on
+        required: false
+        default: ubuntu-latest
+        type: string
 
 env:
   GITHUB_ACTIONS_MATRIX_JOB_LIMIT: 256
@@ -55,6 +60,9 @@ jobs:
           cd "$(brew --repository homebrew/core)"
           git fetch origin "$BRANCH"
           git checkout "$BRANCH"
+
+      - if: startsWith(inputs.runner, 'macos')
+        run: echo "HOMEBREW_SIMULATE_MACOS_ON_LINUX=1" >> "${GITHUB_ENV}"
 
       - id: matrix
         run: |
@@ -93,7 +101,7 @@ jobs:
       matrix:
         index: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
       fail-fast: false
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
     continue-on-error: true
     container:
       image: ghcr.io/homebrew/ubuntu22.04:master
@@ -118,13 +126,23 @@ jobs:
         with:
           name: formulae
 
+      - id: bottle-tag
+        shell: brew ruby {0}
+        run: |
+          File.open(ENV["GITHUB_OUTPUT"], "a") do |f|
+            f.puts("tag=#{Utils::Bottles.tag}")
+          end
+
       - run: |
           formulae=($(jq --raw-output ".[${INDEX}][]" split.json))
           formulae_json="$(brew info --json=v2 ${formulae[@]})"
           installable_formulae=($(
             jq --raw-output \
               '.formulae[] |
-                select((.bottle.stable.files.x86_64_linux != null or .bottle.stable.files.all != null) and (.disabled | not)) |
+                select(
+                  (.bottle.stable.files.${{ steps.bottle-tag.outputs.tag }} != null or .bottle.stable.files.all != null) and
+                  (.disabled | not)
+                ) |
                 .full_name' <<< "$formulae_json"
           ))
 
