@@ -1,5 +1,5 @@
 name: Formula dependents linkage check
-run-name: Check linkage for dependents of ${{ inputs.formula }}
+run-name: Check linkage for ${{ inputs.formula && format('dependents of {0}', inputs.formula) || 'all formulae' }}
 
 on:
   workflow_dispatch:
@@ -45,6 +45,7 @@ jobs:
       options: --user=linuxbrew
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
+      container: ${{ steps.container.outputs.container }}
     defaults:
       run:
         shell: bash
@@ -63,6 +64,10 @@ jobs:
 
       - if: startsWith(inputs.runner, 'macos')
         run: echo "HOMEBREW_SIMULATE_MACOS_ON_LINUX=1" >> "${GITHUB_ENV}"
+
+      - if: startsWith(inputs.runner, 'ubuntu')
+        id: container
+        run: echo 'container={"container":{"image":"ghcr.io/homebrew/ubuntu22.04:master","options":"--user=linuxbrew"}}' >> "${GITHUB_OUTPUT}"
 
       - id: matrix
         run: |
@@ -103,9 +108,7 @@ jobs:
       fail-fast: false
     runs-on: ${{ inputs.runner }}
     continue-on-error: true
-    container:
-      image: ghcr.io/homebrew/ubuntu22.04:master
-      options: --user=linuxbrew
+    container: ${{ needs.generate-matrix.outputs.container }}
     defaults:
       run:
         shell: bash
