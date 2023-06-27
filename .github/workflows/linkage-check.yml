@@ -150,7 +150,7 @@ jobs:
           for formula in ${installable_formulae[@]}
           do
             echo "Installing ${formula}..."
-            if ! brew install --quiet --force --overwrite "$formula"
+            if ! brew install --quiet --force --overwrite --skip-post-install "$formula"
             then
               echo "::warning ::Encountered an error while installing ${formula}"
             fi
