@@ -67,7 +67,7 @@ jobs:
 
       - if: startsWith(inputs.runner, 'ubuntu')
         id: container
-        run: echo 'container={"container":{"image":"ghcr.io/homebrew/ubuntu22.04:master","options":"--user=linuxbrew"}}' >> "${GITHUB_OUTPUT}"
+        run: echo 'container={"image":"ghcr.io/homebrew/ubuntu22.04:master","options":"--user=linuxbrew"}' >> "${GITHUB_OUTPUT}"
 
       - id: matrix
         run: |
