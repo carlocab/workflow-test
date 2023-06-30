@@ -198,7 +198,9 @@ jobs:
 
       - run: |
           linkage_check="${LINKED_FORMULA:-${FORMULA}}"
-          printf "## Dependents of \`${FORMULA}\` with linkage to \`${linkage_check}\`\n" >> "${GITHUB_STEP_SUMMARY}"
+          what="${FORMULA:+"Dependents of \`${FORMULA}\`"}"
+          what="${what:-"All formulae"}"
+          printf '## %s with linkage to `%s`\n' "$what" "$linkage_check" >> "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
           sort linkage-*.txt >> "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
