@@ -137,7 +137,9 @@ jobs:
           end
 
       - if: runner.os == 'macOS'
-        run: brew test-bot --only-cleanup-before
+        run: |
+          brew test-bot --only-cleanup-before
+          brew install jq
 
       - run: |
           formulae=($(jq --raw-output ".[${INDEX}][]" split.json))
