@@ -1,20 +1,17 @@
 name: CI
 on: push
 
+env:
+  HOMEBREW_NO_INSTALL_FROM_API:
+
 jobs:
   debug:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        trial: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    runs-on: macos-latest
     steps:
       - run: |
-          FOO="foo
-          bar
-          baz"
-
-          echo "$FOO"
-          FOO="${FOO//'%'/'%25'}"
-          FOO="${FOO//$'\n'/'%0A'}"
-          FOO="${FOO//$'\r'/'%0D'}"
-          echo "$FOO"
-
-          echo "::notice,title=bottle count::$FOO"
-
+          brew untap homebrew/core
+          brew untap homebrew/cask
+          brew update --verbose --debug
