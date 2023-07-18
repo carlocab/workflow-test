@@ -3,10 +3,6 @@ on: push
 
 jobs:
   debug:
-    strategy:
-      matrix:
-        old-brew-checkout: [true, false]
-      fail-fast: false
     runs-on: macos-latest
     steps:
       - uses: Homebrew/actions/setup-homebrew@master
@@ -17,17 +13,16 @@ jobs:
 
       - run: brew test-bot --only-setup
 
-      - name: Checkout `brew` revision
-        if: matrix.old-brew-checkout
-        run: git -C "$(brew --repository)" checkout 9f9ae1edeb07d0e7790f18fd540ca76228a3eec2
-
       - run: brew tap shivammathur/php
 
       - run: |
           cd "$(brew --repo shivammathur/php)"
-          git fetch origin pull/1844/head
+          git fetch origin pull/1849/head
           git checkout FETCH_HEAD
 
       - run: brew install --build-bottle --verbose --debug shivammathur/php/php@8.3
+
+      - run: otool -l "$(brew --prefix shivammathur/php/php@8.3)/bin/php"
+        if: always()
 
       - run: brew bottle --verbose --debug shivammathur/php/php@8.3
