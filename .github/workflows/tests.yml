@@ -17,7 +17,7 @@ jobs:
 
       - run: |
           cd "$(brew --repo shivammathur/php)"
-          git fetch origin pull/1849/head
+          git fetch origin pull/1848/head
           git checkout FETCH_HEAD
 
       - run: brew install --build-bottle --verbose --debug shivammathur/php/php@8.3
