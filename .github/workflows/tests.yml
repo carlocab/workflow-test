@@ -23,11 +23,6 @@ jobs:
           git fetch origin pull/1848/head
           git checkout FETCH_HEAD
 
-      - run: |
-          cd "$(brew --repository)"
-          git fetch origin pull/15707/head
-          git checkout FETCH_HEAD
-
       - run: brew install --build-bottle --verbose --debug shivammathur/php/php@8.3
 
       - run: otool -l "$(brew --prefix shivammathur/php/php@8.3)/bin/php"
