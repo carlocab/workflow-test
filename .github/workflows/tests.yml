@@ -1,6 +1,9 @@
 name: CI
 on: push
 
+env:
+  HOMEBREW_NO_AUTO_UPDATE: 1
+
 jobs:
   debug:
     runs-on: macos-latest
@@ -18,6 +21,11 @@ jobs:
       - run: |
           cd "$(brew --repo shivammathur/php)"
           git fetch origin pull/1848/head
+          git checkout FETCH_HEAD
+
+      - run: |
+          cd "$(brew --repository)"
+          git fetch origin pull/15707/head
           git checkout FETCH_HEAD
 
       - run: brew install --build-bottle --verbose --debug shivammathur/php/php@8.3
