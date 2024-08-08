@@ -5,6 +5,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - run: cat "${GITHUB_ENV}"
+      - run: echo "${GITHUB_ENV}"
         env:
           HOMEBREW_GITHUB_API_TOKEN: foo
