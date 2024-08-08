@@ -1,17 +1,10 @@
 name: CI
 on: push
 
-env:
-  HOMEBREW_NO_INSTALL_FROM_API:
-
 jobs:
-  debug:
-    strategy:
-      matrix:
-        trial: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    runs-on: macos-latest
+  test:
+    runs-on: ubuntu-latest
     steps:
-      - run: brew config
-      - run: brew untap homebrew/core homebrew/cask
-      - run: brew config
-      - run: brew update --verbose --debug
+      - run: cat "${GITHUB_ENV}"
+        env:
+          HOMEBREW_GITHUB_API_TOKEN: foo
