@@ -10,9 +10,9 @@ jobs:
       - uses: actions/setup-go@v5
 
       - run: |
-          printf '```\n' >> "${GITHUB_OUTPUT}"
+          printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
           {
             which -a go
             go env
-          } | tee -a "${GITHUB_OUTPUT}"
-          printf '```\n' >> "${GITHUB_OUTPUT}"
+          } | tee -a "${GITHUB_STEP_SUMMARY}"
+          printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
