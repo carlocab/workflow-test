@@ -5,6 +5,14 @@ jobs:
   test:
     runs-on: macos-latest
     steps:
-      - run: which -a go | tee -a "${GITHUB_OUTPUT}"
+      - run: brew install go
 
-      - run: go env | tee -a "${GITHUB_OUPUT}"
+      - uses: actions/setup-go@v5
+
+      - run: |
+          printf '```\n' >> "${GITHUB_OUTPUT}"
+          {
+            which -a go
+            go env
+          } | tee -a "${GITHUB_OUTPUT}"
+          printf '```\n' >> "${GITHUB_OUTPUT}"
