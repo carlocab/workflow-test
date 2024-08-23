@@ -3,12 +3,8 @@ on: push
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
-      - run: |
-          echo "${GITHUB_ENV}"
-          stat "${GITHUB_ENV}"
-          file "${GITHUB_ENV}"
-          cat "${GITHUB_ENV}"
-        env:
-          HOMEBREW_GITHUB_API_TOKEN: foo
+      - run: which -a go | tee -a "${GITHUB_OUTPUT}"
+
+      - run: go env | tee -a "${GITHUB_OUPUT}"
