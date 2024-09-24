@@ -8,7 +8,7 @@ jobs:
       - run: brew install gstreamer
 
       - run: |
-          print '## `brew linkage gstreamer`' >> "${GITHUB_STEP_SUMMARY}"
+          printf '## `brew linkage gstreamer`' >> "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
           brew linkage gstreamer | tee -a "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
