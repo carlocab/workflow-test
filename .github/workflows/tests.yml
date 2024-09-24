@@ -5,14 +5,15 @@ jobs:
   test:
     runs-on: macos-latest
     steps:
-      - run: brew install go
-
-      - uses: actions/setup-go@v5
+      - run: brew install gstreamer
 
       - run: |
+          print '## `brew linkage gstreamer`' >> "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
-          {
-            which -a go
-            go env
-          } | tee -a "${GITHUB_STEP_SUMMARY}"
+          brew linkage gstreamer | tee -a "${GITHUB_STEP_SUMMARY}"
+          printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
+
+          print '## `brew linkage --reverse gstreamer`' >> "${GITHUB_STEP_SUMMARY}"
+          printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
+          brew linkage --reverse gstreamer | tee -a "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
