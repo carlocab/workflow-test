@@ -5,8 +5,15 @@ jobs:
   test:
     runs-on: macos-${{ matrix.macos-version }}
     strategy:
+      fail-fast: false
       matrix:
         macos-version: [13, 14, 15]
+        install-clt: [true, false]
+        exclude:
+          - macos-version: 13
+            install-clt: true
+          - macos-version: 14
+            install-clt: true
     steps:
       - name: Find newest installed LLVM
         id: llvm-version
@@ -36,6 +43,16 @@ jobs:
               printf("hello, world!\n");
             }
           SOURCE
+
+      - name: Check CLT installation
+        continue-on-error: true
+        run: |
+          stat /Library/Developer/CommandLineTools
+          ls -la /Library/Developer/CommandLineTools
+
+      - name: Install CLT
+        if: matrix.install-clt
+        run: sudo xcode-select --install
 
       - name: Compile `test.c`
         run: |
