@@ -8,32 +8,20 @@ jobs:
       fail-fast: false
       matrix:
         macos-version: [13, 14, 15]
-        install-clt: [true, false]
-        exclude:
-          - macos-version: 13
-            install-clt: true
-          - macos-version: 14
-            install-clt: true
+
     steps:
       - name: Find newest installed LLVM
-        id: llvm-version
         shell: brew ruby {0}
         run: |
           installed_llvm_formulae = Formula.installed.select { |formula| formula.name.match?(/^llvm(@\d+)?$/) }
           newest_llvm = installed_llvm_formulae.max_by(&:version)
-          github_output = ENV.fetch("GITHUB_OUTPUT")
-          File.open(github_output, "a") do |f|
-            f.puts("llvm-version=#{newest_llvm.version.major}")
+          github_path = ENV.fetch("GITHUB_PATH")
+          File.open(github_path, "a") do |f|
+            f.puts(newest_llvm.opt_bin)
           end
 
-      - name: Set `LLVM_PREFIX`
-        run: echo "LLVM_PREFIX=$(brew --prefix "llvm@${LLVM_VERSION}")" >> "${GITHUB_ENV}"
-        env:
-          LLVM_VERSION: ${{ steps.llvm-version.outputs.llvm-version }}
-
       - name: Print LLVM version info
-        run: |
-          "${LLVM_PREFIX}/bin/clang" --version
+        run: clang --version
 
       - name: Write test C file
         run: |
@@ -50,13 +38,8 @@ jobs:
           stat /Library/Developer/CommandLineTools
           ls -la /Library/Developer/CommandLineTools
 
-      - name: Install CLT
-        if: matrix.install-clt
-        run: sudo xcode-select --install
-
       - name: Compile `test.c`
-        run: |
-          "${LLVM_PREFIX}/bin/clang" -v test.c -o test
+        run: clang -v test.c -o test
 
       - name: Run `test`
         run: ./test
