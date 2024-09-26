@@ -50,6 +50,7 @@ jobs:
           # Taken from Homebrew install script
           clt_placeholder="/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress"
           sudo touch clt_placeholder
+          /usr/sbin/softwareupdate -l # Ensure CLT install is available
           sudo /usr/sbin/softwareupdate -i "Command Line Tools for Xcode-16.0"
           sudo /usr/bin/xcode-select --switch /Library/Developer/CommandLineTools
 
