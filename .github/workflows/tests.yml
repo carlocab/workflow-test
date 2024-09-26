@@ -21,7 +21,7 @@ jobs:
           installed_llvm_formulae = Formula.installed.select { |formula| formula.name.match?(/^llvm(@\d+)?$/) }
           newest_llvm = installed_llvm_formulae.max_by(&:version)
           github_env = ENV.fetch("GITHUB_ENV")
-          File.open(github_output, "a") do |f|
+          File.open(github_env, "a") do |f|
             f.puts("LLVM_PREFIX=#{newest_llvm.opt_prefix}")
           end
 
