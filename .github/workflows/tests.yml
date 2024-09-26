@@ -7,32 +7,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        macos-version: [13, 14, 15]
-        include:
-          - macos-version: 13
-            xcode: '15.2'
-          - macos-version: 13
-            xcode: '14.3.1'
-          - macos-version: 14
-            xcode: '16'
-          - macos-version: 14
-            xcode: '15.4'
-          - macos-version: 14
-            xcode: '14.3.1'
+        macos-version: [12, 13, 14, 15]
+        xcode: ['16', '15.4', '15.3', '15.2', '15.1', '15.0.1', '14.3.1', '14.2', '14.1', '14.0.1', '13.4.1', '13.3.1', '13.2.1', '13.1']
 
     steps:
       - name: Switch Xcode version
-        if: matrix.xcode != ''
         env:
-          XCODE_VERSION: ${{ matrix.xcode }}
+          XCODE_DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer'
         run: |
-          sudo xcode-select --switch "/Applications/Xcode_${XCODE_VERSION}.app/Contents/Developer"
+          if [[ -d "${XCODE_DEVELOPER_DIR}" ]]; then
+            sudo xcode-select --switch "${XCODE_DEVELOPER_DIR}"
+            exit 0
+          fi
+          exit 1
 
       - name: Print ld version info
         run: |
-          echo '```' >> "${GITHUB_OUTPUT}"
-          ld -v | tee -a "${GITHUB_OUTPUT}"
-          echo '```' >> "${GITHUB_OUTPUT}"
+          echo '```' >> "${GITHUB_STEP_SUMMARY}"
+          ld -v | tee -a "${GITHUB_STEP_SUMMARY}"
+          echo '```' >> "${GITHUB_STEP_SUMMARY}"
 
       - name: Write test C file
         run: |
@@ -45,13 +38,13 @@ jobs:
 
       - name: Compile `test.c`
         run: |
-          echo '```' >> "${GITHUB_OUTPUT}"
-          clang -v test.c -L"$(brew --prefix llvm)/lib" -o test 2>&1 | tee -a "${GITHUB_OUTPUT}"
-          echo '```' >> "${GITHUB_OUTPUT}"
+          echo '```' >> "${GITHUB_STEP_SUMMARY}"
+          clang -v test.c -L"$(brew --prefix llvm)/lib" -o test 2>&1 | tee -a "${GITHUB_STEP_SUMMARY}"
+          echo '```' >> "${GITHUB_STEP_SUMMARY}"
 
       - name: Check `test` linkage
         run: |
-          echo '```' >> "${GITHUB_OUTPUT}"
-          otool -L ./test | tee -a "${GITHUB_OUTPUT}"
-          echo '```' >> "${GITHUB_OUTPUT}"
+          echo '```' >> "${GITHUB_STEP_SUMMARY}"
+          otool -L ./test | tee -a "${GITHUB_STEP_SUMMARY}"
+          echo '```' >> "${GITHUB_STEP_SUMMARY}"
 
