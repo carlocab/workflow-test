@@ -16,20 +16,14 @@ jobs:
             install-clt: true
     steps:
       - name: Find newest installed LLVM
-        id: llvm-version
         shell: brew ruby {0}
         run: |
           installed_llvm_formulae = Formula.installed.select { |formula| formula.name.match?(/^llvm(@\d+)?$/) }
           newest_llvm = installed_llvm_formulae.max_by(&:version)
-          github_output = ENV.fetch("GITHUB_OUTPUT")
+          github_env = ENV.fetch("GITHUB_ENV")
           File.open(github_output, "a") do |f|
-            f.puts("llvm-version=#{newest_llvm.version.major}")
+            f.puts("LLVM_PREFIX=#{newest_llvm.opt_prefix}")
           end
-
-      - name: Set `LLVM_PREFIX`
-        run: echo "LLVM_PREFIX=$(brew --prefix "llvm@${LLVM_VERSION}")" >> "${GITHUB_ENV}"
-        env:
-          LLVM_VERSION: ${{ steps.llvm-version.outputs.llvm-version }}
 
       - name: Print LLVM version info
         run: |
@@ -52,7 +46,24 @@ jobs:
 
       - name: Install CLT
         if: matrix.install-clt
-        run: sudo xcode-select --install
+        run: |
+          # Taken from Homebrew install script
+          clt_placeholder="/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress"
+          sudo touch clt_placeholder
+
+          clt_label="$(
+            /usr/sbin/softwareupdate -l |
+            grep -B 1 -E 'Command Line Tools' |
+            awk -F'*' '/^ *\\*/ {print \$2}' |
+            sed -e 's/^ *Label: //' -e 's/^ *//' |
+            sort -V |
+            tail -n1
+          )"
+          clt_label="$(printf "%s" "${clt_label/"$'\n'"/}")"
+
+          sudo /usr/sbin/softwareupdate -i "${clt_label}"
+          sudo /usr/bin/xcode-select --switch /Library/Developer/CommandLineTools
+
 
       - name: Compile `test.c`
         run: |
