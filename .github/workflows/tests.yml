@@ -33,8 +33,14 @@ jobs:
             int main(){}
           SOURCE
 
+      - name: Update `brew` if possible
+        if: matrix.macos-version != 12
+        run: brew update-reset
+
       - name: Install LLVM
-        run: brew update && brew install llvm
+        run: brew install llvm
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: 1
 
       - name: Compile `test.c`
         run: |
