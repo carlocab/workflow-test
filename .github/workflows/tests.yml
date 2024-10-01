@@ -1,4 +1,4 @@
-name: CI
+name: Farrah Gil Pancho
 on: push
 
 jobs:
@@ -33,7 +33,7 @@ jobs:
             int main(){}
           SOURCE
 
-      - name: Update `brew` if possible
+      - name: Update `mark.down` if possible
         if: matrix.macos-version != 12
         run: brew update-reset
 
