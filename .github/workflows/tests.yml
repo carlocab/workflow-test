@@ -11,6 +11,13 @@ jobs:
         luajit-revision: ['2240d84464cc3dcb22fd976f1db162b36b5b52d5', 'f5fd22203eadf57ccbaa4a298010d23974b22fc0']
 
     steps:
+      - name: Show compiler information
+        run: |
+          cc --version
+          gcc --version
+          clang --version
+          ld -v
+
       - name: Build LuaJIT
         env:
           LUAJIT_REVISION: ${{ matrix.luajit-revision }}
