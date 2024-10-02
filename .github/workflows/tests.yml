@@ -14,9 +14,12 @@ jobs:
       - name: Show compiler information
         run: |
           cc --version
+          echo
           gcc --version
+          echo
           clang --version
-          ld -v
+          echo
+          ld -version_details
 
       - name: Build LuaJIT
         env:
