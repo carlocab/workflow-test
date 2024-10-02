@@ -8,39 +8,25 @@ jobs:
       fail-fast: false
       matrix:
         macos-version: [13, 14, 15]
+        luajit-revision: ['2240d84464cc3dcb22fd976f1db162b36b5b52d5', 'f5fd22203eadf57ccbaa4a298010d23974b22fc0']
 
     steps:
-      - name: Find newest installed LLVM
-        shell: brew ruby {0}
+      - name: Build LuaJIT
+        env:
+          LUAJIT_REVISION: ${{ matrix.luajit-revision }}
         run: |
-          installed_llvm_formulae = Formula.installed.select { |formula| formula.name.match?(/^llvm(@\d+)?$/) }
-          newest_llvm = installed_llvm_formulae.max_by(&:version)
-          github_path = ENV.fetch("GITHUB_PATH")
-          File.open(github_path, "a") do |f|
-            f.puts(newest_llvm.opt_bin)
-          end
+          git clone https://github.com/LuaJIT/LuaJIT.git
+          git -C LuaJIT checkout "${LUAJIT_REVISION}"
+          export MACOSX_DEPLOYMENT_TARGET="$(sw_vers -productVersion | cut -f1 -d. | tr -d '\n')"
+          make -C LuaJIT -j
+          ./LuaJIT/src/luajit -v
 
-      - name: Print LLVM version info
-        run: clang --version
-
-      - name: Write test C file
+      - name: Build LPeg
         run: |
-          cat <<'SOURCE' > test.c
-            #include <stdio.h>
-            int main() {
-              printf("hello, world!\n");
-            }
-          SOURCE
+          curl -kL "http://www.inf.puc-rio.br/~roberto/lpeg/lpeg-1.1.0.tar.gz" | tar x
+          make -C lpeg-1.1.0 LUADIR="$PWD/LuaJIT/src" macosx -j
 
-      - name: Check CLT installation
-        continue-on-error: true
+      - name: Test LPeg
         run: |
-          stat /Library/Developer/CommandLineTools
-          ls -la /Library/Developer/CommandLineTools
-
-      - name: Compile `test.c`
-        run: clang -v test.c -o test
-
-      - name: Run `test`
-        run: ./test
-
+          cd lpeg-1.1.0
+          ../LuaJIT/src/luajit test.lua
