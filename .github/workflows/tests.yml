@@ -8,39 +8,12 @@ jobs:
       fail-fast: false
       matrix:
         macos-version: [13, 14, 15]
+        overwrite: [true, false]
+        flag: ['--overwrite']
 
     steps:
-      - name: Find newest installed LLVM
-        shell: brew ruby {0}
-        run: |
-          installed_llvm_formulae = Formula.installed.select { |formula| formula.name.match?(/^llvm(@\d+)?$/) }
-          newest_llvm = installed_llvm_formulae.max_by(&:version)
-          github_path = ENV.fetch("GITHUB_PATH")
-          File.open(github_path, "a") do |f|
-            f.puts(newest_llvm.opt_bin)
-          end
-
-      - name: Print LLVM version info
-        run: clang --version
-
-      - name: Write test C file
-        run: |
-          cat <<'SOURCE' > test.c
-            #include <stdio.h>
-            int main() {
-              printf("hello, world!\n");
-            }
-          SOURCE
-
-      - name: Check CLT installation
-        continue-on-error: true
-        run: |
-          stat /Library/Developer/CommandLineTools
-          ls -la /Library/Developer/CommandLineTools
-
-      - name: Compile `test.c`
-        run: clang -v test.c -o test
-
-      - name: Run `test`
-        run: ./test
-
+      - run: brew update
+      - run: brew deps llvm | xargs brew fetch --concurrency=64 llvm
+      - run: brew install ${FLAG} llvm
+        env:
+          FLAG: ${{ matrix.overwrite && '--overwrite' || '' }}
