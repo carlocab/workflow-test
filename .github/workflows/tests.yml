@@ -11,7 +11,11 @@ jobs:
         overwrite: [true, false]
 
     steps:
+      - run: brew developer on
       - run: brew update
+      - run: |
+          git -C "$(brew --repository)" fetch origin gh-install-overwrite
+          git -C "$(brew --repository)" checkout gh-install-overwrite
       - run: brew deps llvm | xargs brew fetch --concurrency=64 llvm
       - run: brew install ${FLAG} llvm
         env:
