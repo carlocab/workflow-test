@@ -9,7 +9,6 @@ jobs:
       matrix:
         macos-version: [13, 14, 15]
         overwrite: [true, false]
-        flag: ['--overwrite']
 
     steps:
       - run: brew update
