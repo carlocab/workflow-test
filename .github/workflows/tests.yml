@@ -26,6 +26,7 @@ jobs:
           </array>
           </plist>
           EOF
+      - run: sudo rm -rf /Library/Frameworks/Python.framework
       - run: |
           sudo installer -pkg ./python-3.13.0-macos11.pkg \
                          -applyChoiceChangesXML ./choicechanges.plist \
@@ -36,9 +37,9 @@ jobs:
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
           ls -lRa /Library/Frameworks/Python.framework | tee -a "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-
+      - run: find /usr/local -mindepth 1 -delete
       - run: |
           printf '### `/usr/local` Directory Layout\n' >>"${GITHUB_STEP_SUMMARY}"
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-          ls -lRa /usr/local | tee -a "${GITHUB_STEP_SUMMARY}"
+          /bin/ls -lRa /usr/local | tee -a "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
