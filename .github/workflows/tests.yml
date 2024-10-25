@@ -34,8 +34,7 @@ jobs:
           </array>
           </plist>
           EOF
-      - run: sudo find /usr/local -lname '*/Library/Frameworks/Python.framework/*' -delete
-      - run: sudo rm -rf /Library/Frameworks/Python.framework
+      - run: sudo rm -rf /Library/Frameworks/*
       - run: sudo find /usr/local -mindepth 1 -delete
       - run: |
           sudo installer -pkg ./python-3.13.0-macos11.pkg \
@@ -44,9 +43,9 @@ jobs:
       - run: rm -f python-3.13.0-macos11.pkg
       - run: brew install findutils
       - run: |
-          printf '### Python Framework Directory Layout\n' >>"${GITHUB_STEP_SUMMARY}"
+          printf '### PythonT Framework Directory Layout\n' >>"${GITHUB_STEP_SUMMARY}"
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-          gfind /Library/Frameworks/Python.framework -executable -print | tee -a "${GITHUB_STEP_SUMMARY}"
+          gfind /Library/Frameworks/PythonT.framework -executable -print | tee -a "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
       - run: |
           printf '### `/usr/local` Directory Layout\n' >>"${GITHUB_STEP_SUMMARY}"
@@ -57,3 +56,7 @@ jobs:
       - run: /usr/local/bin/python3.13t -c "import sys; print(sys._is_gil_enabled())"
       - run: file /usr/local/bin/python3.13t
       - run: readlink /usr/local/bin/python3.13t
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PythonT.framework
+          path: /Library/Frameworks/PythonT.framework
