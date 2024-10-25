@@ -41,16 +41,18 @@ jobs:
                          -applyChoiceChangesXML ./choicechanges.plist \
                          -target /
       - run: rm -f python-3.13.0-macos11.pkg
+      - run: brew install findutils
       - run: |
           printf '### Python Framework Directory Layout\n' >>"${GITHUB_STEP_SUMMARY}"
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
+          gfind /Library/Frameworks/Python.framework -executable -print | tee -a "${GITHUB_STEP_SUMMARY}"
           ls -lRa /Library/Frameworks/Python.framework | tee -a "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
       - run: sudo find /usr/local -mindepth 1 -delete
       - run: |
           printf '### `/usr/local` Directory Layout\n' >>"${GITHUB_STEP_SUMMARY}"
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-          /bin/ls -lRa /usr/local | tee -a "${GITHUB_STEP_SUMMARY}"
+          gfind /usr/local -executable -print | tee -a "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
       - run: /Library/Frameworks/Python.framework/Versions/Current/bin/python3 -VV
       - run: /Library/Frameworks/Python.framework/Versions/Current/bin/python3 -c "import sys; print(sys._is_gil_enabled())"
