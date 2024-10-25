@@ -36,6 +36,7 @@ jobs:
           EOF
       - run: sudo find /usr/local -lname '*/Library/Frameworks/Python.framework/*' -delete
       - run: sudo rm -rf /Library/Frameworks/Python.framework
+      - run: sudo find /usr/local -mindepth 1 -delete
       - run: |
           sudo installer -pkg ./python-3.13.0-macos11.pkg \
                          -applyChoiceChangesXML ./choicechanges.plist \
@@ -48,7 +49,6 @@ jobs:
           gfind /Library/Frameworks/Python.framework -executable -print | tee -a "${GITHUB_STEP_SUMMARY}"
           ls -lRa /Library/Frameworks/Python.framework | tee -a "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-      - run: sudo find /usr/local -mindepth 1 -delete
       - run: |
           printf '### `/usr/local` Directory Layout\n' >>"${GITHUB_STEP_SUMMARY}"
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
