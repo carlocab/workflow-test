@@ -44,5 +44,5 @@ jobs:
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
           /bin/ls -lRa /usr/local | tee -a "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-      - run: /Library/Frameworks/Python.framework/Versions/Current/bin/python -VV
-      - run: /Library/Frameworks/Python.framework/Versions/Current/bin/python -c "import sys; print(sys._is_gil_enabled())"
+      - run: /Library/Frameworks/Python.framework/Versions/Current/bin/python3 -VV
+      - run: /Library/Frameworks/Python.framework/Versions/Current/bin/python3 -c "import sys; print(sys._is_gil_enabled())"
