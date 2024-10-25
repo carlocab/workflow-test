@@ -53,5 +53,7 @@ jobs:
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
           gfind /usr/local -executable -print | tee -a "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-      - run: /Library/Frameworks/Python.framework/Versions/Current/bin/python3 -VV
-      - run: /Library/Frameworks/Python.framework/Versions/Current/bin/python3 -c "import sys; print(sys._is_gil_enabled())"
+      - run: /usr/local/bin/python3.13t -VV
+      - run: /usr/local/bin/python3.13t -c "import sys; print(sys._is_gil_enabled())"
+      - run: file /usr/local/bin/python3.13t
+      - run: readlink /usr/local/bin/python3.13t
