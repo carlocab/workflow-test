@@ -30,14 +30,8 @@ jobs:
       - run: sudo rm -rf /Library/Frameworks/Python.framework
       - run: |
           sudo installer -pkg ./python-3.13.0-macos11.pkg \
-                         -applyChoiceChangesXML ./choicechanges.plist \
-                         -showChoicesAfterApplyingChangesXML ./choiceresults.plist \
+                         -showChoicesAfterApplyingChangesXML ./choicechanges.plist \
                          -target /
-      - run: |
-          printf '### Installer Choices XML\n' >>"${GITHUB_STEP_SUMMARY}"
-          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-          tee -a "${GITHUB_STEP_SUMMARY}" <choiceresults.plist
-          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
       - run: rm -f python-3.13.0-macos11.pkg
       - run: |
           printf '### Python Framework Directory Layout\n' >>"${GITHUB_STEP_SUMMARY}"
