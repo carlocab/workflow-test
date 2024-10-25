@@ -38,9 +38,11 @@ jobs:
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
           ls -lRa /Library/Frameworks/Python.framework | tee -a "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-      - run: find /usr/local -mindepth 1 -delete
+      - run: sudo find /usr/local -mindepth 1 -delete
       - run: |
           printf '### `/usr/local` Directory Layout\n' >>"${GITHUB_STEP_SUMMARY}"
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-          find /usr/local -lname '*/Library/Frameworks/Python.framework/*' -print | tee -a "${GITHUB_STEP_SUMMARY}"
+          /bin/ls -lRa /usr/local | tee -a "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
+      - run: /Library/Frameworks/Python.framework/Versions/Current/bin/python -VV
+      - run: /Library/Frameworks/Python.framework/Versions/Current/bin/python -c "import sys; print(sys._is_gil_enabled())"
