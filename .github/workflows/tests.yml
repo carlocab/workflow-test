@@ -47,7 +47,6 @@ jobs:
           printf '### Python Framework Directory Layout\n' >>"${GITHUB_STEP_SUMMARY}"
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
           gfind /Library/Frameworks/Python.framework -executable -print | tee -a "${GITHUB_STEP_SUMMARY}"
-          ls -lRa /Library/Frameworks/Python.framework | tee -a "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
       - run: |
           printf '### `/usr/local` Directory Layout\n' >>"${GITHUB_STEP_SUMMARY}"
