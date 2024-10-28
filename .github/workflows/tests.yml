@@ -3,60 +3,8 @@ on: push
 
 jobs:
   test:
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
-      - run: curl -O https://www.python.org/ftp/python/3.13.0/python-3.13.0-macos11.pkg
-      - run: |
-          # create installer choice changes to customize the install:
-          #    enable the PythonTFramework-3.13 package
-          #    while accepting the other defaults (install all other packages)
-          cat > ./choicechanges.plist <<EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <array>
-                  <dict>
-                          <key>attributeSetting</key>
-                          <integer>1</integer>
-                          <key>choiceAttribute</key>
-                          <string>selected</string>
-                          <key>choiceIdentifier</key>
-                          <string>org.python.Python.PythonTFramework-3.13</string>
-                  </dict>
-                  <dict>
-                          <key>attributeSetting</key>
-                          <integer>1</integer>
-                          <key>choiceAttribute</key>
-                          <string>enabled</string>
-                          <key>choiceIdentifier</key>
-                          <string>org.python.Python.PythonTFramework-3.13</string>
-                  </dict>
-          </array>
-          </plist>
-          EOF
-      - run: sudo rm -rf /Library/Frameworks/*
-      - run: sudo find /usr/local -mindepth 1 -delete
-      - run: |
-          sudo installer -pkg ./python-3.13.0-macos11.pkg \
-                         -applyChoiceChangesXML ./choicechanges.plist \
-                         -target /
-      - run: rm -f python-3.13.0-macos11.pkg
-      - run: brew install findutils
-      - run: |
-          printf '### PythonT Framework Directory Layout\n' >>"${GITHUB_STEP_SUMMARY}"
-          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-          gfind /Library/Frameworks/PythonT.framework -executable -print | tee -a "${GITHUB_STEP_SUMMARY}"
-          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-      - run: |
-          printf '### `/usr/local` Directory Layout\n' >>"${GITHUB_STEP_SUMMARY}"
-          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-          gfind /usr/local -executable -print | tee -a "${GITHUB_STEP_SUMMARY}"
-          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-      - run: /usr/local/bin/python3.13t -VV
-      - run: /usr/local/bin/python3.13t -c "import sys; print(sys._is_gil_enabled())"
-      - run: file /usr/local/bin/python3.13t
-      - run: readlink /usr/local/bin/python3.13t
-      - uses: actions/upload-artifact@v4
-        with:
-          name: PythonT.framework
-          path: /Library/Frameworks/PythonT.framework
+      - run: brew update
+      - run: brew install gcc libgccjit
+      - run: brew test --verbose libgccjit
