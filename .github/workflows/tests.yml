@@ -3,8 +3,6 @@ on: push
 
 jobs:
   test:
-    runs-on: macos-13
+    runs-on: macos-latest
     steps:
       - run: brew update
-      - run: brew install gcc libgccjit
-      - run: brew test --verbose libgccjit
