@@ -3,6 +3,16 @@ on: push
 
 jobs:
   test:
-    runs-on: macos-latest
+    strategy:
+      matrix:
+        version: [12, 13, 14, 15]
+    runs-on: macos-${{ matrix.version }}
     steps:
-      - run: brew update
+      - run: |
+          printf '### `uname -r` output on macOS %d\n' "${VERSION}" >>"${GITHUB_STEP_SUMMARY}"
+          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
+          uname -r | tee -a "${GITHUB_STEP_SUMMARY}"
+          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
+        env:
+          VERSION: ${{ matrix.version }}
+
