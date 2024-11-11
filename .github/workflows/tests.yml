@@ -4,9 +4,11 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: powershell
     steps:
       - name: Set up WSL
-        shell: powershell
         run: |
           wsl --update
           wsl --version
@@ -23,15 +25,14 @@ jobs:
           ubuntu2204 install --root
           wsl --set-default Ubuntu-22.04
           wsl --list --verbose
-          wsl --exec apt-get update -y
-          wsl --exec apt-get install -y systemd
-          wsl --exec uname -a
-          wsl --exec command -v journalctl
-          wsl --exec command journalctl
 
-      - name: Run commands
+      - name: Install prerequisites
         run: |
-          uname -a
-          uname -v
-          command -v journalctl
-          journalctl
+          wsl --exec apt-get update -y
+          wsl --exec apt-get install -y systemd which
+
+      - run: wsl --exec uname -a
+
+      - run: wsl --exec which -a journalctl
+
+      - run: wsl --exec journalctl
