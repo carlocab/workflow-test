@@ -23,5 +23,15 @@ jobs:
           ubuntu2204 install --root
           wsl --set-default Ubuntu-22.04
           wsl --list --verbose
+          wsl --exec apt-get update -y
+          wsl --exec apt-get install -y systemd
           wsl --exec uname -a
-          wsl --exec uname -v
+          wsl --exec command -v journalctl
+          wsl --exec command journalctl
+
+      - name: Run commands
+        run: |
+          uname -a
+          uname -v
+          command -v journalctl
+          journalctl
