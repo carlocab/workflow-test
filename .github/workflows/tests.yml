@@ -29,10 +29,11 @@ jobs:
       - name: Install prerequisites
         run: |
           wsl --exec apt-get update -y
-          wsl --exec apt-get install -y systemd which
+          wsl --exec apt-get install -y systemd
 
       - run: wsl --exec uname -a
 
       - run: wsl --exec which -a journalctl
 
       - run: wsl --exec journalctl
+        if: always()
