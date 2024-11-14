@@ -1,19 +1,20 @@
 name: CI
 on: [push, pull_request]
 
+env:
+  HOMEBREW_NO_INSTALL_FROM_API: 1
+
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        runner: [macos-latest, ubuntu-latest]
     steps:
-      - name: Install prerequisites
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y systemd
+      - uses: Homebrew/actions/setup-homebrew@master
+        with:
+          core: true
 
-      - run: uname -a
+      - run: brew install --build-from-source glib
 
-      - run: which -a journalctl
-
-      - run: journalctl
-
-      - run: echo '${{ defaults.run.shell }}'
+      - run: python3 -c "from gi.repository import GLib"
