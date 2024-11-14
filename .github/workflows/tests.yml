@@ -15,7 +15,7 @@ jobs:
         with:
           core: true
 
-      - run: brew uninstall --force glib
+      - run: brew uninstall --force --ignore-dependencies glib
 
       - run: brew install --build-from-source glib
 
