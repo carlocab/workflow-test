@@ -6,17 +6,12 @@ env:
 
 jobs:
   test:
-    runs-on: ${{ matrix.runner }}
-    strategy:
-      matrix:
-        runner: [macos-latest, ubuntu-latest]
+    runs-on: macos-latest
     steps:
       - uses: Homebrew/actions/setup-homebrew@master
-        with:
-          core: true
 
       - run: brew uninstall --force --ignore-dependencies glib
 
       - run: brew install --build-from-source glib
 
-      - run: python3 -c "from gi.repository import GLib"
+      - run: /opt/homebrew/bin/python3 -c "from gi.repository import GLib"
