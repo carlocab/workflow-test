@@ -18,7 +18,6 @@ jobs:
           cd "$(brew --repository homebrew/core)"
           git fetch origin pull/197696/head:glib-pkgconf
           git checkout glib-pkgconf
-          git show HEAD
 
       - run: brew install --build-from-source glib
 
