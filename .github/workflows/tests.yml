@@ -17,6 +17,8 @@ jobs:
       - run: |
          cd "$(brew --repository homebrew/core)"
          gh pr checkout 197696
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - run: brew install --build-from-source glib
 
