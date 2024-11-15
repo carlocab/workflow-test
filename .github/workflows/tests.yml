@@ -9,8 +9,14 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: Homebrew/actions/setup-homebrew@master
+        with:
+          core: true
 
       - run: brew uninstall --force --ignore-dependencies glib
+
+      - run: |
+         cd "$(brew --repository homebrew/core)"
+         gh pr checkout 197696
 
       - run: brew install --build-from-source glib
 
