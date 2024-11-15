@@ -15,12 +15,9 @@ jobs:
       - run: brew uninstall --force --ignore-dependencies glib
 
       - run: |
-         brew tap homebrew/core
-         brew update-reset homebrew/core
-         cd "$(brew --repository homebrew/core)"
-         gh pr checkout 197696
-        env:
-          GH_TOKEN: ${{ github.token }}
+          cd "$(brew --repository homebrew/core)"
+          git fetch origin pull/197696/head:glib-pkgconf
+          git checkout glib-pkgconf
 
       - run: brew install --build-from-source glib
 
