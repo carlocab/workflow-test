@@ -3,6 +3,7 @@ on: [push, pull_request]
 
 env:
   HOMEBREW_NO_INSTALL_FROM_API: 1
+  HOMEBREW_NO_AUTO_UPDATE: 1
 
 jobs:
   test:
@@ -18,7 +19,8 @@ jobs:
 
       - run: |
           cd "$(brew --repository homebrew/core)"
-          git checkout e3562695f2369d96d7a5568f50dba3504715e22e -- Formula/m/meson.rb
+          git fetch origin pull/197696/head:glib-pkgconf
+          git checkout glib-pkgconf
 
       - run: brew install --build-from-source glib
 
