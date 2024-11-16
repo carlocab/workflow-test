@@ -12,13 +12,13 @@ jobs:
         with:
           core: true
 
+      - run: echo "HOMEBREW_NO_INSTALL_FROM_API=1" >>"${GITHUB_ENV}"
+
       - run: brew uninstall --force --ignore-dependencies glib
 
       - run: |
           cd "$(brew --repository homebrew/core)"
-          git fetch origin pull/197696/head:glib-pkgconf
-          git checkout glib-pkgconf
-          git show HEAD
+          git checkout e3562695f2369d96d7a5568f50dba3504715e22e -- Formula/m/meson.rb
 
       - run: brew install --build-from-source glib
 
