@@ -1,18 +1,51 @@
 name: CI
-on: push
+on: [push, pull_request]
 
 jobs:
   test:
-    strategy:
-      matrix:
-        version: [12, 13, 14, 15]
-    runs-on: macos-${{ matrix.version }}
+    runs-on: ubuntu-latest
     steps:
-      - run: |
-          printf '### `uname -r` output on macOS %d\n' "${VERSION}" >>"${GITHUB_STEP_SUMMARY}"
-          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-          uname -r | tee -a "${GITHUB_STEP_SUMMARY}"
-          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-        env:
-          VERSION: ${{ matrix.version }}
+      - name: Upload metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: event_payload
+          path: ${{ github.event_path }}
 
+      - name: Dump metadata
+        run: |
+          printf '### Contents of `%s`\n' "${GITHUB_EVENT_PATH}" >>"${GITHUB_STEP_SUMMARY}"
+          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
+          jq . "${GITHUB_EVENT_PATH}" | tee -a "${GITHUB_STEP_SUMMARY}"
+          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
+
+      - name: Show contents of `github.event` object
+        run: |
+          printf '### Contents of `github.event`\n' >>"${GITHUB_STEP_SUMMARY}"
+          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
+          jq . <<<"${GITHUB_EVENT_DATA}" | tee -a "${GITHUB_STEP_SUMMARY}"
+          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
+          jq . <<<"${GITHUB_EVENT_DATA}" >github_event.json
+        env:
+          GITHUB_EVENT_DATA: ${{ toJSON(github.event) }}
+
+      - name: Upload `github.event` data
+        uses: actions/upload-artifact@v4
+        with:
+          name: github_event_payload
+          path: github_event.json
+
+      - name: Check if `github_event.json` and `event.json` are different
+        run: |
+          MESSAGE_PREFIX="::notice ::${GITHUB_EVENT_PATH} and github_event.json are"
+          if diff "${GITHUB_EVENT_PATH}" github_event.json; then
+            printf '%s different\n' "${MESSAGE_PREFIX}"
+          else
+            printf '%s identical\n' "${MESSAGE_PREFIX}"
+          fi
+
+      - name: Show `GITHUB_*` environment variables
+        run: |
+          printf '### `GITHUB_*` environment variables\n' >>"${GITHUB_STEP_SUMMARY}"
+          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
+          env | grep -E '^GITHUB_' | sort | tee -a "${GITHUB_STEP_SUMMARY}"
+          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
