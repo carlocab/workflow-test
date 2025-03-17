@@ -3,16 +3,8 @@ on: push
 
 jobs:
   test:
-    strategy:
-      matrix:
-        version: [12, 13, 14, 15]
-    runs-on: macos-${{ matrix.version }}
+    runs-on: ubuntu-22.04-arm
+    container:
+      image: ghcr.io/homebrew/ubuntu22.04:master
     steps:
-      - run: |
-          printf '### `uname -r` output on macOS %d\n' "${VERSION}" >>"${GITHUB_STEP_SUMMARY}"
-          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-          uname -r | tee -a "${GITHUB_STEP_SUMMARY}"
-          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-        env:
-          VERSION: ${{ matrix.version }}
-
+      - run: brew ruby -e 'puts Hardware::CPU.arch'
