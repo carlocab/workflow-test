@@ -21,3 +21,5 @@ jobs:
       - run: gcc-14 -dumpmachine
 
       - run: gcc-14 -print-multiarch
+
+      - run: gcc-14 -print-file-name=fixincl
