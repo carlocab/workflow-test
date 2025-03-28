@@ -5,14 +5,19 @@ jobs:
   test:
     strategy:
       matrix:
-        version: [12, 13, 14, 15]
-    runs-on: macos-${{ matrix.version }}
+        runner: ['ubuntu-latest', 'ubuntu-22.04-arm']
+    runs-on: ${{ matrix.runner }}
+    container:
+      image: ghcr.io/homebrew/ubuntu22.04:master
+      options: --user=linuxbrew
     steps:
-      - run: |
-          printf '### `uname -r` output on macOS %d\n' "${VERSION}" >>"${GITHUB_STEP_SUMMARY}"
-          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-          uname -r | tee -a "${GITHUB_STEP_SUMMARY}"
-          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-        env:
-          VERSION: ${{ matrix.version }}
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
 
+      - run: brew install gcc
+
+      - run: which -a gcc-14
+
+      - run: gcc-14 -dumpmachine
+
+      - run: gcc-14 -print-multiarch
