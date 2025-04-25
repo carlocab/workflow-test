@@ -9,9 +9,9 @@ jobs:
     runs-on: macos-${{ matrix.version }}
     steps:
       - run: |
-          printf '### `uname -r` output on macOS %d\n' "${VERSION}" >>"${GITHUB_STEP_SUMMARY}"
+          printf '### `file /usr/bin/trash` output on macOS %d\n' "${VERSION}" >>"${GITHUB_STEP_SUMMARY}"
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-          uname -r | tee -a "${GITHUB_STEP_SUMMARY}"
+          file /usr/bin/trash | tee -a "${GITHUB_STEP_SUMMARY}"
           printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
         env:
           VERSION: ${{ matrix.version }}
