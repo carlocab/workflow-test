@@ -39,6 +39,7 @@ jobs:
             /^\+\+>>>>>>> / {inconflict=0; next}
             inconflict
         run: |
+          cd "$(brew --repository homebrew/core)"
           GIT_DIFF="$(git diff)"
           cat <<DIFF >diff.md
           \`\`\`diff
