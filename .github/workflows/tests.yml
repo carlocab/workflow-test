@@ -3,16 +3,15 @@ on: push
 
 jobs:
   test:
-    strategy:
-      matrix:
-        version: [12, 13, 14, 15]
-    runs-on: macos-${{ matrix.version }}
+    runs-on: ubuntu-latest
     steps:
-      - run: |
-          printf '### `file /usr/bin/trash` output on macOS %d\n' "${VERSION}" >>"${GITHUB_STEP_SUMMARY}"
-          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-          file /usr/bin/trash | tee -a "${GITHUB_STEP_SUMMARY}"
-          printf '```\n' >>"${GITHUB_STEP_SUMMARY}"
-        env:
-          VERSION: ${{ matrix.version }}
+      - uses: actions/checkout@main
+        with:
+          repository: 'Homebrew/homebrew-core'
+          fetch-depth: 0
 
+      - run: |
+          gcb old-main 4f8215e39463753cc71d78650f021112eb776ff2
+          gcb feature f3ecdbd01a5bdf94430d4f974b27525f8e56045e
+          git merge --no-commit --no-ff old-main
+          git diff
