@@ -39,4 +39,5 @@ jobs:
             pre_grep="$(git diff | awk "${AWK_SCRIPT}")"
             post_grep="$(grep -E "${BOTTLE_LINE_REGEX}" <<<"${pre_grep}")"
             diff <(echo "${pre_grep}") <(echo "${post_grep}")
+            echo "diff exit code: $?"
           fi
