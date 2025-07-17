@@ -31,6 +31,5 @@ jobs:
           git checkout -b feature f3ecdbd01a5bdf94430d4f974b27525f8e56045e
           if ! git merge --no-commit --no-ff old-main
           then
-            set +o pipefail
             git diff | awk "${AWK_SCRIPT}" | grep -E "${BOTTLE_LINE_REGEX}"
           fi
