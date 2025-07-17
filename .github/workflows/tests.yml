@@ -33,11 +33,21 @@ jobs:
           git config --global user.name "Carlo Cabrera"
           git checkout -b old-main 4f8215e39463753cc71d78650f021112eb776ff2
           git checkout -b feature f3ecdbd01a5bdf94430d4f974b27525f8e56045e
-          if ! git merge --no-commit --no-ff old-main
+        run: |
+          GIT_DIFF="$(git diff)"
+          cat <<DIFF >diff.md
+          \`\`\`diff
+          ${GIT_DIFF}
+          \`\`\`
+          DIFF
+
+          HUNKS_WITHOUT_CONFLICT_MARKERS="$(awk "${AWK_SCRIPT}" <<<"${GIT_DIFF}")"
+
+          resolvable=false
+          if ! grep --extended-regexp --invert-match --quiet "${BOTTLE_LINE_REGEX}" <<<"${HUNKS_WITHOUT_CONFLICT_MARKERS}"
           then
-            set +o pipefail
-            pre_grep="$(git diff | awk "${AWK_SCRIPT}")"
-            post_grep="$(grep -E "${BOTTLE_LINE_REGEX}" <<<"${pre_grep}")"
-            diff <(echo "${pre_grep}") <(echo "${post_grep}")
-            echo "diff exit code: $?"
+            resolvable=true
           fi
+          echo "resolvable=${resolvable}" >>"${GITHUB_OUTPUT}"
+
+          cat diff.md
