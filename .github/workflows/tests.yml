@@ -36,5 +36,5 @@ jobs:
           if ! git merge --no-commit --no-ff old-main
           then
             set +o pipefail
-            git diff | awk "${AWK_SCRIPT}" | grep -E "${BOTTLE_LINE_REGEX}"
+            git diff | awk "${AWK_SCRIPT}"
           fi
