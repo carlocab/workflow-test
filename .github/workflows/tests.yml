@@ -4,19 +4,26 @@ on: push
 jobs:
   test:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/homebrew/ubuntu22.04:main
     steps:
-      - uses: actions/checkout@main
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@main
         with:
-          repository: 'Homebrew/homebrew-core'
-          fetch-depth: 0
+          core: true
+          cask: false
+          test-bot: false
 
-      - env:
+      - name: Do the stuff
+        env:
           BOTTLE_LINE_REGEX: '^\s?\+s*sha256.*:\s+"[a-f0-9]{64}"'
           AWK_SCRIPT: |
             /^\+\+<<<<<<< / {inconflict=1; next}
             /^\+\+=======/ {next}
             /^\+\+>>>>>>> / {inconflict=0; next}
             inconflict
+        working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
         run: |
           git config --global user.email "github@carlo.cab"
           git config --global user.name "Carlo Cabrera"
