@@ -21,7 +21,7 @@ jobs:
 
       - name: Do the stuff
         env:
-          BOTTLE_LINE_REGEX: '^\s?\+s*sha256.*:\s+"[a-f0-9]{64}"'
+          BOTTLE_LINE_REGEX: '^\s?\+\s*sha256.*:\s+"[a-f0-9]{64}"'
           AWK_SCRIPT: |
             /^\+\+<<<<<<< / {inconflict=1; next}
             /^\+\+=======/ {next}
@@ -36,5 +36,5 @@ jobs:
           if ! git merge --no-commit --no-ff old-main
           then
             set +o pipefail
-            git diff | awk "${AWK_SCRIPT}"
+            git diff | awk "${AWK_SCRIPT}" | grep -E "${BOTTLE_LINE_REGEX}"
           fi
