@@ -23,8 +23,10 @@ jobs:
             /^\+\+=======/ {next}
             /^\+\+>>>>>>> / {inconflict=0; next}
             inconflict
-        working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
         run: |
+          cd "$(brew --repository homebrew/core)"
+          git config --global user.email "github@carlo.cab"
+          git config --global user.name "Carlo Cabrera"
           git checkout -b old-main 4f8215e39463753cc71d78650f021112eb776ff2
           git checkout -b feature f3ecdbd01a5bdf94430d4f974b27525f8e56045e
           if ! git merge --no-commit --no-ff old-main
