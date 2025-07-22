@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04-arm
     container:
       image: ghcr.io/homebrew/ubuntu22.04:main
     steps:
@@ -22,39 +22,11 @@ jobs:
           cask: false
           test-bot: false
 
-      - name: Simulate merge conflict
-        run: |
-          cd "$(brew --repository homebrew/core)"
-          git config --global user.email "github@carlo.cab"
-          git config --global user.name "Carlo Cabrera"
-          git checkout -b old-main 4f8215e39463753cc71d78650f021112eb776ff2
-          git checkout -b feature f3ecdbd01a5bdf94430d4f974b27525f8e56045e
-          git merge --no-commit --no-ff old-main ||:
+      - run: brew config
 
-      - name: Do the stuff
-        env:
-          BOTTLE_LINE_REGEX: '^\s?\+\s*sha256.*:\s+"[a-f0-9]{64}"'
-          AWK_SCRIPT: |
-            /^\+\+<<<<<<< / {inconflict=1; next}
-            /^\+\+=======/ {next}
-            /^\+\+>>>>>>> / {inconflict=0; next}
-            inconflict
-        run: |
-          cd "$(brew --repository homebrew/core)"
-          GIT_DIFF="$(git diff)"
-          cat <<DIFF >diff.md
-          \`\`\`diff
-          ${GIT_DIFF}
-          \`\`\`
-          DIFF
+      - name: set `HOMEBREW_MAKE_JOBS`
+        run: echo "HOMEBREW_MAKE_JOBS=2" >>"${GITHUB_ENV}"
 
-          HUNKS_WITHOUT_CONFLICT_MARKERS="$(awk "${AWK_SCRIPT}" <<<"${GIT_DIFF}")"
+      - run: brew config
 
-          resolvable=false
-          if ! grep --extended-regexp --invert-match --quiet "${BOTTLE_LINE_REGEX}" <<<"${HUNKS_WITHOUT_CONFLICT_MARKERS}"
-          then
-            resolvable=true
-          fi
-          echo "resolvable=${resolvable}" >>"${GITHUB_OUTPUT}"
-
-          cat diff.md
+      - run: brew install --build-bottle qt
