@@ -25,7 +25,7 @@ jobs:
       - run: brew config
 
       - name: set `HOMEBREW_MAKE_JOBS`
-        run: echo "HOMEBREW_MAKE_JOBS=2" >>"${GITHUB_ENV}"
+        run: echo "HOMEBREW_MAKE_JOBS=1" >>"${GITHUB_ENV}"
 
       - run: brew config
 
