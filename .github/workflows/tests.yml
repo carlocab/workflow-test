@@ -56,6 +56,6 @@ jobs:
           ./eza --help
           ./eza --version
 
-      - run: mv ez "$(brew --prefix eza)/bin"
+      - run: mv eza "$(brew --prefix eza)/bin/"
 
       - run: brew test --verbose eza
