@@ -38,7 +38,12 @@ jobs:
       - run: brew install --build-from-source eza
 
       - run: |
-          touch hello
+          touch hello goodbye foo bar
+          mkdir baz
+
+          ls
+          ls -la
+      - run: |
           eza
           eza -l
           eza -a
