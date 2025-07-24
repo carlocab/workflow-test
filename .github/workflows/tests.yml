@@ -14,7 +14,6 @@ jobs:
     container:
       image: ghcr.io/homebrew/ubuntu22.04:main
     env:
-      HOMEBREW_NO_INSTALL_FROM_API: 1
       HOMEBREW_DOWNLOAD_CONCURRENCY: 8
     steps:
       - name: Set up Homebrew
@@ -24,6 +23,8 @@ jobs:
           core: true
           cask: false
           test-bot: false
+
+      - run: echo "HOMEBREW_NO_INSTALL_FROM_API=1" >>"${GITHUB_ENV}"
 
       - run: brew config
 
