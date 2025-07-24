@@ -10,9 +10,12 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-22.04-arm
+    runs-on: ubuntu-latest
     container:
       image: ghcr.io/homebrew/ubuntu22.04:main
+    env:
+      HOMEBREW_NO_INSTALL_FROM_API: 1
+      HOMEBREW_DOWNLOAD_CONCURRENCY: 8
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -24,9 +27,17 @@ jobs:
 
       - run: brew config
 
-      - name: set `HOMEBREW_MAKE_JOBS`
-        run: echo "HOMEBREW_MAKE_JOBS=1" >>"${GITHUB_ENV}"
+      - run: |
+          git fetch origin pull/230525/head:bump-eza-0.23.0
+          git checkout bump-eza-0.23.0
+        working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
 
-      - run: brew config
+      - run: brew install --only-dependencies --include-build eza
 
-      - run: brew install --build-bottle qt
+      - run: brew install --build-from-source eza
+
+      - run: |
+          touch hello
+          eza
+
+      - run: brew test --verbose eza
