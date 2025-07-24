@@ -28,9 +28,9 @@ jobs:
       - run: brew config
 
       - run: |
+          cd "$(brew --repository homebrew/core)"
           git fetch origin pull/230525/head:bump-eza-0.23.0
           git checkout bump-eza-0.23.0
-        working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
 
       - run: brew install --only-dependencies --include-build eza
 
