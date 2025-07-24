@@ -44,20 +44,20 @@ jobs:
           ls
           ls -la
       - run: |
-          eza
-          eza -l
-          eza -a
-          eza -g
+          eza "${PWD}"
+          eza -l "${PWD}"
+          eza -a "${PWD}"
+          eza -g "${PWD}"
           eza --help
           eza --version
 
       - run: |
           curl --location --output eza.tar.gz https://github.com/eza-community/eza/releases/download/v0.23.0/eza_x86_64-unknown-linux-gnu.tar.gz
           tar xf eza.tar.gz
-          ./eza
-          ./eza -l
-          ./eza -a
-          ./eza -g
+          ./eza "${PWD}"
+          ./eza -l "${PWD}"
+          ./eza -a "${PWD}"
+          ./eza -g "${PWD}"
           ./eza --help
           ./eza --version
 
