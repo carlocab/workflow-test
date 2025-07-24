@@ -24,8 +24,6 @@ jobs:
           cask: false
           test-bot: false
 
-      - run: echo "HOMEBREW_NO_INSTALL_FROM_API=1" >>"${GITHUB_ENV}"
-
       - run: brew config
 
       - run: |
@@ -34,6 +32,8 @@ jobs:
           git checkout bump-eza-0.23.0
 
       - run: brew install --only-dependencies eza
+
+      - run: echo "HOMEBREW_NO_INSTALL_FROM_API=1" >>"${GITHUB_ENV}"
 
       - run: brew install --build-from-source eza
 
