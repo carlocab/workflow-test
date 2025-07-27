@@ -30,8 +30,6 @@ jobs:
           cd "$(brew --repository homebrew/core)"
           sed -i '24i ldflags += "-extld #{ENV.cc}"' Formula/a/actionlint.rb
 
-      - run: brew install --only-dependencies actionlint
-
       - run: echo "HOMEBREW_NO_INSTALL_FROM_API=1" >>"${GITHUB_ENV}"
 
       - run: brew install --build-from-source actionlint
