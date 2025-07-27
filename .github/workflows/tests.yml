@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04-arm
     container:
       image: ghcr.io/homebrew/ubuntu22.04:main
     env:
@@ -28,39 +28,12 @@ jobs:
 
       - run: |
           cd "$(brew --repository homebrew/core)"
-          git fetch origin pull/230525/head:bump-eza-0.23.0
-          git checkout bump-eza-0.23.0
+          sed -i '24i ldflags += "-extld #{ENV.cc}"' Formula/a/actionlint.rb
 
-      - run: brew install --only-dependencies eza
+      - run: brew install --only-dependencies actionlint
 
       - run: echo "HOMEBREW_NO_INSTALL_FROM_API=1" >>"${GITHUB_ENV}"
 
-      - run: brew install --build-from-source eza
+      - run: brew install --build-from-source actionlint
 
-      - run: |
-          touch hello goodbye foo bar
-          mkdir baz
-
-          ls
-          ls -la
-      - run: |
-          eza "${PWD}"
-          eza -l "${PWD}"
-          eza -a "${PWD}"
-          eza -g "${PWD}"
-          eza --help
-          eza --version
-
-      - run: |
-          curl --location --output eza.tar.gz https://github.com/eza-community/eza/releases/download/v0.23.0/eza_x86_64-unknown-linux-gnu.tar.gz
-          tar xf eza.tar.gz
-          ./eza "${PWD}"
-          ./eza -l "${PWD}"
-          ./eza -a "${PWD}"
-          ./eza -g "${PWD}"
-          ./eza --help
-          ./eza --version
-
-      - run: mv eza "$(brew --prefix eza)/bin/"
-
-      - run: brew test --verbose eza
+      - run: brew test --verbose actionlint
