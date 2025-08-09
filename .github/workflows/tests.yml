@@ -10,28 +10,17 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-22.04-arm
+    runs-on: ubuntu-latest
     container:
       image: ghcr.io/homebrew/ubuntu22.04:main
-    env:
-      HOMEBREW_DOWNLOAD_CONCURRENCY: 8
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@main
-        with:
-          core: true
-          cask: false
-          test-bot: false
-
-      - run: brew config
 
       - run: |
-          cd "$(brew --repository homebrew/core)"
-          sed -i '24i ldflags += " -extld #{ENV.cc}"' Formula/a/actionlint.rb
-
-      - run: echo "HOMEBREW_NO_INSTALL_FROM_API=1" >>"${GITHUB_ENV}"
-
-      - run: brew install --build-from-source actionlint
-
-      - run: brew test --verbose actionlint
+          which -a rm
+          which -a mv
+          which -a chown
+          which -a setfacl
+          which -a install
