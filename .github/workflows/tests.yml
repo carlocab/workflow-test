@@ -22,16 +22,16 @@ jobs:
 
       - run: brew update
 
+      - name: Ensure that failure is reproducible
+        run: |
+          ! brew test-bot --only-formulae or-tools
+
       - run: |
           cd "$(brew --repository)"
           gh pr checkout 20403
           echo "HOMEBREW_NO_AUTO_UPDATE=1" >>"${GITHUB_ENV}"
         env:
           GH_TOKEN: ${{ github.token }}
-
-      - run: brew install --build-from-source or-tools
-
-      - run: brew test --verbose or-tools
 
       - run: brew uninstall --force or-tools
 
