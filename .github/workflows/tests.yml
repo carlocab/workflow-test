@@ -26,6 +26,9 @@ jobs:
         run: brew test-bot --only-formulae or-tools
         continue-on-error: true
 
+      - name: Clean stray bottle files
+        run: rm -fv **/*.bottle*
+
       - name: Check out `protodesc_cold` PR fix
         run: |
           cd "$(brew --repository)"
