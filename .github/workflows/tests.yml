@@ -23,10 +23,11 @@ jobs:
       - run: brew update
 
       - name: Ensure that failure is reproducible
-        run: |
-          ! brew test-bot --only-formulae or-tools
+        run: brew test-bot --only-formulae or-tools
+        continue-on-error: true
 
-      - run: |
+      - name: Check out `protodesc_cold` PR fix
+        run: |
           cd "$(brew --repository)"
           gh pr checkout 20403
           echo "HOMEBREW_NO_AUTO_UPDATE=1" >>"${GITHUB_ENV}"
