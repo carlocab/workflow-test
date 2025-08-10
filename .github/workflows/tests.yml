@@ -18,9 +18,13 @@ jobs:
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@main
 
+      - run: brew update
+
       - run: |
-          which -a rm
-          which -a mv
-          which -a chown
-          which -a setfacl
-          which -a install
+          cd "$(brew --repository)"
+          gh pr checkout 20403
+          echo "HOMEBREW_NO_AUTO_UPDATE=1" >>"${GITHUB_ENV}"
+
+      - run: brew install --build-from-source or-tools
+
+      - run: brew test --verbose or-tools
