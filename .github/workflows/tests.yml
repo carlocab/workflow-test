@@ -18,25 +18,24 @@ jobs:
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@main
         with:
+          core: true
           test-bot: true
+
+      - name: Set `HOMEBREW_NO_INSTALL_FROM_API`
+        run: echo "HOMEBREW_NO_INSTALL_FROM_API=1" >>"${GITHUB_ENV}"
 
       - run: brew update
 
-      - name: Ensure that failure is reproducible
-        run: brew test-bot --only-formulae or-tools
-        continue-on-error: true
+      - run: git -C "$(brew --repository)" show HEAD
 
-      - name: Clean stray bottle files
-        run: rm -fv **/*.bottle*
-
-      - name: Check out `protodesc_cold` PR fix
+      - name: Remove `return` in opencv test block
         run: |
-          cd "$(brew --repository)"
-          gh pr checkout 20403
+          cd "$(brew --repository homebrew/core)"
+          sed -i 's/return if OS.linux? || Hardware::CPU.intel?/return if false/' Formula/o/opencv.rb
           echo "HOMEBREW_NO_AUTO_UPDATE=1" >>"${GITHUB_ENV}"
         env:
           GH_TOKEN: ${{ github.token }}
 
-      - run: brew uninstall --force or-tools
+      - run: brew uninstall --force opencv
 
-      - run: brew test-bot --only-formulae or-tools
+      - run: brew test-bot --only-formulae opencv
