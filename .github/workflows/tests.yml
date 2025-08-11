@@ -10,33 +10,21 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        runner:
+          - ubuntu-latest
+          - ubuntu-22.04-arm
+    runs-on: ${{ matrix.runner }}
     container:
       image: ghcr.io/homebrew/ubuntu22.04:main
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@main
-        with:
-          test-bot: true
 
-      - run: brew update
+      - run: brew install ratarmount
 
-      - name: Ensure that failure is reproducible
-        run: brew test-bot --only-formulae or-tools
-        continue-on-error: true
+      - run: brew linkage ratarmount
 
-      - name: Clean stray bottle files
-        run: rm -fv **/*.bottle*
-
-      - name: Check out `protodesc_cold` PR fix
-        run: |
-          cd "$(brew --repository)"
-          gh pr checkout 20403
-          echo "HOMEBREW_NO_AUTO_UPDATE=1" >>"${GITHUB_ENV}"
-        env:
-          GH_TOKEN: ${{ github.token }}
-
-      - run: brew uninstall --force or-tools
-
-      - run: brew test-bot --only-formulae or-tools
+      - run: brew linkage --reverse ratarmount
