@@ -10,7 +10,13 @@ permissions:
 
 jobs:
   test:
+    name: ${{ startsWith(matrix.commit, '04b') && 'Broken' || 'Fixed' }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        commit:
+          - 04b47bc1aa7a765d51012d230634a248377d076c
+          - 6457770a59273c03b07f5235902640b393c8e452
     container:
       image: ghcr.io/homebrew/ubuntu22.04:main
     steps:
@@ -22,9 +28,21 @@ jobs:
 
       - run: brew update
 
+      - name: Check out commit to test
+        run: |
+          cd "$(brew --repository)"
+          git fetch origin "${COMMIT}"
+          git checkout FETCH_HEAD
+          echo "HOMEBREW_NO_AUTO_UPDATE=1" >>"${GITHUB_ENV}"
+        env:
+          COMMIT: ${{ matrix.commit }}
+
       - run: brew install protobuf
 
       - run: brew linkage protobuf
 
       - run: brew linkage --test protobuf
+        if: always()
+
+      - run: brew test-bot --only-formulae or-tools
         if: always()
