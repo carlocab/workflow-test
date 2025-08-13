@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   test:
-    name: ${{ matrix.developer && format({0}-{1}, matrix.runner, 'developer') || matrix.runner }}
+    name: ${{ matrix.developer && format('{0}-{1}', matrix.runner, 'developer') || matrix.runner }}
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
