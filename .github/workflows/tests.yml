@@ -33,7 +33,10 @@ jobs:
 
       - run: brew update
 
-      - run: brew list | xargs brew uninstall --force --ignore-dependencies
+      - name: Remove installed formulae and taps
+        run: |
+          brew list | xargs brew uninstall --force --ignore-dependencies
+          brew tap | xargs brew untap --force
         if: runner.os == 'macOS'
 
       - name: Check out commit to test
