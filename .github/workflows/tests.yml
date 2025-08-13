@@ -10,11 +10,14 @@ permissions:
 
 jobs:
   test:
-    name: ${{ startsWith(matrix.commit, '04b') && 'Broken' || (matrix.commit == 'patchelf-test' && 'Patchelf' || 'Fixed') }}
-    runs-on: ubuntu-latest
+    name: ${{ format('{0}-{1}', matrix.runner, startsWith(matrix.commit, '04b') && 'Broken' || (matrix.commit == 'patchelf-test' && 'Patchelf' || 'Fixed')) }}
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
+        runner:
+          - ubuntu-latest
+          - macos-latest
         commit:
           - 04b47bc1aa7a765d51012d230634a248377d076c
           - 16bad8838dc4324d8c3bf77d603a6a7250179f18
