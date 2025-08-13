@@ -36,7 +36,7 @@ jobs:
       - name: Remove installed formulae and taps
         run: |
           brew list | xargs brew uninstall --force --ignore-dependencies
-          brew tap | xargs brew untap --force
+          brew tap | grep -v 'homebrew/test-bot' | xargs brew untap --force
         if: runner.os == 'macOS'
 
       - name: Check out commit to test
