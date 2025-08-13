@@ -33,6 +33,9 @@ jobs:
 
       - run: brew update
 
+      - run: brew list | xargs brew uninstall --force --ignore-dependencies
+        if: runner.os == 'macOS'
+
       - name: Check out commit to test
         run: |
           cd "$(brew --repository)"
