@@ -10,15 +10,12 @@ permissions:
 
 jobs:
   test:
-    name: ${{ matrix.developer && format('{0}-{1}', matrix.runner, 'developer') || matrix.runner }}
+    name: ${{ matrix.runner }}
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
         runner: [ubuntu-latest, macos-latest]
-        developer: [true, false]
-    env:
-      HOMEBREW_DEVELOPER: ${{ matrix.developer && '1' || '' }}
     container:
       image: ${{ matrix.runner == 'ubuntu-latest' && 'ghcr.io/homebrew/ubuntu22.04:main' || '' }}
     steps:
@@ -27,17 +24,19 @@ jobs:
         uses: Homebrew/actions/setup-homebrew@main
         with:
           core: true
-          test-bot: true
 
       - name: Set environment variables
         run: |
           echo "HOMEBREW_NO_AUTO_UPDATE=1" >>"${GITHUB_ENV}"
           echo "HOMEBREW_NO_INSTALL_FROM_API=1" >>"${GITHUB_ENV}"
+          echo "HOMEBREW_DEVELOPER=1" >>"${GITHUB_ENV}"
 
       - run: brew config
 
       - run: brew doctor
         continue-on-error: true
+
+      - run: brew ruby -e 'puts "hello"'
 
       - run: brew update
 
