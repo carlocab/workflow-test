@@ -20,7 +20,7 @@ jobs:
           - macos-latest
         commit:
           - 04b47bc1aa7a765d51012d230634a248377d076c
-          - 16bad8838dc4324d8c3bf77d603a6a7250179f18
+          - c9060c3242c465d1a8f557147c1feb068a0b35f3
           - patchelf-test
     container:
       image: ${{ matrix.runner == 'ubuntu-latest' && 'ghcr.io/homebrew/ubuntu22.04:main' || '' }}
