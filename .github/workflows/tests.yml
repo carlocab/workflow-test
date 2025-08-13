@@ -17,7 +17,7 @@ jobs:
       matrix:
         commit:
           - 04b47bc1aa7a765d51012d230634a248377d076c
-          - 6457770a59273c03b07f5235902640b393c8e452
+          - 16bad8838dc4324d8c3bf77d603a6a7250179f18
           - patchelf-test
     container:
       image: ghcr.io/homebrew/ubuntu22.04:main
