@@ -10,18 +10,15 @@ permissions:
 
 jobs:
   test:
-    name: ${{ format('{0}-{1}', matrix.runner, startsWith(matrix.commit, '04b') && 'Broken' || (matrix.commit == 'patchelf-test' && 'Patchelf' || 'Fixed')) }}
+    name: ${{ matrix.runner }}
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
-        runner:
-          - ubuntu-latest
-          - macos-latest
-        commit:
-          - 04b47bc1aa7a765d51012d230634a248377d076c
-          - c9060c3242c465d1a8f557147c1feb068a0b35f3
-          - patchelf-test
+        runner: [ubuntu-latest, macos-latest]
+        developer: [true, false]
+    env:
+      HOMEBREW_DEVELOPER: ${{ matrix.developer && '1' || '' }}
     container:
       image: ${{ matrix.runner == 'ubuntu-latest' && 'ghcr.io/homebrew/ubuntu22.04:main' || '' }}
     steps:
@@ -29,33 +26,18 @@ jobs:
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@main
         with:
+          core: true
           test-bot: true
 
-      - name: Remove installed formulae and taps
-        if: runner.os == 'macOS'
+      - name: Set environment variables
         run: |
-          brew list | xargs brew uninstall --force --ignore-dependencies
-          brew tap | grep -v 'homebrew/test-bot' | xargs brew untap --force
+          echo "HOMEBREW_NO_AUTO_UPDATE=1" >>"${GITHUB_ENV}"
+          echo "HOMEBREW_NO_INSTALL_FROM_API=1" >>"${GITHUB_ENV}"
 
       - run: brew update
 
-      - name: Check out commit to test
-        run: |
-          cd "$(brew --repository)"
-          git fetch origin "${COMMIT}"
-          git checkout FETCH_HEAD
-          echo "HOMEBREW_NO_AUTO_UPDATE=1" >>"${GITHUB_ENV}"
-        env:
-          COMMIT: ${{ matrix.commit }}
+      - run: brew info hello
 
-      - run: brew install protobuf
+      - run: brew install hello
 
-      - run: brew linkage protobuf
-
-      - run: brew linkage --test protobuf
-        if: always()
-
-      - run: |
-          brew tap --force homebrew/core
-          brew test-bot --only-formulae or-tools
-        if: always()
+      - run: brew uninstall hello
