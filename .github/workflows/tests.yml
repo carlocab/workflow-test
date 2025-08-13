@@ -23,7 +23,7 @@ jobs:
           - 16bad8838dc4324d8c3bf77d603a6a7250179f18
           - patchelf-test
     container:
-      image: ghcr.io/homebrew/ubuntu22.04:main
+      image: ${{ matrix.runner == 'ubuntu-latest' && 'ghcr.io/homebrew/ubuntu22.04:main' || '' }}
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
