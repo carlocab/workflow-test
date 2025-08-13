@@ -56,6 +56,6 @@ jobs:
         if: always()
 
       - run: |
-          brew tap homebrew/core
+          brew tap --force homebrew/core
           brew test-bot --only-formulae or-tools
         if: always()
