@@ -40,14 +40,8 @@ jobs:
 
       - run: brew update
 
-      - run: rm -rfv "$(brew --cache)"/api*
+      - run: brew install bulk_extractor
 
-      - run: brew info hello
+      - run: brew linkage bulk_extractor
 
-      - run: rm -rfv "$(brew --cache)"/api*
-
-      - run: brew install hello
-
-      - run: rm -rfv "$(brew --cache)"/api*
-
-      - run: brew uninstall hello
+      - run: brew test bulk_extractor
