@@ -15,7 +15,7 @@ on:
       branch:
         description: Branch to checkout
         required: false
-        default: master
+        default: main
         type: string
       job-size:
         description: Number of dependents per matrix job
@@ -27,6 +27,9 @@ on:
         required: false
         default: ubuntu-latest
         type: string
+
+permissions:
+  contents: read
 
 env:
   GITHUB_ACTIONS_MATRIX_JOB_LIMIT: 256
@@ -41,7 +44,7 @@ jobs:
   generate-matrix:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/homebrew/ubuntu22.04:master
+      image: ghcr.io/homebrew/ubuntu22.04:main
       options: --user=linuxbrew
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
@@ -50,11 +53,12 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: Homebrew/actions/setup-homebrew@master
+      - uses: Homebrew/actions/setup-homebrew@main
         with:
+          core: true
           test-bot: false
 
-      - if: inputs.branch != 'master'
+      - if: inputs.branch != 'main'
         env:
           BRANCH: ${{ inputs.branch }}
         run: |
@@ -67,7 +71,7 @@ jobs:
 
       - if: startsWith(inputs.runner, 'ubuntu')
         id: container
-        run: echo 'container={"image":"ghcr.io/homebrew/ubuntu22.04:master","options":"--user=linuxbrew"}' >> "${GITHUB_OUTPUT}"
+        run: echo 'container={"image":"ghcr.io/homebrew/ubuntu22.04:main","options":"--user=linuxbrew"}' >> "${GITHUB_OUTPUT}"
 
       - id: matrix
         run: |
@@ -113,11 +117,11 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: Homebrew/actions/setup-homebrew@master
+      - uses: Homebrew/actions/setup-homebrew@main
         with:
           test-bot: ${{ runner.os == 'macOS' }}
 
-      - if: inputs.branch != 'master'
+      - if: inputs.branch != 'main'
         env:
           BRANCH: ${{ inputs.branch }}
         run: |
@@ -142,30 +146,30 @@ jobs:
           brew install jq
 
       - run: |
-          formulae=($(jq --raw-output ".[${INDEX}][]" split.json))
-          formulae_json="$(brew info --json=v2 ${formulae[@]})"
-          installable_formulae=($(
+          read -ra formulae < <(jq --raw-output ".[${INDEX}][]" split.json)
+          formulae_json="$(brew info --json=v2 "${formulae[@]}")"
+          read -ra installable_formulae < <(
             jq --raw-output \
-              '.formulae[] |
+              ".formulae[] |
                 select(
-                  (.bottle.stable.files.${{ steps.bottle-tag.outputs.tag }} != null or .bottle.stable.files.all != null) and
+                  (.bottle.stable.files.${TAG} != null or .bottle.stable.files.all != null) and
                   (.disabled | not)
                 ) |
-                .full_name' <<< "$formulae_json"
-          ))
+                .full_name" <<< "$formulae_json"
+          )
 
           linkage_check="${LINKED_FORMULA:-${FORMULA}}"
-          for formula in ${installable_formulae[@]}
+          for formula in "${installable_formulae[@]}"
           do
             echo "Installing ${formula}..."
             if ! brew install --quiet --force --overwrite --skip-post-install "$formula"
             then
               echo "::warning ::Encountered an error while installing ${formula}"
             fi
-            formulae="$(brew list --formulae)"
-            [[ -n "$formulae" ]] && xargs brew unlink <<< $formulae # Handle formula conflicts
+            read -ra installed_formulae < <(brew list --formulae)
+            [[ -n "${installed_formulae[*]}" ]] && xargs brew unlink <<<"${installed_formulae[@]}" # Handle formula conflicts
 
-            if brew linkage $formula | grep -E -q "\(${linkage_check}\)$"
+            if brew linkage "$formula" | grep -E -q "\(${linkage_check}\)$"
             then
               echo "::notice ::${formula} has linkage with ${linkage_check}!"
               echo "${formula}" >> "linkage-${INDEX}.txt"
@@ -175,6 +179,7 @@ jobs:
           done
         env:
           INDEX: ${{ matrix.index }}
+          TAG: ${{ steps.bottle-tag.outputs.tag }}
 
       - uses: actions/upload-artifact@main
         with:
@@ -200,10 +205,12 @@ jobs:
           linkage_check="${LINKED_FORMULA:-${FORMULA}}"
           what="${FORMULA:+"Dependents of \`${FORMULA}\`"}"
           what="${what:-"All formulae"}"
-          printf '## %s with linkage to `%s`\n' "$what" "$linkage_check" >> "${GITHUB_STEP_SUMMARY}"
-          printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
-          sort linkage-*.txt >> "${GITHUB_STEP_SUMMARY}"
-          printf '```\n' >> "${GITHUB_STEP_SUMMARY}"
+          {
+            printf "## %s with linkage to \`%s\`\n" "$what" "$linkage_check"
+            printf '```\n'
+            sort linkage-*.txt
+            printf '```\n'
+          } >>"${GITHUB_STEP_SUMMARY}"
 
       - uses: actions/download-artifact@main
         with:
