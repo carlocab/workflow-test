@@ -30,4 +30,6 @@ jobs:
           git fetch origin openvino-aarch64-linux
           git checkout openvino-aarch64-linux
 
-      - run: brew test-bot --only-formulae --keep-old --only-json-tab --skip-online-checks --skip-dependents openvino
+      - run: brew test-bot --verbose --only-formulae --keep-old --only-json-tab --skip-online-checks --skip-dependents openvino
+
+      - run: cat linkage_output.txt
