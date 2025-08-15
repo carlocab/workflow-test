@@ -10,38 +10,24 @@ permissions:
 
 jobs:
   test:
-    name: ${{ matrix.runner }}
-    runs-on: ${{ matrix.runner }}
-    strategy:
-      fail-fast: false
-      matrix:
-        runner: [ubuntu-latest, macos-latest]
+    name: Build OpenVINO on arm64 Linux
+    runs-on: ubuntu-22.04-arm
     container:
-      image: ${{ matrix.runner == 'ubuntu-latest' && 'ghcr.io/homebrew/ubuntu22.04:main' || '' }}
+      image: ghcr.io/homebrew/ubuntu22.04:main
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@main
         with:
           core: true
-
-      - name: Set environment variables
-        run: |
-          echo "HOMEBREW_NO_AUTO_UPDATE=1" >>"${GITHUB_ENV}"
-          echo "HOMEBREW_NO_INSTALL_FROM_API=1" >>"${GITHUB_ENV}"
-          echo "HOMEBREW_DEVELOPER=1" >>"${GITHUB_ENV}"
-
-      - run: brew config
-
-      - run: brew doctor
-        continue-on-error: true
-
-      - run: brew ruby -e 'puts "hello"'
+          test-bot: true
 
       - run: brew update
 
-      - run: brew install bulk_extractor
+      - name: Check out PR fix
+        run: |
+          cd "$(brew --repository homebrew/core)"
+          git fetch origin openvino-aarch64-linux
+          git checkout openvino-aarch64-linux
 
-      - run: brew linkage bulk_extractor
-
-      - run: brew test bulk_extractor
+      - run: brew test-bot --only-formulae --keep-old --only-json-tab --skip-online-checks --skip-dependents openvino
