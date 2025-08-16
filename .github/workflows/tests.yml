@@ -10,12 +10,15 @@ permissions:
 
 jobs:
   test:
-    name: ${{ matrix.runner }}
+    name: ${{ matrix.runner }}-${{ matrix.concurrency && 'concurrent' || '' }}
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
         runner: [ubuntu-latest, macos-latest]
+        concurrency: [true, false]
+    env:
+      HOMEBREW_DOWNLOAD_CONCURRENCY: ${{ matrix.concurrency && '1' || '' }}
     container:
       image: ${{ matrix.runner == 'ubuntu-latest' && 'ghcr.io/homebrew/ubuntu22.04:main' || '' }}
     steps:
@@ -40,8 +43,14 @@ jobs:
 
       - run: brew update
 
-      - run: brew install bulk_extractor
+      - run: rm -rfv "$(brew --cache)"/api*
 
-      - run: brew linkage bulk_extractor
+      - run: brew info hello
 
-      - run: brew test bulk_extractor
+      - run: rm -rfv "$(brew --cache)"/api*
+
+      - run: brew install hello
+
+      - run: rm -rfv "$(brew --cache)"/api*
+
+      - run: brew uninstall hello
