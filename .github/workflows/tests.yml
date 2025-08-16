@@ -34,6 +34,7 @@ jobs:
           echo "HOMEBREW_DEVELOPER=1" >>"${GITHUB_ENV}"
           echo "HOMEBREW_AUTO_UPDATE_SECS=43200" >>"${GITHUB_ENV}"
           echo "HOMEBREW_NO_AUTO_UPDATE=" >>"${GITHUB_ENV}"
+          brew analytics on
 
       - run: brew config
 
