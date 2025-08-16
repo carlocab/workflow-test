@@ -32,7 +32,7 @@ jobs:
         run: |
           echo "HOMEBREW_NO_INSTALL_FROM_API=1" >>"${GITHUB_ENV}"
           echo "HOMEBREW_DEVELOPER=1" >>"${GITHUB_ENV}"
-          echo "HOMEBREW_AUTO_UPDATE_SECS=43200"
+          echo "HOMEBREW_AUTO_UPDATE_SECS=43200" >>"${GITHUB_ENV}"
 
       - run: brew config
 
