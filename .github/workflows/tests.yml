@@ -27,9 +27,18 @@ jobs:
       - name: Check out PR fix
         run: |
           cd "$(brew --repository homebrew/core)"
-          git fetch origin openvino-aarch64-linux
-          git checkout openvino-aarch64-linux
+          git fetch origin openvino-more-aarch64-linux-fixes
+          git checkout openvino-more-aarch64-linux-fixes
 
-      - run: brew test-bot --verbose --only-formulae --keep-old --only-json-tab --skip-online-checks --skip-dependents openvino
+      - run: brew test-bot --only-formulae --keep-old --only-json-tab --skip-online-checks --skip-dependents openvino
 
-      - run: cat linkage_output.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: logs
+          path: logs
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: text-files
+          path: |
+            *.txt
