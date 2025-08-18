@@ -41,4 +41,4 @@ jobs:
 
       - run: brew install "$(brew --cache ruby)"
 
-      - run: head "$(brew --prefix ruby)/bundle"
+      - run: head "$(brew --prefix ruby)/bin/bundle"
