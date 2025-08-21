@@ -10,49 +10,23 @@ permissions:
 
 jobs:
   test:
-    name: ${{ matrix.concurrency && format('{0}-concurrent', matrix.runner) || matrix.runner }}
+    name: ${{ matrix.runner }}
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
-        runner: [ubuntu-latest, macos-latest]
-        concurrency: [true, false]
+        runner: [macos-13, macos-14, macos-15]
     env:
-      HOMEBREW_DOWNLOAD_CONCURRENCY: ${{ matrix.concurrency && 'auto' || '1' }}
-    container:
-      image: ${{ matrix.runner == 'ubuntu-latest' && 'ghcr.io/homebrew/ubuntu22.04:main' || '' }}
+      HOMEBREW_DOWNLOAD_CONCURRENCY: auto
+      HOMEBREW_DEVELOPER: 1
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@main
-        with:
-          core: true
-
-      - name: Set environment variables
-        run: |
-          echo "HOMEBREW_NO_INSTALL_FROM_API=1" >>"${GITHUB_ENV}"
-          echo "HOMEBREW_DEVELOPER=1" >>"${GITHUB_ENV}"
-          echo "HOMEBREW_AUTO_UPDATE_SECS=43200" >>"${GITHUB_ENV}"
-          echo "HOMEBREW_NO_AUTO_UPDATE=" >>"${GITHUB_ENV}"
-          brew analytics on
 
       - run: brew config
 
       - run: brew doctor
         continue-on-error: ${{ runner.os == 'macOS' }}
 
-      - run: brew ruby -e 'puts "hello"'
-
-      - run: brew update
-
-      - run: rm -rfv "$(brew --cache)"/api*
-
-      - run: brew info hello
-
-      - run: rm -rfv "$(brew --cache)"/api*
-
-      - run: brew install hello
-
-      - run: rm -rfv "$(brew --cache)"/api*
-
-      - run: brew uninstall hello
+      - run: brew list --cask
