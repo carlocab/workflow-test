@@ -25,34 +25,19 @@ jobs:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@main
-        with:
-          core: true
 
-      - name: Set environment variables
+      - name: Ensure clean `brew doctor`
         run: |
-          echo "HOMEBREW_NO_INSTALL_FROM_API=1" >>"${GITHUB_ENV}"
-          echo "HOMEBREW_DEVELOPER=1" >>"${GITHUB_ENV}"
-          echo "HOMEBREW_AUTO_UPDATE_SECS=43200" >>"${GITHUB_ENV}"
-          echo "HOMEBREW_NO_AUTO_UPDATE=" >>"${GITHUB_ENV}"
-          brew analytics on
+          brew list | xargs brew uninstall --force
+          brew cleanup
+        if: runner.os == 'macOS'
 
       - run: brew config
 
       - run: brew doctor
-        continue-on-error: ${{ runner.os == 'macOS' }}
-
-      - run: brew ruby -e 'puts "hello"'
 
       - run: brew update
 
-      - run: rm -rfv "$(brew --cache)"/api*
-
-      - run: brew info hello
-
-      - run: rm -rfv "$(brew --cache)"/api*
+      - run: brew fetch hello
 
       - run: brew install hello
-
-      - run: rm -rfv "$(brew --cache)"/api*
-
-      - run: brew uninstall hello
