@@ -26,7 +26,9 @@ jobs:
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@main
 
-      - name: Ensure clean `brew doctor`
+      - run: brew untap --force homebrew/core
+
+      - name: Uninstall everything (for a clean `brew doctor`)
         run: |
           brew list | xargs brew uninstall --force
           brew cleanup
@@ -40,4 +42,4 @@ jobs:
 
       - run: brew fetch hello
 
-      - run: brew install hello
+      - run: brew install --verbose hello
