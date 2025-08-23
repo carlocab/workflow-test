@@ -26,10 +26,11 @@ jobs:
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@main
 
-      - run: brew untap --force homebrew/core homebrew/cask
+      - run: brew untap --force homebrew/core
 
       - name: Uninstall everything (for a clean `brew doctor`)
         run: |
+          brew untap --force homebrew/cask
           brew list | xargs brew uninstall --force
           brew cleanup
         if: runner.os == 'macOS'
