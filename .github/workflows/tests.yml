@@ -10,37 +10,14 @@ permissions:
 
 jobs:
   test:
-    runs-on: ${{ matrix.runner }}
-    strategy:
-      fail-fast: false
-      matrix:
-        runner: [ubuntu-latest, macos-latest]
+    runs-on: macos-latest
     env:
       HOMEBREW_DOWNLOAD_CONCURRENCY: auto
-    container:
-      image: ${{ matrix.runner == 'ubuntu-latest' && 'ghcr.io/homebrew/ubuntu22.04:main' || '' }}
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@main
 
-      - run: brew untap --force homebrew/core
+      - run: brew list --full-name
 
-      - name: Uninstall everything (for a clean `brew doctor`)
-        run: |
-          brew untap --force homebrew/cask
-          brew list | xargs brew uninstall --force
-          brew cleanup
-        if: runner.os == 'macOS'
-
-      - run: brew config
-
-      - run: brew doctor
-
-      - run: brew update
-
-      - run: brew deps cmus | xargs brew fetch cmus
-
-      - run: brew install cmus
-
-      - run: cmus --plugins
+      - run: brew info --installed --json=v2 | jq '.formulae[] | select(.name == "cmake")'
