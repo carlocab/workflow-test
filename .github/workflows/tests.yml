@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   test:
-    runs-on: macos-15
+    runs-on: ubuntu-latest
     env:
       HOMEBREW_DOWNLOAD_CONCURRENCY: auto
     steps:
@@ -18,6 +18,4 @@ jobs:
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@main
 
-      - run: brew list --full-name
-
-      - run: brew info --installed --json=v2 | jq '.formulae[] | select(.name == "cmake")'
+      - run: brew info llvm
