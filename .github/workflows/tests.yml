@@ -18,6 +18,6 @@ jobs:
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@main
 
-      - run: brew list --full-name
+      - run: brew tap
 
       - run: brew info --installed --json=v2 | jq '.formulae[] | select(.name == "cmake")'
