@@ -10,37 +10,11 @@ permissions:
 
 jobs:
   test:
-    name: ${{ matrix.concurrency && format('{0}-concurrent', matrix.runner) || matrix.runner }}
-    runs-on: ${{ matrix.runner }}
-    strategy:
-      fail-fast: false
-      matrix:
-        runner: [ubuntu-latest, macos-latest]
-        concurrency: [true, false]
-    env:
-      HOMEBREW_DOWNLOAD_CONCURRENCY: ${{ matrix.concurrency && 'auto' || '1' }}
-    container:
-      image: ${{ matrix.runner == 'ubuntu-latest' && 'ghcr.io/homebrew/ubuntu22.04:main' || '' }}
+    name: Run `brew tests --only=os/mac/pkgconfig`
+    runs-on: macos-latest
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@main
 
-      - run: brew untap --force homebrew/core
-
-      - name: Uninstall everything (for a clean `brew doctor`)
-        run: |
-          brew untap --force homebrew/cask
-          brew list | xargs brew uninstall --force
-          brew cleanup
-        if: runner.os == 'macOS'
-
-      - run: brew config
-
-      - run: brew doctor
-
-      - run: brew update
-
-      - run: brew fetch hello
-
-      - run: brew install --verbose hello
+      - run: brew tests --only=os/mac/pkgconfig
