@@ -19,7 +19,7 @@ jobs:
       - name: Install Qt (cached)
         uses: Homebrew/actions/cache-homebrew-prefix@main
         with:
-          install: pkg-config qt
+          install: pkgconf qt
           uninstall: true
           workflow-key: qt-probe
 
