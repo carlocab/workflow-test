@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   postgres-probe:
-    name: Probe Homebrew Qt6 layout
+    name: Instal Postgres
     strategy:
       matrix:
         runner: [macos-latest, ubuntu-latest]
