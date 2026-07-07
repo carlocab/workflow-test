@@ -20,5 +20,7 @@ jobs:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@main
 
-      - name: Install Postgres
-        run: brew install postgresql@18
+      - name: Install Postgres using a Brewfile
+        run: |
+          echo 'brew "postgresql@18"' >Brewfile
+          brew bundle install
