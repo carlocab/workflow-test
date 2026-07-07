@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   postgres-probe:
-    name: Instal Postgres
+    name: Install Postgres
     strategy:
       matrix:
         runner: [macos-latest, ubuntu-latest]
