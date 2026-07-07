@@ -9,66 +9,16 @@ permissions:
   contents: read
 
 jobs:
-  qt-probe:
+  postgres-probe:
     name: Probe Homebrew Qt6 layout
-    runs-on: macos-latest
+    strategy:
+      matrix:
+        runner: [macos-latest, ubuntu-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@main
 
-      - name: Install Qt (cached)
-        uses: Homebrew/actions/cache-homebrew-prefix@main
-        with:
-          install: pkgconf qt
-          uninstall: true
-          workflow-key: qt-probe
-
-      # 1) What pkg-config actually exposes (this is what meson reads).
-      - name: pkg-config view of Qt6
-        run: |
-          pkg-config --modversion        Qt6Core
-          pkg-config --variable=prefix      Qt6Core
-          pkg-config --variable=libdir      Qt6Core
-          pkg-config --variable=includedir  Qt6Core
-          pkg-config --cflags  Qt6Core
-          pkg-config --cflags  Qt6Gui Qt6Widgets
-          # Does Qt ship a separate private .pc?
-          ls /opt/homebrew/lib/pkgconfig | grep -i -E 'qt6.*priv' || echo "no Qt6*Private*.pc"
-
-      # 2) Confirm nothing meson currently reaches for actually exists.
-      - name: Show that prefix/include has no Qt
-        run: |
-          ls -ld /opt/homebrew/include/QtCore                  2>&1 || true
-          ls -ld /opt/homebrew/include/6.11.1                  2>&1 || true
-          ls -ld /opt/homebrew/include/6.11.1/QtCore           2>&1 || true
-          ls /opt/homebrew/include | grep -i qt || echo "no qt* under /opt/homebrew/include"
-
-      # 3) The framework layout the patch is going to point at.
-      - name: Probe framework Headers tree
-        run: |
-          ls -ld /opt/homebrew/lib/QtCore.framework
-          ls -ld /opt/homebrew/lib/QtCore.framework/Headers
-          ls    /opt/homebrew/lib/QtCore.framework/Headers | head -40
-          # Exact version-dir name (we're guessing "6.11.1" — confirm):
-          ls -d /opt/homebrew/lib/QtCore.framework/Headers/*/
-          # The -I path the patch will emit:
-          ls -d /opt/homebrew/lib/QtCore.framework/Headers/*/QtCore
-          # The header that's currently failing to resolve:
-          ls    /opt/homebrew/lib/QtCore.framework/Headers/*/QtCore/private/qobject_p.h
-
-      # 4) Cross-check via the formula's Frameworks/ symlink.
-      - name: Probe Frameworks/ symlink path
-        run: |
-          ls -ld /opt/homebrew/Frameworks/QtCore.framework             2>&1 || true
-          ls    /opt/homebrew/Frameworks/QtCore.framework/Headers/*/QtCore/private/qobject_p.h 2>&1 || true
-
-      # 5) QtGui/QtWidgets share the same layout (the failing test pulls them in).
-      - name: Probe Gui/Widgets frameworks
-        run: |
-          for m in Gui Widgets; do
-            ls /opt/homebrew/lib/Qt${m}.framework/Headers/*/Qt${m}/private/ | head -5
-          done
-
-      # 6) Dump Qt6Core.pc so we can see the template's includedir/Cflags verbatim.
-      - name: Dump Qt6Core.pc
-        run: cat /opt/homebrew/lib/pkgconfig/Qt6Core.pc
+      - name: Install Postgres
+        run: brew install postgresql@18
